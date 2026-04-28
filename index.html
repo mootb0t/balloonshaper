@@ -1360,6 +1360,9 @@
           };
         }
         case 'wang': {
+          // Wang-style parametric hull — superellipse with bulge factor a > 2 and
+          // taper factor b < 2. Fatter through the middle than a pure ellipsoid,
+          // with a slight upward shift of the peak for an airship-ish profile.
           const a = 2.6, b = 1.7;
           const peakShift = 0.08;             // small upward bias of the peak
           return (y) => {
