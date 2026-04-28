@@ -1,0 +1,1727 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BalloonShaper — Aeronaut</title>
+  <meta name="description" content="Balloon & airship generator for the Create: Aeronautics Minecraft mod. Configure a shape, get a vanilla .nbt structure to load with a schematic." />
+  <link rel="stylesheet" href="./style.css" />
+
+  <style>
+    :root {
+      --bg-aero: #0d0d0f;
+      --panel-aero: #15151a;
+      --line-aero: rgba(233,237,242,.10);
+      --brass: #c8952a;
+      --brass-dim: rgba(200,149,42,.55);
+      --brass-faint: rgba(200,149,42,.18);
+      --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      /* Native selects / scrollbars follow dark UI on Windows & Android */
+      color-scheme: dark;
+    }
+
+    body {
+      background: var(--bg-aero);
+    }
+
+    .aero-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 22px 18px 64px;
+    }
+
+    .aero-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 10px 0 16px;
+      border-bottom: 1px solid var(--line-aero);
+      margin-bottom: 18px;
+    }
+    .aero-header .crumb {
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .aero-header .crumb:hover { color: var(--text); }
+    .aero-header h1 {
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      font-size: 32px;
+      margin: 0;
+    }
+    .aero-header h1 .accent { color: var(--brass); }
+    .aero-header .tagline {
+      color: var(--muted);
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .layout { grid-template-columns: 1fr; }
+      .preview-wrap { order: -1; height: 420px; }
+    }
+
+    .panel-aero {
+      background: var(--panel-aero);
+      border: 1px solid var(--line-aero);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+
+    .preview-wrap {
+      position: relative;
+      background: var(--panel-aero);
+      border: 1px solid var(--line-aero);
+      border-radius: 12px;
+      overflow: hidden;
+      height: 640px;
+    }
+    .preview-wrap canvas { display: block; width: 100%; height: 100%; }
+    .preview-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: rgba(233,237,242,.55);
+      pointer-events: none;
+      letter-spacing: .04em;
+    }
+    .preview-overlay .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--brass);
+      margin-right: 6px;
+      vertical-align: middle;
+      box-shadow: 0 0 8px var(--brass);
+    }
+
+    .rotate-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,.45);
+      border: 1px solid var(--brass-faint);
+      color: var(--brass);
+      padding: 5px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      backdrop-filter: blur(4px);
+      transition: border-color .12s, color .12s, background .12s;
+    }
+    .rotate-toggle:hover { border-color: var(--brass-dim); background: rgba(200,149,42,.08); }
+    .rotate-toggle svg { display: block; transition: transform .4s linear; }
+    .rotate-toggle.on svg { animation: spin 4s linear infinite; }
+    .rotate-toggle.off { color: rgba(233,237,242,.4); border-color: var(--line-aero); }
+    .rotate-toggle.off svg { animation: none; }
+    @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+
+    .orient-controls {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      gap: 2px;
+      background: rgba(0,0,0,.45);
+      border: 1px solid var(--line-aero);
+      border-radius: 6px;
+      padding: 3px;
+      backdrop-filter: blur(4px);
+    }
+    .orient-btn {
+      appearance: none;
+      background: transparent;
+      border: none;
+      color: rgba(233,237,242,.45);
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: color .12s, background .12s;
+    }
+    .orient-btn:hover { color: var(--text); background: rgba(255,255,255,.04); }
+    .orient-btn.active { color: var(--brass); background: var(--brass-faint); }
+    .orient-btn svg { transition: transform .25s; }
+    .orient-btn[data-rot="90"]  svg { transform: rotate(90deg); }
+    .orient-btn[data-rot="180"] svg { transform: rotate(180deg); }
+
+    /* Shape grid */
+    .shape-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+    .shape-btn {
+      appearance: none;
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line-aero);
+      border-radius: 8px;
+      padding: 8px 4px 6px;
+      cursor: pointer;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: .03em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: border-color .12s, color .12s, background .12s;
+    }
+    .shape-btn svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 1.4; }
+    .shape-btn:hover { border-color: rgba(200,149,42,.35); color: var(--text); }
+    .shape-btn.active {
+      border-color: var(--brass);
+      color: var(--brass);
+      background: var(--brass-faint);
+    }
+
+    /* Sliders */
+    .control {
+      margin-top: 14px;
+    }
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+    .control-row .val {
+      color: var(--brass);
+      font-weight: 600;
+    }
+    .control input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(255,255,255,.08);
+      border-radius: 2px;
+      outline: none;
+    }
+    .control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--brass);
+      cursor: pointer;
+      border: 2px solid #1c1410;
+      box-shadow: 0 0 0 1px var(--brass);
+    }
+    .control input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--brass);
+      cursor: pointer;
+      border: 2px solid #1c1410;
+    }
+
+    /* Editable number inputs paired with each slider. Visually nearly
+       identical to the read-only label they replaced — same brass colour,
+       same mono font — but you can click and type. */
+    .num-input {
+      width: 56px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--line-aero);
+      color: var(--brass);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      text-align: right;
+      padding: 2px 6px;
+      border-radius: 4px;
+      outline: none;
+      -moz-appearance: textfield;
+      transition: border-color .12s;
+    }
+    .num-input:hover  { border-color: rgba(200,149,42,.35); }
+    .num-input:focus  { border-color: var(--brass-dim); background: rgba(200,149,42,.06); }
+    .num-input::-webkit-outer-spin-button,
+    .num-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .select-aero, .text-aero {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      /* Opaque bg: semi-transparent + inherited text breaks Windows native list contrast */
+      background-color: #1a1a22;
+      border: 1px solid rgba(233,237,242,.16);
+      color: #e9edf2;
+      padding: 10px 36px 10px 12px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.35;
+      outline: none;
+      color-scheme: dark;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c8952a' d='M0 0h12L6 8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .text-aero {
+      display: none;
+      margin-top: 6px;
+      cursor: text;
+      background-image: none;
+      padding: 10px 12px;
+    }
+    .text-aero.show { display: block; }
+    .select-aero option,
+    .select-aero optgroup {
+      background-color: #1a1a22;
+      color: #e9edf2;
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 0.5em 0.35em;
+    }
+    .select-aero:focus, .text-aero:focus {
+      border-color: var(--brass-dim);
+      box-shadow: 0 0 0 1px rgba(200,149,42,.25);
+    }
+    @media (max-width: 920px) {
+      .select-aero, .text-aero {
+        font-size: 16px;
+        padding-top: 14px;
+        padding-bottom: 14px;
+        min-height: 48px;
+        border-radius: 10px;
+      }
+      .select-aero {
+        padding-right: 44px;
+        background-position: right 14px center;
+      }
+      .select-aero option,
+      .select-aero optgroup {
+        font-size: 16px;
+      }
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .stat {
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line-aero);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: var(--mono);
+    }
+    .stat .label {
+      font-size: 9.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat .num {
+      font-size: 18px;
+      color: var(--brass);
+      font-weight: 700;
+      margin-top: 4px;
+      letter-spacing: -.5px;
+    }
+    .stat .unit {
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: 4px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .stat[title] { cursor: help; }
+
+    /* Buttons */
+    .btn-aero {
+      appearance: none;
+      width: 100%;
+      background: var(--brass);
+      color: #1a1306;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: filter .12s;
+    }
+    .btn-aero:hover { filter: brightness(1.1); }
+    .btn-aero:disabled { opacity: .4; cursor: default; filter: none; }
+    .btn-aero.btn-aero-secondary {
+      margin-top: 8px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line-aero);
+      color: var(--brass);
+    }
+    .btn-aero.btn-aero-secondary:hover {
+      filter: none;
+      border-color: rgba(200,149,42,.35);
+      background: rgba(200,149,42,.06);
+    }
+
+    .instructions {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: rgba(200,149,42,.06);
+      border: 1px solid var(--brass-faint);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .instructions .step { color: var(--text); }
+    .instructions code {
+      background: rgba(0,0,0,.35);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid var(--line-aero);
+      color: var(--brass);
+      font-size: 10.5px;
+    }
+
+    /* Custom-profile canvas */
+    .profile-wrap {
+      display: none;
+      margin-top: 10px;
+      background: rgba(0,0,0,.4);
+      border: 1px solid var(--line-aero);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .profile-wrap.show { display: block; }
+    .profile-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      cursor: crosshair;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 22px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 22px),
+        #0a0a0c;
+      border-radius: 4px;
+    }
+    .profile-wrap .help {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .profile-wrap .help button {
+      appearance: none;
+      background: transparent;
+      border: 1px solid var(--line-aero);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .profile-wrap .help button:hover { border-color: var(--brass-dim); color: var(--brass); }
+
+    /* Param (3-silhouette) editor */
+    .param-wrap { display: none; margin-top: 10px; }
+    .param-wrap.show { display: block; }
+    .param-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 7px;
+      background: rgba(220, 80, 80, .12);
+      color: #ff8a8a;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: .14em;
+      border-radius: 3px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(220, 80, 80, .35);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .param-badge::before {
+      content: "";
+      display: inline-block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #ff8a8a;
+      box-shadow: 0 0 5px #ff8a8a;
+    }
+    .param-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+    }
+    .param-editor {
+      background: rgba(0, 0, 0, .4);
+      border: 1px solid var(--line-aero);
+      border-radius: 6px;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .param-editor canvas {
+      display: block;
+      width: 100%;
+      height: 110px;
+      cursor: crosshair;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 16px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 16px),
+        #0a0a0c;
+      border-radius: 3px;
+    }
+    .param-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: .04em;
+    }
+    .param-label .ax { color: var(--brass); }
+    .param-help {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .param-help button {
+      appearance: none;
+      background: transparent;
+      border: 1px solid var(--line-aero);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .param-help button:hover { border-color: var(--brass-dim); color: var(--brass); }
+
+    /* Section spacing */
+    .section + .section { margin-top: 16px; }
+
+    .footer-note {
+      margin-top: 22px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: .04em;
+    }
+    .footer-note a { color: var(--brass); text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="aero-wrap">
+    <div class="aero-header">
+      <a class="crumb" href="./">← balloonshaper.xyz</a>
+      <h1>aero<span class="accent">naut</span></h1>
+      <span class="tagline">// balloon &amp; airship generator for create: aeronautics</span>
+    </div>
+
+    <div class="layout">
+      <!-- LEFT: Controls -->
+      <div>
+        <div class="panel-aero section">
+          <h3 class="panel-title">Shape</h3>
+          <div class="shape-grid" id="shapeGrid"></div>
+
+          <div class="profile-wrap" id="profileWrap">
+            <canvas id="profileCanvas" width="200" height="220"></canvas>
+            <div class="help">
+              <span>drag along left half to draw silhouette</span>
+              <button id="profileClear">clear</button>
+            </div>
+          </div>
+
+          <div class="param-wrap" id="paramWrap">
+            <div class="param-badge">experimental</div>
+            <div class="param-grid">
+              <div class="param-editor">
+                <canvas id="paramCanvas-front" width="120" height="140"></canvas>
+                <span class="param-label">front · <span class="ax">X</span>(<span class="ax">Y</span>)</span>
+              </div>
+              <div class="param-editor">
+                <canvas id="paramCanvas-side" width="120" height="140"></canvas>
+                <span class="param-label">side · <span class="ax">Z</span>(<span class="ax">Y</span>)</span>
+              </div>
+              <div class="param-editor">
+                <canvas id="paramCanvas-top" width="120" height="140"></canvas>
+                <span class="param-label">top · <span class="ax">X</span>(<span class="ax">Z</span>)</span>
+              </div>
+            </div>
+            <div class="param-help">
+              <span>drag in each panel · voxel solid iff inside all 3</span>
+              <button id="paramClearAll">reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-aero section">
+          <h3 class="panel-title">Dimensions</h3>
+          <div class="control">
+            <div class="control-row">
+              <span>height</span>
+              <span><input type="number" class="num-input" id="heightNum" min="5" max="120" value="24" /> blocks</span>
+            </div>
+            <input type="range" id="heightInput" min="5" max="120" value="24" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <span>width</span>
+              <span><input type="number" class="num-input" id="widthNum" min="5" max="120" value="20" /> blocks</span>
+            </div>
+            <input type="range" id="widthInput" min="5" max="120" value="20" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <span>wall thickness</span>
+              <span><input type="number" class="num-input" id="thicknessNum" min="1" max="3" value="1" /> blocks</span>
+            </div>
+            <input type="range" id="thicknessInput" min="1" max="3" value="1" />
+          </div>
+          <div class="control" id="ribControl" style="display:none">
+            <div class="control-row">
+              <span>rib count</span>
+              <span><input type="number" class="num-input" id="ribNum" min="4" max="12" value="8" /></span>
+            </div>
+            <input type="range" id="ribInput" min="4" max="12" value="8" />
+          </div>
+        </div>
+
+        <div class="panel-aero section">
+          <h3 class="panel-title">Material</h3>
+          <select class="select-aero" id="materialSelect">
+            <option value="aeronautics:white_envelope">White Envelope (Create: Aeronautics)</option>
+            <option value="minecraft:white_wool">White Wool</option>
+            <option value="minecraft:terracotta">Terracotta</option>
+            <option value="minecraft:oak_planks">Oak Planks</option>
+            <option value="minecraft:glass">Glass</option>
+            <option value="minecraft:stripped_birch_log">Stripped Birch Log</option>
+            <option value="minecraft:iron_block">Iron Block</option>
+            <option value="custom">Custom block ID…</option>
+          </select>
+          <input type="text" class="text-aero" id="customBlock" placeholder="minecraft:cyan_concrete" value="minecraft:cyan_concrete" />
+        </div>
+
+        <div class="panel-aero section">
+          <h3 class="panel-title">Stats</h3>
+          <div class="stats">
+            <div class="stat" title="Total non-air blocks in the structure">
+              <div class="label">blocks</div>
+              <div class="num" id="statBlocks">—</div>
+            </div>
+            <div class="stat" title="Hollow interior volume — 1 block ≈ 1m³">
+              <div class="label">interior</div>
+              <div class="num"><span id="statInterior">—</span><span class="unit">m³</span></div>
+            </div>
+            <div class="stat" title="Approximate &amp; for fun: assumes ~0.4 kg lift per m³ (heated air vs ambient).">
+              <div class="label">lift</div>
+              <div class="num"><span id="statLift">—</span><span class="unit">kg</span></div>
+            </div>
+            <div class="stat" title="Total bounding-box envelope">
+              <div class="label">envelope</div>
+              <div class="num"><span id="statEnvelope">—</span><span class="unit">m³</span></div>
+            </div>
+          </div>
+
+          <button class="btn-aero" id="downloadBtn">Download .nbt</button>
+
+          <div class="instructions">
+            <div class="step">// to load with Create's Schematic Table</div>
+            1. place &amp; right-click a <span style="color:var(--text)">Schematic Table</span> in-game<br>
+            2. drop this <code>.nbt</code> into the <code>schematics/</code> folder it points you to (usually <code>.minecraft/schematics/</code>)<br>
+            3. pick the file in the Table → take the empty schematic → fire it with a <span style="color:var(--text)">Schematicannon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: 3D preview -->
+      <div class="preview-wrap">
+        <canvas id="threeCanvas"></canvas>
+        <div class="preview-overlay">
+          <span class="dot"></span><span id="overlayText">building…</span>
+        </div>
+        <button class="rotate-toggle on" id="rotateToggle" title="toggle auto-rotate" aria-label="toggle auto-rotate" aria-pressed="true">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13.5 8 a 5.5 5.5 0 1 1 -1.6 -3.9"/>
+            <path d="M11 1.2 v 3.5 h 3.5"/>
+          </svg>
+          <span id="rotateLabel">auto</span>
+        </button>
+        <div class="orient-controls" id="orientControls" title="preview orientation (display only — does not affect the .nbt)">
+          <button class="orient-btn active" data-rot="0"   aria-label="upright">
+            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+              <path d="M7 10.5 v3 M9 10.5 v3"/>
+            </svg>
+          </button>
+          <button class="orient-btn" data-rot="90" aria-label="on side">
+            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+              <path d="M7 10.5 v3 M9 10.5 v3"/>
+            </svg>
+          </button>
+          <button class="orient-btn" data-rot="180" aria-label="upside down">
+            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+              <path d="M7 10.5 v3 M9 10.5 v3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      For <a href="https://www.curseforge.com/minecraft/mc-mods/create-aeronautics" target="_blank" rel="noopener">Create: Aeronautics</a> · uses vanilla structure NBT (1.21+) · all generation runs in your browser
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+  <script type="module">
+    // ────────────────────────────────────────────────────────────
+    //   AERONAUT
+    //   Single-file generator. Three.js (r128) + pako.
+    // ────────────────────────────────────────────────────────────
+
+    // ─── Shape definitions ──────────────────────────────────────
+    const SHAPES = [
+      { id: 'hotair',   label: 'hot air',  hasRibs: false,
+        icon: `<path d="M15 4 C 6 4, 6 18, 15 18 C 24 18, 24 4, 15 4 Z M 12 18 L 14 26 L 16 26 L 18 18"/>` },
+      { id: 'sphere',   label: 'sphere',   hasRibs: false,
+        icon: `<circle cx="15" cy="15" r="11"/>` },
+      { id: 'ellipsoid', label: 'ellipsoid', hasRibs: false,
+        icon: `<ellipse cx="15" cy="15" rx="13" ry="5"/>` },
+      { id: 'capsule', label: 'capsule', hasRibs: false,
+        icon: `<path d="M8 10 Q 8 6, 12 6 L 18 6 Q 22 6, 22 10 L 22 20 Q 22 24, 18 24 L 12 24 Q 8 24, 8 20 Z"/>` },
+      { id: 'zeppelin', label: 'zeppelin', hasRibs: false,
+        icon: `<path d="M15 28 Q 12 23, 11 19 L 11 9 Q 11 3, 15 3 Q 19 3, 19 9 L 19 19 Q 18 23, 15 28 Z"/>` },
+      { id: 'pumpkin',  label: 'pumpkin',  hasRibs: true,
+        icon: `<circle cx="15" cy="15" r="11"/><path d="M15 4 C 11 8, 11 22, 15 26 M15 4 C 19 8, 19 22, 15 26 M4 15 L 26 15"/>` },
+      { id: 'onion',    label: 'onion',    hasRibs: false,
+        icon: `<path d="M15 3 L 13 10 C 5 12, 5 24, 15 26 C 25 24, 25 12, 17 10 Z"/>` },
+      { id: 'cube',     label: 'lantern',  hasRibs: false,
+        icon: `<path d="M6 8 Q 6 5, 9 5 L 21 5 Q 24 5, 24 8 L 24 22 Q 24 25, 21 25 L 9 25 Q 6 25, 6 22 Z"/>` },
+      { id: 'heart',    label: 'heart',    hasRibs: false,
+        icon: `<path d="M15 26 C 6 18, 4 12, 6 8 C 9 4, 13 6, 15 10 C 17 6, 21 4, 24 8 C 26 12, 24 18, 15 26 Z"/>` },
+      // ── airship hull profiles ──
+      { id: 'atyya',    label: 'atyya',    hasRibs: false,
+        icon: `<path d="M15 4 Q 24 6, 24 13 L 22 16 L 17 26 L 13 26 L 8 16 L 6 13 Q 6 6, 15 4 Z"/>` },
+      { id: 'npl',      label: 'npl',      hasRibs: false,
+        icon: `<path d="M15 4 Q 25 5, 25 13 Q 25 22, 15 26 Q 5 22, 5 13 Q 5 5, 15 4 Z" /><path d="M5 13 L 25 13" opacity="0.4"/>` },
+      { id: 'wang',     label: 'wang',     hasRibs: false,
+        icon: `<path d="M15 4 Q 27 11, 26 15 Q 27 19, 15 26 Q 3 19, 4 15 Q 3 11, 15 4 Z"/>` },
+      { id: 'custom',   label: 'custom',   hasRibs: false,
+        icon: `<path d="M15 4 L 15 26 M 15 6 Q 6 14, 15 22"/><circle cx="11" cy="10" r="1.4" fill="currentColor"/><circle cx="7"  cy="16" r="1.4" fill="currentColor"/><circle cx="11" cy="22" r="1.4" fill="currentColor"/>` },
+      // ── parametric three-silhouette mode (experimental) ──
+      { id: 'param',    label: 'param',    hasRibs: false,
+        icon: `<path d="M15 4 L 15 26 M 6 11 L 24 21 M 6 21 L 24 11"/><circle cx="22" cy="6" r="2.2" fill="currentColor" stroke="none"/>` },
+    ];
+
+    // approximate Minecraft block colours
+    const BLOCK_COLORS = {
+      'aeronautics:white_envelope':   0xece9dd,   // canvas/fabric off-white
+      'minecraft:white_wool':         0xe9ecec,
+      'minecraft:terracotta':         0x985e43,
+      'minecraft:oak_planks':         0xb08a59,
+      'minecraft:glass':              0xb0d8e8,
+      'minecraft:stripped_birch_log': 0xd3c789,
+      'minecraft:iron_block':         0xd8d8d8,
+    };
+    function colourFor(blockId) { return BLOCK_COLORS[blockId] ?? 0x8b8b90; }
+
+    // ─── State ──────────────────────────────────────────────────
+    const state = {
+      shape: 'hotair',
+      H: 24, W: 20, T: 1, ribs: 8,
+      block: 'aeronautics:white_envelope',
+      customBlock: 'minecraft:cyan_concrete',
+      customProfile: [],     // array of {y: 0..1, r: 0..1}
+      // Three orthogonal silhouettes for 'param' (experimental) mode.
+      // Each is an array of {y: 0..1, r: 0..1} — y = position along the
+      // canvas's vertical axis, r = half-extent along the horizontal axis.
+      paramFront: [          // X half-width as a function of Y
+        { y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 },
+      ],
+      paramSide: [           // Z half-width as a function of Y
+        { y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 },
+      ],
+      paramTop: [            // X half-width as a function of Z
+        { y: 0.10, r: 0.30 }, { y: 0.50, r: 0.95 }, { y: 0.90, r: 0.30 },
+      ],
+    };
+
+    // ─── Build shape buttons ────────────────────────────────────
+    const shapeGrid = document.getElementById('shapeGrid');
+    SHAPES.forEach(s => {
+      const b = document.createElement('button');
+      b.className = 'shape-btn' + (s.id === state.shape ? ' active' : '');
+      b.dataset.shape = s.id;
+      b.innerHTML = `<svg viewBox="0 0 30 30">${s.icon}</svg><span>${s.label}</span>`;
+      b.onclick = () => {
+        state.shape = s.id;
+        document.querySelectorAll('.shape-btn').forEach(x => x.classList.toggle('active', x.dataset.shape === s.id));
+        document.getElementById('ribControl').style.display = s.hasRibs ? '' : 'none';
+        document.getElementById('profileWrap').classList.toggle('show', s.id === 'custom');
+        document.getElementById('paramWrap').classList.toggle('show', s.id === 'param');
+        regenerate();
+      };
+      shapeGrid.appendChild(b);
+    });
+
+    // ─── Wire up controls ───────────────────────────────────────
+    // Each dimension has both a range slider and a number input. The slider
+    // always commits (clamps + syncs) on every change. The number input is
+    // more lenient mid-typing: while you're typing it only syncs state when
+    // the current value is in-range, and *never* overwrites the field. That
+    // way you can type "47" without "4" snapping up to the minimum the
+    // moment you press the first key. Final clamp happens on blur or Enter.
+    function bindRangeAndNum(rangeId, numId, key) {
+      const range = document.getElementById(rangeId);
+      const num   = document.getElementById(numId);
+      const min = +range.min, max = +range.max;
+
+      function commit(v) {
+        if (Number.isNaN(v)) return;
+        const clamped = Math.max(min, Math.min(max, Math.round(v)));
+        state[key]  = clamped;
+        range.value = clamped;
+        num.value   = clamped;
+        regenerate();
+      }
+
+      range.addEventListener('input', () => commit(+range.value));
+
+      // Live-sync only when the typed value is already valid; leave the
+      // field alone so the user can keep typing.
+      num.addEventListener('input', () => {
+        const v = parseFloat(num.value);
+        if (Number.isNaN(v)) return;
+        if (v >= min && v <= max) {
+          const rounded = Math.round(v);
+          state[key]  = rounded;
+          range.value = rounded;
+          regenerate();
+        }
+      });
+
+      // On blur or Enter: clamp + sync. Empty or junk → snap back to last
+      // good value.
+      num.addEventListener('blur', () => {
+        const v = parseFloat(num.value);
+        if (num.value === '' || Number.isNaN(v)) { num.value = state[key]; return; }
+        commit(v);
+      });
+      num.addEventListener('keydown', e => { if (e.key === 'Enter') num.blur(); });
+    }
+    bindRangeAndNum('heightInput',    'heightNum',    'H');
+    bindRangeAndNum('widthInput',     'widthNum',     'W');
+    bindRangeAndNum('thicknessInput', 'thicknessNum', 'T');
+    bindRangeAndNum('ribInput',       'ribNum',       'ribs');
+
+    const matSelect   = document.getElementById('materialSelect');
+    const customBlock = document.getElementById('customBlock');
+    matSelect.addEventListener('change', () => {
+      if (matSelect.value === 'custom') {
+        customBlock.classList.add('show');
+        state.block = customBlock.value || 'minecraft:cyan_concrete';
+      } else {
+        customBlock.classList.remove('show');
+        state.block = matSelect.value;
+      }
+      regenerate();
+    });
+    customBlock.addEventListener('input', () => {
+      if (matSelect.value === 'custom') {
+        state.block = customBlock.value || 'minecraft:cyan_concrete';
+        regenerate();
+      }
+    });
+
+    // ─── Custom profile canvas ──────────────────────────────────
+    const pCanvas = document.getElementById('profileCanvas');
+    const pCtx    = pCanvas.getContext('2d');
+    let drawing = false;
+
+    function profileToScreen(y, r, w, h) {
+      // y=0 bottom → bottom of canvas; y=1 top
+      // r=0 → centerX; r=1 → leftEdge (we draw left half of silhouette)
+      const cx = w / 2;
+      return { x: cx - r * (w / 2 - 4), y: h - y * (h - 4) - 2 };
+    }
+    function screenToProfile(sx, sy, w, h) {
+      const cx = w / 2;
+      let r = (cx - sx) / (w / 2 - 4);
+      let y = (h - sy - 2) / (h - 4);
+      r = Math.max(0, Math.min(1, r));
+      y = Math.max(0, Math.min(1, y));
+      return { y, r };
+    }
+    function drawProfile() {
+      const w = pCanvas.width, h = pCanvas.height;
+      pCtx.clearRect(0, 0, w, h);
+      // axis line
+      pCtx.strokeStyle = 'rgba(200,149,42,.25)';
+      pCtx.lineWidth = 1;
+      pCtx.beginPath();
+      pCtx.moveTo(w/2, 0); pCtx.lineTo(w/2, h);
+      pCtx.stroke();
+      // mirrored fill of profile
+      if (state.customProfile.length > 1) {
+        const sorted = [...state.customProfile].sort((a,b) => a.y - b.y);
+        pCtx.fillStyle = 'rgba(200,149,42,.25)';
+        pCtx.strokeStyle = 'var(--brass)';
+        pCtx.strokeStyle = '#c8952a';
+        pCtx.lineWidth = 1.5;
+        pCtx.beginPath();
+        // left side from bottom up
+        sorted.forEach((p,i) => {
+          const s = profileToScreen(p.y, p.r, w, h);
+          if (i === 0) pCtx.moveTo(s.x, s.y); else pCtx.lineTo(s.x, s.y);
+        });
+        // mirror to right side, top to bottom
+        for (let i = sorted.length - 1; i >= 0; i--) {
+          const p = sorted[i];
+          const s = profileToScreen(p.y, -p.r, w, h);
+          pCtx.lineTo(s.x, s.y);
+        }
+        pCtx.closePath();
+        pCtx.fill();
+        pCtx.stroke();
+      }
+    }
+    function addProfilePoint(e) {
+      const rect = pCanvas.getBoundingClientRect();
+      const sx = (e.clientX - rect.left) * (pCanvas.width / rect.width);
+      const sy = (e.clientY - rect.top)  * (pCanvas.height / rect.height);
+      const p = screenToProfile(sx, sy, pCanvas.width, pCanvas.height);
+      // replace any existing point with similar y
+      state.customProfile = state.customProfile.filter(q => Math.abs(q.y - p.y) > 0.02);
+      state.customProfile.push(p);
+      drawProfile();
+      if (state.shape === 'custom') regenerate();
+    }
+    pCanvas.addEventListener('mousedown', e => { drawing = true;  addProfilePoint(e); });
+    pCanvas.addEventListener('mousemove', e => { if (drawing) addProfilePoint(e); });
+    window.addEventListener('mouseup',     ()  => { drawing = false; });
+    pCanvas.addEventListener('touchstart', e => { drawing = true;  addProfilePoint(e.touches[0]); e.preventDefault(); });
+    pCanvas.addEventListener('touchmove',  e => { if (drawing) addProfilePoint(e.touches[0]); e.preventDefault(); });
+    pCanvas.addEventListener('touchend',   ()  => { drawing = false; });
+
+    document.getElementById('profileClear').onclick = () => {
+      state.customProfile = [];
+      drawProfile();
+      if (state.shape === 'custom') regenerate();
+    };
+
+    // seed a starter profile so the user has something to riff on
+    state.customProfile = [
+      { y: 0.05, r: 0.15 },
+      { y: 0.20, r: 0.55 },
+      { y: 0.50, r: 0.85 },
+      { y: 0.78, r: 0.65 },
+      { y: 0.95, r: 0.20 },
+    ];
+    drawProfile();
+
+    // ─── Param (experimental 3-silhouette) canvases ─────────────
+    // Three independent "draggable profile" canvases — same UX as the custom
+    // canvas, just smaller and there's three of them. Each writes to a
+    // different state key (paramFront / paramSide / paramTop).
+    function setupParamCanvas(canvasId, profileKey) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
+
+      function redraw() {
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        // center axis line
+        ctx.strokeStyle = 'rgba(200,149,42,.25)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
+
+        const points = state[profileKey];
+        if (points.length < 2) return;
+        const sorted = [...points].sort((a, b) => a.y - b.y);
+        ctx.fillStyle = 'rgba(200,149,42,.25)';
+        ctx.strokeStyle = '#c8952a';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        sorted.forEach((p, i) => {
+          const sx = w/2 - p.r * (w/2 - 4);
+          const sy = h - p.y * (h - 4) - 2;
+          if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+        });
+        for (let i = sorted.length - 1; i >= 0; i--) {
+          const p = sorted[i];
+          const sx = w/2 + p.r * (w/2 - 4);
+          const sy = h - p.y * (h - 4) - 2;
+          ctx.lineTo(sx, sy);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      function addAt(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = (clientX - rect.left) * (canvas.width  / rect.width);
+        const sy = (clientY - rect.top)  * (canvas.height / rect.height);
+        const cx = canvas.width / 2;
+        let r = (cx - sx) / (canvas.width/2 - 4);
+        let y = (canvas.height - sy - 2) / (canvas.height - 4);
+        r = Math.max(0, Math.min(1, Math.abs(r)));   // mirror — both halves contribute
+        y = Math.max(0, Math.min(1, y));
+        state[profileKey] = state[profileKey].filter(q => Math.abs(q.y - y) > 0.04);
+        state[profileKey].push({ y, r });
+        redraw();
+        if (state.shape === 'param') regenerate();
+      }
+
+      canvas.addEventListener('mousedown', e => { drawing = true; addAt(e.clientX, e.clientY); });
+      canvas.addEventListener('mousemove', e => { if (drawing) addAt(e.clientX, e.clientY); });
+      window.addEventListener('mouseup',     ()  => { drawing = false; });
+      canvas.addEventListener('touchstart', e => { drawing = true; addAt(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); });
+      canvas.addEventListener('touchmove',  e => { if (drawing) addAt(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); });
+      canvas.addEventListener('touchend',    ()  => { drawing = false; });
+
+      redraw();
+      return { redraw };
+    }
+    const paramFrontCv = setupParamCanvas('paramCanvas-front', 'paramFront');
+    const paramSideCv  = setupParamCanvas('paramCanvas-side',  'paramSide');
+    const paramTopCv   = setupParamCanvas('paramCanvas-top',   'paramTop');
+
+    document.getElementById('paramClearAll').onclick = () => {
+      // reset to a neutral starter shape (lozenge-ish)
+      state.paramFront = [{ y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 }];
+      state.paramSide  = [{ y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 }];
+      state.paramTop   = [{ y: 0.10, r: 0.30 }, { y: 0.50, r: 0.95 }, { y: 0.90, r: 0.30 }];
+      paramFrontCv.redraw(); paramSideCv.redraw(); paramTopCv.redraw();
+      if (state.shape === 'param') regenerate();
+    };
+
+    // Convert a {y, r} polyline into a function f(t) → r interpolated value.
+    function makePointProfile(points) {
+      if (points.length < 2) return () => 0;
+      const sorted = [...points].sort((a, b) => a.y - b.y);
+      return (t) => {
+        if (t < sorted[0].y || t > sorted[sorted.length - 1].y) return 0;
+        for (let i = 0; i < sorted.length - 1; i++) {
+          if (t >= sorted[i].y && t <= sorted[i+1].y) {
+            const u = (t - sorted[i].y) / (sorted[i+1].y - sorted[i].y || 1e-6);
+            return sorted[i].r * (1 - u) + sorted[i+1].r * u;
+          }
+        }
+        return 0;
+      };
+    }
+
+    // Airship-hull shapes orient themselves along the longer axis. When the
+    // user makes one of these wider than tall (W > H) the cigar lies on its
+    // side — long axis = X, cross-section in the YZ plane — instead of being
+    // squashed into a flat oblate disc. Other shapes (hot-air, sphere, onion,
+    // lantern, heart, custom, pumpkin) always revolve around Y because they
+    // have intrinsic top/bottom features.
+    const longAxisShapes = new Set(['zeppelin', 'ellipsoid', 'capsule', 'atyya', 'npl', 'wang']);
+
+    // ─── Voxelization ───────────────────────────────────────────
+    // Returns { mask, sizeX, sizeY, sizeZ }. The mask is a Uint8Array of
+    // length sizeX*sizeY*sizeZ with 1 = solid, 0 = empty.
+    function buildSolidMask() {
+      const W = state.W, H = state.H;
+      const horizontal = longAxisShapes.has(state.shape) && W > H;
+
+      let sizeX, sizeY, sizeZ;
+      if (horizontal) {
+        // long axis along X, circular cross-section of diameter H in the YZ plane
+        sizeX = W; sizeY = H; sizeZ = H;
+      } else {
+        // standard: long axis along Y, circular cross-section of diameter W in XZ
+        sizeX = W; sizeY = H; sizeZ = W;
+      }
+
+      const mask = new Uint8Array(sizeX * sizeY * sizeZ);
+      const idx = (x, y, z) => x + sizeX * (y + sizeY * z);
+
+      if (state.shape === 'pumpkin') {
+        // pumpkin keeps Y-axis revolution (theta grooves are defined around Y)
+        for (let z = 0; z < sizeZ; z++) {
+          for (let y = 0; y < sizeY; y++) {
+            for (let x = 0; x < sizeX; x++) {
+              const px = x + 0.5, py = y + 0.5, pz = z + 0.5;
+              mask[idx(x, y, z)] =
+                solidPumpkin(px, py, pz, sizeX, sizeY, state.ribs) ? 1 : 0;
+            }
+          }
+        }
+      } else if (state.shape === 'param') {
+        // Visual hull from three orthogonal silhouettes (experimental).
+        // Front (XY): r_front(y) → X half-width
+        // Side  (YZ): r_side(y)  → Z half-width
+        // Top   (XZ): r_top(z)   → X half-width
+        // A voxel is solid iff it lies inside *all three* projections, i.e.
+        //   |x-cx| ≤ min(rFront(y), rTop(z))   AND   |z-cz| ≤ rSide(y)
+        const halfX = sizeX / 2, halfY = sizeY / 2, halfZ = sizeZ / 2;
+        const fFront = makePointProfile(state.paramFront);
+        const fSide  = makePointProfile(state.paramSide);
+        const fTop   = makePointProfile(state.paramTop);
+        for (let z = 0; z < sizeZ; z++) {
+          const tz = (z + 0.5) / sizeZ;
+          const rXfromZ = fTop(tz) * halfX;
+          const dz0 = z + 0.5 - halfZ;
+          for (let y = 0; y < sizeY; y++) {
+            const ty = (y + 0.5) / sizeY;
+            const rXfromY = fFront(ty) * halfX;
+            const rZfromY = fSide(ty)  * halfZ;
+            const xBound  = Math.min(rXfromY, rXfromZ);
+            const zBound  = rZfromY;
+            if (xBound <= 0 || zBound <= 0 || Math.abs(dz0) > zBound) {
+              continue;  // whole row is outside; leave mask as 0
+            }
+            for (let x = 0; x < sizeX; x++) {
+              const dx0 = x + 0.5 - halfX;
+              if (Math.abs(dx0) <= xBound) mask[idx(x, y, z)] = 1;
+            }
+          }
+        }
+      } else {
+        // makeProfile signature: (shape, diameterAxis, longAxis). Swap the args
+        // when revolving around X so the profile is parameterised along the
+        // correct axis.
+        const profile = horizontal
+          ? makeProfile(state.shape, sizeY, sizeX)
+          : makeProfile(state.shape, sizeX, sizeY);
+
+        for (let z = 0; z < sizeZ; z++) {
+          for (let y = 0; y < sizeY; y++) {
+            for (let x = 0; x < sizeX; x++) {
+              const px = x + 0.5, py = y + 0.5, pz = z + 0.5;
+              let u, r;
+              if (horizontal) {
+                u = px;
+                const dy = py - sizeY / 2, dz = pz - sizeZ / 2;
+                r = Math.sqrt(dy * dy + dz * dz);
+              } else {
+                u = py;
+                const dx = px - sizeX / 2, dz = pz - sizeZ / 2;
+                r = Math.sqrt(dx * dx + dz * dz);
+              }
+              mask[idx(x, y, z)] = (r <= profile(u)) ? 1 : 0;
+            }
+          }
+        }
+      }
+      return { mask, sizeX, sizeY, sizeZ };
+    }
+
+    // ─── Profile functions per shape ────────────────────────────
+    function makeProfile(shape, W, H) {
+      const halfW = W / 2;
+      switch (shape) {
+        case 'hotair': {
+          // Smooth teardrop: a narrow throat at the bottom (small basket opening) that
+          // grows in a quarter-sine into a rounded dome at the top. Single continuous
+          // curve, no kink — the previous cone-into-ellipsoid version had a visible
+          // shoulder where the two pieces met.
+          const yPeak = 0.62 * H;
+          const minR  = halfW * 0.15;          // small opening for the basket
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y <= yPeak) {
+              const t = y / yPeak;             // 0 at throat → 1 at peak
+              return minR + (halfW - minR) * Math.sin(t * Math.PI / 2);
+            }
+            // upper rounded dome — quarter ellipse from peak to apex
+            const t = (y - yPeak) / (H - yPeak);
+            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
+          };
+        }
+        case 'sphere': {
+          // Ellipsoid (rounded all the way through — tapers smoothly end to end)
+          const halfH = H / 2;
+          return (y) => {
+            const dy = (y - halfH) / halfH;
+            if (Math.abs(dy) > 1) return 0;
+            return halfW * Math.sqrt(1 - dy * dy);
+          };
+        }
+        case 'ellipsoid': {
+          // True ellipsoid of revolution.
+          // Radius at height y: r(y) = a * sqrt(1 - ((y-b)/b)^2) where:
+          //   a = halfW (equatorial radius), b = H/2 (polar radius).
+          // When H == W this collapses to a sphere (geometrically correct).
+          const halfH = H / 2;
+          return (y) => {
+            const dy = (y - halfH) / halfH;
+            if (Math.abs(dy) > 1) return 0;
+            return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
+          };
+        }
+        case 'capsule': {
+          // Capsule — cylindrical body with hemispherical end caps. Symmetric.
+          // This is the old (previously mislabeled) "ellipsoid" profile.
+          const capR = Math.min(halfW, H / 2);
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y < capR) {
+              const dy = (capR - y) / capR;
+              return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
+            }
+            if (y > H - capR) {
+              const dy = (y - (H - capR)) / capR;
+              return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
+            }
+            return halfW; // straight cylindrical body
+          };
+        }
+        case 'zeppelin': {
+          // Real zeppelin hull — asymmetric. Modeled on Hindenburg-class airships:
+          // a short blunt rounded nose, a long cylindrical mid-body, and a noticeably
+          // longer pointed tail. When the long-axis logic flips the shape horizontal
+          // (W > H), the tail ends up at u=0 and the nose at u=L.
+          const tailFrac = 0.22;          // tail (pointed end)
+          const noseFrac = 0.16;          // nose (blunt rounded end)
+          const tailEnd   = H * tailFrac;
+          const noseStart = H * (1 - noseFrac);
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y <= tailEnd) {
+              // Pointed tail — concave-up power curve grows slowly near the tip,
+              // approaches halfW at the body junction.
+              const t = y / tailEnd;
+              return halfW * Math.pow(t, 0.55);
+            }
+            if (y >= noseStart) {
+              // Blunt rounded nose — quarter ellipse from halfW down to 0.
+              const t = (y - noseStart) / (H - noseStart);
+              return halfW * Math.sqrt(Math.max(0, 1 - t * t));
+            }
+            // straight cylindrical body
+            return halfW;
+          };
+        }
+        case 'cube': {
+          // "Lantern" — paper-lantern barrel. Surface of revolution with a wide,
+          // nearly-flat middle that tapers (but doesn't pinch to a point) at the
+          // top and bottom. Previously this was a rounded cuboid SDF, which read
+          // as just a plain cube unless you were inspecting the corners closely.
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            const t = (y - H / 2) / (H / 2);  // -1 .. +1
+            // Power curve: ~flat across the middle, narrows quickly past |t|≈0.7
+            const f = 1 - Math.pow(Math.abs(t), 3.5) * 0.85;
+            return halfW * f;
+          };
+        }
+        case 'onion': {
+          const yEq = H * 0.35;
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y <= yEq) {
+              const t = y / yEq;
+              return halfW * 0.20 + (halfW - halfW * 0.20) * Math.pow(t, 0.55);
+            }
+            const t = (y - yEq) / (H - yEq);
+            return halfW * Math.pow(Math.max(0, 1 - t), 0.85) * (1 + 0.18 * Math.sin(Math.PI * t));
+          };
+        }
+        case 'heart': {
+          // sample heart curve t in [0, π] → (xRaw, yRaw)
+          // x = 16 sin³t; y = 13 cos t − 5 cos 2t − 2 cos 3t − cos 4t
+          const samples = [];
+          const N = 200;
+          let yMin =  Infinity, yMax = -Infinity, xMax = 0;
+          for (let i = 0; i <= N; i++) {
+            const t = (i / N) * Math.PI;
+            const x = 16 * Math.sin(t) ** 3;
+            const yh = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+            samples.push([x, yh]);
+            if (yh < yMin) yMin = yh;
+            if (yh > yMax) yMax = yh;
+            if (x  > xMax) xMax = x;
+          }
+          // remap (xRaw, yRaw) → (radius 0..halfW, height 0..H) where yMin → 0, yMax → H
+          const yRange = yMax - yMin;
+          // build dense lookup r(yNorm)
+          const lutN = H * 4;
+          const lut = new Float32Array(lutN + 1);
+          for (let k = 0; k <= lutN; k++) {
+            const yTarget = (k / lutN) * H;
+            // find samples bracketing this height
+            let bestR = 0;
+            for (let i = 0; i < samples.length - 1; i++) {
+              const ya = (samples[i][1] - yMin) / yRange * H;
+              const yb = (samples[i+1][1] - yMin) / yRange * H;
+              if ((ya <= yTarget && yb >= yTarget) || (yb <= yTarget && ya >= yTarget)) {
+                const t = ya === yb ? 0 : (yTarget - ya) / (yb - ya);
+                const x = samples[i][0] + t * (samples[i+1][0] - samples[i][0]);
+                if (x > bestR) bestR = x;
+              }
+            }
+            lut[k] = (bestR / xMax) * halfW;
+          }
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            const k = (y / H) * lutN;
+            const k0 = Math.floor(k), k1 = Math.min(lutN, k0 + 1);
+            const t = k - k0;
+            return lut[k0] * (1 - t) + lut[k1] * t;
+          };
+        }
+        case 'atyya': {
+          // GNVR-style optimal-drag airship hull (after Atyya 2023). Asymmetric:
+          // long gentle taper at the tail (bottom), rounded blunt nose at the top,
+          // max diameter shifted upward toward the nose at ~65% of total height.
+          const yPeak = 0.65 * H;
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y <= yPeak) {
+              // tail — concave-up power-law taper, slow growth near the tip
+              const t = y / yPeak;
+              return halfW * Math.pow(t, 0.62);
+            }
+            // nose — quarter ellipse, blunt rounded curvature
+            const t = (y - yPeak) / (H - yPeak);
+            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
+          };
+        }
+        case 'npl': {
+          // NPL two-ellipse hull. Two pure ellipses sharing a common max radius
+          // at the join, with different lengths above and below — gives an
+          // asymmetric oval distinct from the symmetric sphere/ellipsoid.
+          const yJoin = 0.60 * H;
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            if (y <= yJoin) {
+              // lower ellipse — longer, ~quarter ellipse from r=0 at base to halfW at join
+              const t = (yJoin - y) / yJoin;
+              return halfW * Math.sqrt(Math.max(0, 1 - t * t));
+            }
+            // upper ellipse — shorter, quarter ellipse from halfW at join to 0 at top
+            const t = (y - yJoin) / (H - yJoin);
+            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
+          };
+        }
+        case 'wang': {
+          // Wang-style parametric hull — superellipse with bulge factor a > 2 and
+          // taper factor b < 2. Fatter through the middle than a pure ellipsoid,
+          // with a slight upward shift of the peak for an airship-ish profile.
+          const a = 2.6, b = 1.7;
+          const peakShift = 0.08;             // small upward bias of the peak
+          return (y) => {
+            if (y < 0 || y > H) return 0;
+            const u = (2 * y / H - 1) - peakShift;
+            const ua = Math.min(1, Math.abs(u) / (1 - peakShift));
+            return halfW * Math.pow(Math.max(0, 1 - Math.pow(ua, a)), 1 / b);
+          };
+        }
+        case 'custom': {
+          if (state.customProfile.length < 2) return () => 0;
+          const sorted = [...state.customProfile].sort((a,b) => a.y - b.y);
+          return (y) => {
+            const yn = y / H;
+            if (yn < sorted[0].y || yn > sorted[sorted.length - 1].y) return 0;
+            for (let i = 0; i < sorted.length - 1; i++) {
+              if (yn >= sorted[i].y && yn <= sorted[i+1].y) {
+                const t = (yn - sorted[i].y) / (sorted[i+1].y - sorted[i].y || 1e-6);
+                return (sorted[i].r * (1 - t) + sorted[i+1].r * t) * halfW;
+              }
+            }
+            return 0;
+          };
+        }
+        default:
+          return () => 0;
+      }
+    }
+
+    // pumpkin: ellipsoid minus θ-dependent grooves
+    function solidPumpkin(x, y, z, W, H, ribs) {
+      const halfW = W / 2, halfH = H / 2;
+      const cx = halfW, cz = halfW, cy = halfH;
+      const dy = (y - cy) / halfH;
+      if (Math.abs(dy) > 1) return false;
+      const baseR = halfW * Math.sqrt(1 - dy * dy);
+      const dx = x - cx, dz = z - cz;
+      const r = Math.sqrt(dx*dx + dz*dz);
+      const theta = Math.atan2(dz, dx);
+      // Grooves: subtract a smooth bump that's 0 at ridge, max at valley
+      const groove = halfW * 0.16 * 0.5 * (1 - Math.cos(ribs * theta));
+      return r <= baseR - groove;
+    }
+
+    // ─── Erosion → shell ────────────────────────────────────────
+    function erode3D(mask, sX, sY, sZ) {
+      const out = new Uint8Array(mask.length);
+      const idx = (x, y, z) => x + sX * (y + sY * z);
+      for (let z = 0; z < sZ; z++) {
+        for (let y = 0; y < sY; y++) {
+          for (let x = 0; x < sX; x++) {
+            const i = idx(x, y, z);
+            if (!mask[i]) continue;
+            if (x === 0 || x === sX-1 || y === 0 || y === sY-1 || z === 0 || z === sZ-1) continue;
+            if (mask[idx(x-1,y,z)] && mask[idx(x+1,y,z)] &&
+                mask[idx(x,y-1,z)] && mask[idx(x,y+1,z)] &&
+                mask[idx(x,y,z-1)] && mask[idx(x,y,z+1)]) {
+              out[i] = 1;
+            }
+          }
+        }
+      }
+      return out;
+    }
+
+    function buildShellAndStats() {
+      const T = state.T;
+      const { mask: solid, sizeX, sizeY, sizeZ } = buildSolidMask();
+      let inner = solid;
+      for (let i = 0; i < T; i++) inner = erode3D(inner, sizeX, sizeY, sizeZ);
+      const shell = new Uint8Array(solid.length);
+      let blockCount = 0, interiorCount = 0, solidCount = 0;
+      for (let i = 0; i < solid.length; i++) {
+        if (solid[i]) solidCount++;
+        if (inner[i]) interiorCount++;
+        if (solid[i] && !inner[i]) { shell[i] = 1; blockCount++; }
+      }
+      // collect block positions
+      const blocks = [];
+      const idx = (x, y, z) => x + sizeX * (y + sizeY * z);
+      for (let z = 0; z < sizeZ; z++)
+        for (let y = 0; y < sizeY; y++)
+          for (let x = 0; x < sizeX; x++)
+            if (shell[idx(x,y,z)]) blocks.push({ x, y, z });
+
+      return {
+        blocks, blockCount, interiorCount, solidCount,
+        envelope: sizeX * sizeY * sizeZ, sizeX, sizeY, sizeZ,
+      };
+    }
+
+    // ─── Three.js preview ───────────────────────────────────────
+    const canvas = document.getElementById('threeCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+    const keyLight = new THREE.DirectionalLight(0xfff1d6, 0.85);
+    keyLight.position.set(5, 10, 7);
+    scene.add(keyLight);
+    const rimLight = new THREE.DirectionalLight(0x6688aa, 0.35);
+    rimLight.position.set(-6, -2, -8);
+    scene.add(rimLight);
+
+    const axes = new THREE.AxesHelper(3);
+    axes.position.set(-0.5, -0.5, -0.5);
+    scene.add(axes);
+
+    let bboxMesh = null;
+    let mesh = null;
+    const root = new THREE.Group();
+    scene.add(root);
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    // simple orbit controls (manual — avoids extra script)
+    let yaw = 0.6, pitch = 0.45, dist = 50;
+    let rotateEnabled = true;        // master toggle (button) — false = never rotate
+    let interacting = false;
+    let lastInteract = 0;
+
+    const rotateToggle = document.getElementById('rotateToggle');
+    const rotateLabel  = document.getElementById('rotateLabel');
+    rotateToggle.addEventListener('click', () => {
+      rotateEnabled = !rotateEnabled;
+      rotateToggle.classList.toggle('on',  rotateEnabled);
+      rotateToggle.classList.toggle('off', !rotateEnabled);
+      rotateToggle.setAttribute('aria-pressed', rotateEnabled);
+      rotateLabel.textContent = rotateEnabled ? 'auto' : 'paused';
+    });
+
+    // Display-only orientation buttons. These tilt the `root` group (visual transform
+    // applied at render time only) — the underlying voxel data in `lastStats.blocks`
+    // and therefore the NBT export are completely unaffected.
+    const orientControls = document.getElementById('orientControls');
+    orientControls.querySelectorAll('.orient-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        orientControls.querySelectorAll('.orient-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        const deg = parseInt(btn.dataset.rot, 10);
+        root.rotation.z = deg * Math.PI / 180;
+      });
+    });
+
+    canvas.addEventListener('pointerdown', (e) => {
+      interacting = true;
+      lastInteract = performance.now();
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!interacting) return;
+      yaw   -= e.movementX * 0.008;
+      pitch -= e.movementY * 0.008;
+      pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+    });
+    canvas.addEventListener('pointerup',  () => { interacting = false; });
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      dist = Math.max(8, Math.min(200, dist + e.deltaY * 0.05));
+    }, { passive: false });
+
+    function rebuildMesh(stats) {
+      if (mesh) { root.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh = null; }
+      if (bboxMesh) { root.remove(bboxMesh); bboxMesh.geometry.dispose(); bboxMesh.material.dispose(); bboxMesh = null; }
+
+      const { blocks, sizeX, sizeY, sizeZ } = stats;
+
+      const blockId = state.block;
+      const colour = colourFor(blockId);
+      const isGlass = blockId.includes('glass');
+
+      const geom = new THREE.BoxGeometry(1, 1, 1);
+      const mat = new THREE.MeshStandardMaterial({
+        color: colour,
+        roughness: isGlass ? 0.05 : 0.85,
+        metalness: blockId.includes('iron') ? 0.6 : 0.0,
+        transparent: isGlass,
+        opacity: isGlass ? 0.45 : 1.0,
+      });
+
+      if (blocks.length > 0) {
+        mesh = new THREE.InstancedMesh(geom, mat, blocks.length);
+        const m = new THREE.Matrix4();
+        blocks.forEach((b, i) => {
+          m.makeTranslation(b.x + 0.5 - sizeX/2, b.y + 0.5 - sizeY/2, b.z + 0.5 - sizeZ/2);
+          mesh.setMatrixAt(i, m);
+        });
+        mesh.instanceMatrix.needsUpdate = true;
+        root.add(mesh);
+      } else {
+        // dispose unused geom/mat to avoid leaks
+        geom.dispose(); mat.dispose();
+      }
+
+      // wireframe envelope
+      const bgeom = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+      const wireMat = new THREE.LineBasicMaterial({ color: 0xc8952a, transparent: true, opacity: 0.18 });
+      bboxMesh = new THREE.LineSegments(new THREE.EdgesGeometry(bgeom), wireMat);
+      root.add(bboxMesh);
+
+      // adjust camera distance to fit
+      dist = Math.max(sizeX, sizeY, sizeZ) * 1.7;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      // Auto-rotate only when the toggle is on, the user isn't actively dragging,
+      // and we've been idle for 2.5s (so a quick orbit doesn't immediately resume).
+      const idle = !interacting && (performance.now() - lastInteract > 2500);
+      if (rotateEnabled && idle) yaw += 0.0035;
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      const cp = Math.cos(pitch), sp = Math.sin(pitch);
+      camera.position.set(dist * cp * sy, dist * sp, dist * cp * cy);
+      camera.lookAt(0, 0, 0);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // ─── NBT writer (vanilla structure format) ──────────────────
+    class NBTWriter {
+      constructor() {
+        this.buf = new Uint8Array(4096);
+        this.len = 0;
+      }
+      _ensure(n) {
+        if (this.len + n <= this.buf.length) return;
+        let cap = this.buf.length;
+        while (cap < this.len + n) cap *= 2;
+        const nb = new Uint8Array(cap);
+        nb.set(this.buf);
+        this.buf = nb;
+      }
+      byte(v)  { this._ensure(1); this.buf[this.len++] = v & 0xff; }
+      short(v) { this._ensure(2); this.buf[this.len++] = (v >> 8) & 0xff; this.buf[this.len++] = v & 0xff; }
+      int(v)   { this._ensure(4);
+        this.buf[this.len++] = (v >>> 24) & 0xff;
+        this.buf[this.len++] = (v >>> 16) & 0xff;
+        this.buf[this.len++] = (v >>>  8) & 0xff;
+        this.buf[this.len++] =  v         & 0xff;
+      }
+      str(s) {
+        const utf = new TextEncoder().encode(s);
+        this.short(utf.length);
+        this._ensure(utf.length);
+        this.buf.set(utf, this.len);
+        this.len += utf.length;
+      }
+      bytes() { return this.buf.subarray(0, this.len); }
+    }
+
+    function writeNBT(blocks, sizeX, sizeY, sizeZ, blockId) {
+      const w = new NBTWriter();
+      // root TAG_Compound with empty name
+      w.byte(10); w.str('');
+
+      // DataVersion
+      w.byte(3); w.str('DataVersion'); w.int(3955);
+
+      // size: List<Int>[3]
+      w.byte(9); w.str('size');
+      w.byte(3); w.int(3);
+      w.int(sizeX); w.int(sizeY); w.int(sizeZ);
+
+      // entities: List<Compound>[0]
+      w.byte(9); w.str('entities');
+      w.byte(10); w.int(0);
+
+      // blocks: List<Compound>
+      w.byte(9); w.str('blocks');
+      w.byte(10); w.int(blocks.length);
+      for (const b of blocks) {
+        // pos: List<Int>[3]
+        w.byte(9); w.str('pos');
+        w.byte(3); w.int(3);
+        w.int(b.x); w.int(b.y); w.int(b.z);
+        // state: Int
+        w.byte(3); w.str('state'); w.int(1);
+        // end of compound
+        w.byte(0);
+      }
+
+      // palette: List<Compound>
+      w.byte(9); w.str('palette');
+      w.byte(10); w.int(2);
+      // [0] minecraft:air
+      w.byte(8); w.str('Name'); w.str('minecraft:air');
+      w.byte(0);
+      // [1] chosen block
+      w.byte(8); w.str('Name'); w.str(blockId);
+      w.byte(0);
+
+      // close root compound
+      w.byte(0);
+      return w.bytes();
+    }
+
+    // ─── Stats UI ────────────────────────────────────────────────
+    const statBlocks   = document.getElementById('statBlocks');
+    const statInterior = document.getElementById('statInterior');
+    const statLift     = document.getElementById('statLift');
+    const statEnvelope = document.getElementById('statEnvelope');
+    const overlayText  = document.getElementById('overlayText');
+
+    function fmt(n) {
+      if (n >= 10000) return (n / 1000).toFixed(1) + 'k';
+      return String(n);
+    }
+
+    let lastStats = null;
+    function regenerate() {
+      const t0 = performance.now();
+      const stats = buildShellAndStats();
+      lastStats = stats;
+      rebuildMesh(stats);
+
+      statBlocks.textContent   = fmt(stats.blockCount);
+      statInterior.textContent = fmt(stats.interiorCount);
+      // ~0.4 kg/m³ lift — very approximate
+      const liftKg = Math.round(stats.interiorCount * 0.4);
+      statLift.textContent     = fmt(liftKg);
+      statEnvelope.textContent = fmt(stats.envelope);
+
+      const ms = (performance.now() - t0).toFixed(0);
+      overlayText.textContent = `${state.shape} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
+    }
+
+    // ─── Download ────────────────────────────────────────────────
+    document.getElementById('downloadBtn').onclick = () => {
+      if (!lastStats) return;
+      const { blocks, sizeX, sizeY, sizeZ } = lastStats;
+      if (blocks.length === 0) {
+        alert('No blocks to export — try larger dimensions or a different shape.');
+        return;
+      }
+      const nbtBytes = writeNBT(blocks, sizeX, sizeY, sizeZ, state.block);
+      const gzipped  = pako.gzip(nbtBytes);
+      const safeName = state.block.replace(/^minecraft:/, '').replace(/[^a-z0-9_]/gi, '');
+      const filename = `aeronaut_${state.shape}_${sizeX}x${sizeY}x${sizeZ}_${safeName}.nbt`;
+      const blob = new Blob([gzipped], { type: 'application/octet-stream' });
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+
+    // first build
+    regenerate();
+  </script>
+</body>
+</html>
