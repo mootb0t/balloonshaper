@@ -997,10 +997,11 @@
     function bindRangeAndNum(rangeId, numId, key) {
       const range = document.getElementById(rangeId);
       const num   = document.getElementById(numId);
-      const min = +range.min, max = +range.max;
+      const min = +range.min;
 
       function commit(v) {
         if (Number.isNaN(v)) return;
+        const max = +range.max;
         const clamped = Math.max(min, Math.min(max, Math.round(v)));
         state[key]  = clamped;
         range.value = clamped;
@@ -1015,6 +1016,7 @@
       num.addEventListener('input', () => {
         const v = parseFloat(num.value);
         if (Number.isNaN(v)) return;
+        const max = +range.max;
         if (v >= min && v <= max) {
           const rounded = Math.round(v);
           state[key]  = rounded;
@@ -1086,9 +1088,10 @@
     function bindHullRange(rangeId, numId, key) {
       const range = document.getElementById(rangeId);
       const num   = document.getElementById(numId);
-      const min = +range.min, max = +range.max;
+      const min = +range.min;
       function commit(v) {
         if (Number.isNaN(v)) return;
+        const max = +range.max;
         const clamped = Math.max(min, Math.min(max, Math.round(v)));
         state.hull[key] = clamped;
         range.value = clamped;
@@ -1099,6 +1102,7 @@
       num.addEventListener('input', () => {
         const v = parseFloat(num.value);
         if (Number.isNaN(v)) return;
+        const max = +range.max;
         if (v >= min && v <= max) {
           const rounded = Math.round(v);
           state.hull[key] = rounded;
