@@ -151,6 +151,26 @@
     .footer-note { margin-top: 22px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .04em; }
     .footer-note a { color: var(--brass); text-decoration: none; }
     .footer-note a:hover { text-decoration: underline; }
+
+    /* Independent scroll: left column scrolls, right column (preview) stays fixed */
+    @media (min-width: 921px) {
+      .layout > div:first-child {
+        position: sticky;
+        top: 22px;
+        max-height: calc(100vh - 44px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(200,149,42,.25) transparent;
+      }
+      .layout > div:first-child::-webkit-scrollbar { width: 4px; }
+      .layout > div:first-child::-webkit-scrollbar-track { background: transparent; }
+      .layout > div:first-child::-webkit-scrollbar-thumb { background: rgba(200,149,42,.25); border-radius: 2px; }
+      .layout > div:last-child {
+        position: sticky;
+        top: 22px;
+      }
+    }
   </style>
 </head>
 <body>
