@@ -16,613 +16,139 @@
       --brass-dim: rgba(200,149,42,.55);
       --brass-faint: rgba(200,149,42,.18);
       --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      /* Native selects / scrollbars follow dark UI on Windows & Android */
       color-scheme: dark;
     }
-
-    body {
-      background: var(--bg-aero);
-    }
-
-    .aero-wrap {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 22px 18px 64px;
-    }
-
-    .aero-header {
-      display: flex;
-      align-items: baseline;
-      gap: 14px;
-      flex-wrap: wrap;
-      padding: 10px 0 16px;
-      border-bottom: 1px solid var(--line-aero);
-      margin-bottom: 18px;
-    }
-    .aero-header .crumb {
-      color: var(--muted);
-      font-size: 13px;
-      text-decoration: none;
-    }
+    body { background: var(--bg-aero); }
+    .aero-wrap { max-width: 1280px; margin: 0 auto; padding: 22px 18px 64px; }
+    .aero-header { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding: 10px 0 16px; border-bottom: 1px solid var(--line-aero); margin-bottom: 18px; }
+    .aero-header .crumb { color: var(--muted); font-size: 13px; text-decoration: none; }
     .aero-header .crumb:hover { color: var(--text); }
-    .aero-header h1 {
-      font-family: var(--mono);
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      font-size: 32px;
-      margin: 0;
-    }
+    .aero-header h1 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.5px; font-size: 32px; margin: 0; }
     .aero-header h1 .accent { color: var(--brass); }
-    .aero-header .tagline {
-      color: var(--muted);
-      font-size: 13px;
-      font-family: var(--mono);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-    @media (max-width: 920px) {
-      .layout { grid-template-columns: 1fr; }
-      .preview-wrap { order: -1; height: 420px; }
-    }
-
-    .panel-aero {
-      background: var(--panel-aero);
-      border: 1px solid var(--line-aero);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .panel-title {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--brass);
-      margin: 0 0 10px;
-      font-weight: 700;
-    }
-
-    .preview-wrap {
-      position: relative;
-      background: var(--panel-aero);
-      border: 1px solid var(--line-aero);
-      border-radius: 12px;
-      overflow: hidden;
-      height: 640px;
-    }
+    .aero-header .tagline { color: var(--muted); font-size: 13px; font-family: var(--mono); }
+    .layout { display: grid; grid-template-columns: 380px 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } .preview-wrap { order: -1; height: 420px; } }
+    .panel-aero { background: var(--panel-aero); border: 1px solid var(--line-aero); border-radius: 12px; padding: 16px; }
+    .panel-title { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--brass); margin: 0 0 10px; font-weight: 700; }
+    .preview-wrap { position: relative; background: var(--panel-aero); border: 1px solid var(--line-aero); border-radius: 12px; overflow: hidden; height: 640px; }
     .preview-wrap canvas { display: block; width: 100%; height: 100%; }
-    .preview-overlay {
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: rgba(233,237,242,.55);
-      pointer-events: none;
-      letter-spacing: .04em;
-    }
-    .preview-overlay .dot {
-      display: inline-block;
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--brass);
-      margin-right: 6px;
-      vertical-align: middle;
-      box-shadow: 0 0 8px var(--brass);
-    }
-
-    .rotate-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(0,0,0,.45);
-      border: 1px solid var(--brass-faint);
-      color: var(--brass);
-      padding: 5px 9px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      backdrop-filter: blur(4px);
-      transition: border-color .12s, color .12s, background .12s;
-    }
+    .preview-overlay { position: absolute; top: 12px; left: 12px; font-family: var(--mono); font-size: 11px; color: rgba(233,237,242,.55); pointer-events: none; letter-spacing: .04em; }
+    .preview-overlay .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--brass); margin-right: 6px; vertical-align: middle; box-shadow: 0 0 8px var(--brass); }
+    .rotate-toggle { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,.45); border: 1px solid var(--brass-faint); color: var(--brass); padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; backdrop-filter: blur(4px); transition: border-color .12s, color .12s, background .12s; }
     .rotate-toggle:hover { border-color: var(--brass-dim); background: rgba(200,149,42,.08); }
-    .rotate-toggle svg { display: block; transition: transform .4s linear; }
+    .rotate-toggle svg { display: block; }
     .rotate-toggle.on svg { animation: spin 4s linear infinite; }
     .rotate-toggle.off { color: rgba(233,237,242,.4); border-color: var(--line-aero); }
-    .rotate-toggle.off svg { animation: none; }
     @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
-
-    .orient-controls {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      display: flex;
-      gap: 2px;
-      background: rgba(0,0,0,.45);
-      border: 1px solid var(--line-aero);
-      border-radius: 6px;
-      padding: 3px;
-      backdrop-filter: blur(4px);
-    }
-    .orient-btn {
-      appearance: none;
-      background: transparent;
-      border: none;
-      color: rgba(233,237,242,.45);
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: color .12s, background .12s;
-    }
+    .orient-controls { position: absolute; bottom: 10px; right: 10px; display: flex; gap: 2px; background: rgba(0,0,0,.45); border: 1px solid var(--line-aero); border-radius: 6px; padding: 3px; backdrop-filter: blur(4px); }
+    .orient-btn { appearance: none; background: transparent; border: none; color: rgba(233,237,242,.45); width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer; border-radius: 4px; transition: color .12s, background .12s; }
     .orient-btn:hover { color: var(--text); background: rgba(255,255,255,.04); }
     .orient-btn.active { color: var(--brass); background: var(--brass-faint); }
     .orient-btn svg { transition: transform .25s; }
     .orient-btn[data-rot="90"]  svg { transform: rotate(90deg); }
     .orient-btn[data-rot="180"] svg { transform: rotate(180deg); }
 
+    /* Balloon list */
+    .balloon-list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .balloon-list { display: flex; flex-direction: column; gap: 4px; }
+    .balloon-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: rgba(255,255,255,.02); border: 1px solid var(--line-aero); border-radius: 6px; cursor: pointer; transition: border-color .12s, background .12s; user-select: none; }
+    .balloon-row:hover { border-color: rgba(200,149,42,.3); background: rgba(200,149,42,.04); }
+    .balloon-row.active { border-color: var(--brass); background: var(--brass-faint); }
+    .balloon-row-icon { flex-shrink: 0; color: var(--muted); display: flex; align-items: center; }
+    .balloon-row.active .balloon-row-icon { color: var(--brass); }
+    .balloon-row-info { flex: 1; min-width: 0; }
+    .balloon-row-name { display: block; font-family: var(--mono); font-size: 11px; color: var(--text); }
+    .balloon-row-meta { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+    .balloon-row-color { display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,.15); flex-shrink: 0; }
+    .balloon-row-pos { font-family: var(--mono); font-size: 9.5px; color: var(--muted); flex-shrink: 0; white-space: nowrap; }
+    .balloon-row-btn { appearance: none; background: transparent; border: 1px solid transparent; color: var(--muted); font-size: 13px; width: 22px; height: 22px; display: grid; place-items: center; cursor: pointer; border-radius: 3px; flex-shrink: 0; transition: color .12s, border-color .12s; padding: 0; line-height: 1; }
+    .balloon-row-btn:hover { color: var(--text); border-color: var(--line-aero); }
+    .balloon-row-del:hover { color: #ff6b6b !important; border-color: rgba(255,107,107,.4) !important; }
+    .balloon-row-btn:disabled { opacity: .3; cursor: default; pointer-events: none; }
+    .btn-add-balloon { appearance: none; background: rgba(200,149,42,.12); border: 1px solid var(--brass-faint); color: var(--brass); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: .08em; padding: 4px 10px; border-radius: 5px; cursor: pointer; transition: background .12s, border-color .12s; }
+    .btn-add-balloon:hover { background: rgba(200,149,42,.2); border-color: var(--brass-dim); }
+
     /* Shape grid */
-    .shape-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-    .shape-btn {
-      appearance: none;
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--line-aero);
-      border-radius: 8px;
-      padding: 8px 4px 6px;
-      cursor: pointer;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 9.5px;
-      letter-spacing: .03em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      transition: border-color .12s, color .12s, background .12s;
-    }
+    .shape-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .shape-btn { appearance: none; background: rgba(255,255,255,.02); border: 1px solid var(--line-aero); border-radius: 8px; padding: 8px 4px 6px; cursor: pointer; color: var(--muted); font-family: var(--mono); font-size: 9.5px; letter-spacing: .03em; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: border-color .12s, color .12s, background .12s; }
     .shape-btn svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 1.4; }
     .shape-btn:hover { border-color: rgba(200,149,42,.35); color: var(--text); }
-    .shape-btn.active {
-      border-color: var(--brass);
-      color: var(--brass);
-      background: var(--brass-faint);
-    }
+    .shape-btn.active { border-color: var(--brass); color: var(--brass); background: var(--brass-faint); }
 
     /* Sliders */
-    .control {
-      margin-top: 14px;
-    }
-    .control-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: .04em;
-      margin-bottom: 6px;
-    }
-    .control-row .val {
-      color: var(--brass);
-      font-weight: 600;
-    }
-    .control input[type="range"] {
-      width: 100%;
-      -webkit-appearance: none;
-      appearance: none;
-      height: 4px;
-      background: rgba(255,255,255,.08);
-      border-radius: 2px;
-      outline: none;
-    }
-    .control input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: var(--brass);
-      cursor: pointer;
-      border: 2px solid #1c1410;
-      box-shadow: 0 0 0 1px var(--brass);
-    }
-    .control input[type="range"]::-moz-range-thumb {
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: var(--brass);
-      cursor: pointer;
-      border: 2px solid #1c1410;
-    }
-
-    /* Editable number inputs paired with each slider. Visually nearly
-       identical to the read-only label they replaced — same brass colour,
-       same mono font — but you can click and type. */
-    .num-input {
-      width: 56px;
-      background: rgba(255, 255, 255, .04);
-      border: 1px solid var(--line-aero);
-      color: var(--brass);
-      font-family: var(--mono);
-      font-size: 12px;
-      font-weight: 600;
-      text-align: right;
-      padding: 2px 6px;
-      border-radius: 4px;
-      outline: none;
-      -moz-appearance: textfield;
-      transition: border-color .12s;
-    }
-    .num-input:hover  { border-color: rgba(200,149,42,.35); }
-    .num-input:focus  { border-color: var(--brass-dim); background: rgba(200,149,42,.06); }
-    .num-input::-webkit-outer-spin-button,
-    .num-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .select-aero, .text-aero {
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      /* Opaque bg: semi-transparent + inherited text breaks Windows native list contrast */
-      background-color: #1a1a22;
-      border: 1px solid rgba(233,237,242,.16);
-      color: #e9edf2;
-      padding: 10px 36px 10px 12px;
-      border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.35;
-      outline: none;
-      color-scheme: dark;
-      -webkit-appearance: none;
-      appearance: none;
-      cursor: pointer;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c8952a' d='M0 0h12L6 8z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-    }
-    .text-aero {
-      display: none;
-      margin-top: 6px;
-      cursor: text;
-      background-image: none;
-      padding: 10px 12px;
-    }
+    .control { margin-top: 14px; }
+    .control-row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 6px; }
+    .control input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; background: rgba(255,255,255,.08); border-radius: 2px; outline: none; }
+    .control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--brass); cursor: pointer; border: 2px solid #1c1410; box-shadow: 0 0 0 1px var(--brass); }
+    .control input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--brass); cursor: pointer; border: 2px solid #1c1410; }
+    .num-input { width: 56px; background: rgba(255,255,255,.04); border: 1px solid var(--line-aero); color: var(--brass); font-family: var(--mono); font-size: 12px; font-weight: 600; text-align: right; padding: 2px 6px; border-radius: 4px; outline: none; -moz-appearance: textfield; transition: border-color .12s; }
+    .num-input:hover { border-color: rgba(200,149,42,.35); }
+    .num-input:focus { border-color: var(--brass-dim); background: rgba(200,149,42,.06); }
+    .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .select-aero, .text-aero { width: 100%; max-width: 100%; box-sizing: border-box; background-color: #1a1a22; border: 1px solid rgba(233,237,242,.16); color: #e9edf2; padding: 10px 36px 10px 12px; border-radius: 8px; font-family: var(--mono); font-size: 13px; line-height: 1.35; outline: none; color-scheme: dark; -webkit-appearance: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c8952a' d='M0 0h12L6 8z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+    .text-aero { display: none; margin-top: 6px; cursor: text; background-image: none; padding: 10px 12px; }
     .text-aero.show { display: block; }
-    .select-aero option,
-    .select-aero optgroup {
-      background-color: #1a1a22;
-      color: #e9edf2;
-      font-family: var(--mono);
-      font-size: 13px;
-      padding: 0.5em 0.35em;
-    }
-    .select-aero:focus, .text-aero:focus {
-      border-color: var(--brass-dim);
-      box-shadow: 0 0 0 1px rgba(200,149,42,.25);
-    }
-    @media (max-width: 920px) {
-      .select-aero, .text-aero {
-        font-size: 16px;
-        padding-top: 14px;
-        padding-bottom: 14px;
-        min-height: 48px;
-        border-radius: 10px;
-      }
-      .select-aero {
-        padding-right: 44px;
-        background-position: right 14px center;
-      }
-      .select-aero option,
-      .select-aero optgroup {
-        font-size: 16px;
-      }
-    }
+    .select-aero option, .select-aero optgroup { background-color: #1a1a22; color: #e9edf2; font-family: var(--mono); font-size: 13px; padding: 0.5em 0.35em; }
+    .select-aero:focus, .text-aero:focus { border-color: var(--brass-dim); box-shadow: 0 0 0 1px rgba(200,149,42,.25); }
+    @media (max-width: 920px) { .select-aero, .text-aero { font-size: 16px; padding-top: 14px; padding-bottom: 14px; min-height: 48px; } .select-aero { padding-right: 44px; } }
 
     /* Stats */
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 4px;
-    }
-    .stat {
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--line-aero);
-      border-radius: 8px;
-      padding: 10px;
-      font-family: var(--mono);
-    }
-    .stat .label {
-      font-size: 9.5px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .stat .num {
-      font-size: 18px;
-      color: var(--brass);
-      font-weight: 700;
-      margin-top: 4px;
-      letter-spacing: -.5px;
-    }
-    .stat .unit {
-      font-size: 10px;
-      color: var(--muted);
-      margin-left: 4px;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+    .stat { background: rgba(255,255,255,.02); border: 1px solid var(--line-aero); border-radius: 8px; padding: 10px; font-family: var(--mono); }
+    .stat .label { font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+    .stat .num { font-size: 18px; color: var(--brass); font-weight: 700; margin-top: 4px; letter-spacing: -.5px; }
+    .stat .unit { font-size: 10px; color: var(--muted); margin-left: 4px; font-weight: 400; }
     .stat[title] { cursor: help; }
 
     /* Buttons */
-    .btn-aero {
-      appearance: none;
-      width: 100%;
-      background: var(--brass);
-      color: #1a1306;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      margin-top: 16px;
-      transition: filter .12s;
-    }
+    .btn-aero { appearance: none; width: 100%; background: var(--brass); color: #1a1306; border: none; padding: 12px; border-radius: 8px; font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; margin-top: 16px; transition: filter .12s; }
     .btn-aero:hover { filter: brightness(1.1); }
     .btn-aero:disabled { opacity: .4; cursor: default; filter: none; }
-    .btn-aero.btn-aero-secondary {
-      margin-top: 8px;
-      background: rgba(255,255,255,.02);
-      border: 1px solid var(--line-aero);
-      color: var(--brass);
-    }
-    .btn-aero.btn-aero-secondary:hover {
-      filter: none;
-      border-color: rgba(200,149,42,.35);
-      background: rgba(200,149,42,.06);
-    }
+    .btn-aero.btn-aero-secondary { margin-top: 8px; background: rgba(255,255,255,.02); border: 1px solid var(--line-aero); color: var(--brass); }
+    .btn-aero.btn-aero-secondary:hover { filter: none; border-color: rgba(200,149,42,.35); background: rgba(200,149,42,.06); }
 
-    .instructions {
-      margin-top: 14px;
-      padding: 10px 12px;
-      background: rgba(200,149,42,.06);
-      border: 1px solid var(--brass-faint);
-      border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
+    .instructions { margin-top: 14px; padding: 10px 12px; background: rgba(200,149,42,.06); border: 1px solid var(--brass-faint); border-radius: 8px; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.55; }
     .instructions .step { color: var(--text); }
-    .instructions code {
-      background: rgba(0,0,0,.35);
-      padding: 1px 5px;
-      border-radius: 4px;
-      border: 1px solid var(--line-aero);
-      color: var(--brass);
-      font-size: 10.5px;
-    }
+    .instructions code { background: rgba(0,0,0,.35); padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line-aero); color: var(--brass); font-size: 10.5px; }
 
-    /* Custom-profile canvas */
-    .profile-wrap {
-      display: none;
-      margin-top: 10px;
-      background: rgba(0,0,0,.4);
-      border: 1px solid var(--line-aero);
-      border-radius: 8px;
-      padding: 8px;
-    }
+    /* Profile canvas */
+    .profile-wrap { display: none; margin-top: 10px; background: rgba(0,0,0,.4); border: 1px solid var(--line-aero); border-radius: 8px; padding: 8px; }
     .profile-wrap.show { display: block; }
-    .profile-wrap canvas {
-      display: block;
-      width: 100%;
-      height: 220px;
-      cursor: crosshair;
-      background:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 22px),
-        repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 22px),
-        #0a0a0c;
-      border-radius: 4px;
-    }
-    .profile-wrap .help {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .profile-wrap .help button {
-      appearance: none;
-      background: transparent;
-      border: 1px solid var(--line-aero);
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    .profile-wrap canvas { display: block; width: 100%; height: 220px; cursor: crosshair; background: repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 22px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 22px),#0a0a0c; border-radius: 4px; }
+    .profile-wrap .help { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 6px; display: flex; justify-content: space-between; }
+    .profile-wrap .help button { appearance: none; background: transparent; border: 1px solid var(--line-aero); color: var(--muted); font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .profile-wrap .help button:hover { border-color: var(--brass-dim); color: var(--brass); }
 
-    /* Param (3-silhouette) editor */
+    /* Param editor */
     .param-wrap { display: none; margin-top: 10px; }
     .param-wrap.show { display: block; }
-    .param-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 2px 7px;
-      background: rgba(220, 80, 80, .12);
-      color: #ff8a8a;
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: .14em;
-      border-radius: 3px;
-      margin-bottom: 8px;
-      border: 1px solid rgba(220, 80, 80, .35);
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .param-badge::before {
-      content: "";
-      display: inline-block;
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #ff8a8a;
-      box-shadow: 0 0 5px #ff8a8a;
-    }
-    .param-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 5px;
-    }
-    .param-editor {
-      background: rgba(0, 0, 0, .4);
-      border: 1px solid var(--line-aero);
-      border-radius: 6px;
-      padding: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .param-editor canvas {
-      display: block;
-      width: 100%;
-      height: 110px;
-      cursor: crosshair;
-      background:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 16px),
-        repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 16px),
-        #0a0a0c;
-      border-radius: 3px;
-    }
-    .param-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: .04em;
-    }
+    .param-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; background: rgba(220,80,80,.12); color: #ff8a8a; font-family: var(--mono); font-size: 9px; letter-spacing: .14em; border-radius: 3px; margin-bottom: 8px; border: 1px solid rgba(220,80,80,.35); text-transform: uppercase; font-weight: 700; }
+    .param-badge::before { content:""; display:inline-block; width:5px; height:5px; border-radius:50%; background:#ff8a8a; box-shadow:0 0 5px #ff8a8a; }
+    .param-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+    .param-editor { background: rgba(0,0,0,.4); border: 1px solid var(--line-aero); border-radius: 6px; padding: 5px; display: flex; flex-direction: column; gap: 4px; }
+    .param-editor canvas { display: block; width: 100%; height: 110px; cursor: crosshair; background: repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 16px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 16px),#0a0a0c; border-radius: 3px; }
+    .param-label { font-family: var(--mono); font-size: 9px; color: var(--muted); text-align: center; letter-spacing: .04em; }
     .param-label .ax { color: var(--brass); }
-    .param-help {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .param-help button {
-      appearance: none;
-      background: transparent;
-      border: 1px solid var(--line-aero);
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    .param-help { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 6px; }
+    .param-help button { appearance: none; background: transparent; border: 1px solid var(--line-aero); color: var(--muted); font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .param-help button:hover { border-color: var(--brass-dim); color: var(--brass); }
 
-    /* Section spacing */
     .section + .section { margin-top: 16px; }
 
-    /* Ship hull toggle */
-    .hull-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--muted);
-      user-select: none;
-    }
-    .hull-toggle input[type="checkbox"] {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 16px;
-      height: 16px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid var(--line-aero);
-      border-radius: 3px;
-      cursor: pointer;
-      position: relative;
-      transition: border-color .12s, background .12s;
-      flex-shrink: 0;
-      margin: 0;
-    }
+    .hull-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); user-select: none; }
+    .hull-toggle input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line-aero); border-radius: 3px; cursor: pointer; position: relative; transition: border-color .12s, background .12s; flex-shrink: 0; margin: 0; }
     .hull-toggle input[type="checkbox"]:hover { border-color: rgba(200,149,42,.45); }
-    .hull-toggle input[type="checkbox"]:checked {
-      background: var(--brass);
-      border-color: var(--brass);
-    }
-    .hull-toggle input[type="checkbox"]:checked::after {
-      content: "";
-      position: absolute;
-      left: 4px;
-      top: 1px;
-      width: 5px;
-      height: 9px;
-      border: solid #1a1306;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
+    .hull-toggle input[type="checkbox"]:checked { background: var(--brass); border-color: var(--brass); }
+    .hull-toggle input[type="checkbox"]:checked::after { content:""; position:absolute; left:4px; top:1px; width:5px; height:9px; border:solid #1a1306; border-width:0 2px 2px 0; transform:rotate(45deg); }
     .hull-toggle:hover { color: var(--text); }
     .hull-controls { display: none; }
     .hull-controls.show { display: block; }
-    .control-label {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: .04em;
-      margin-bottom: 6px;
-    }
+    .control-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 6px; }
 
-    .preview-credit {
-      margin-top: 10px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: .04em;
-    }
+    .preview-credit { margin-top: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .04em; }
     .preview-credit a { color: var(--brass); text-decoration: none; }
     .preview-credit a:hover { text-decoration: underline; }
-
-    .footer-note {
-      margin-top: 22px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
-      letter-spacing: .04em;
-    }
+    .footer-note { margin-top: 22px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .04em; }
     .footer-note a { color: var(--brass); text-decoration: none; }
     .footer-note a:hover { text-decoration: underline; }
   </style>
@@ -638,10 +164,20 @@
     <div class="layout">
       <!-- LEFT: Controls -->
       <div>
+
+        <!-- Balloon list -->
+        <div class="panel-aero section">
+          <div class="balloon-list-header">
+            <h3 class="panel-title" style="margin:0">Balloons</h3>
+            <button class="btn-add-balloon" id="addBalloonBtn">+ Add</button>
+          </div>
+          <div class="balloon-list" id="balloonList"></div>
+        </div>
+
+        <!-- Shape -->
         <div class="panel-aero section">
           <h3 class="panel-title">Shape</h3>
           <div class="shape-grid" id="shapeGrid"></div>
-
           <div class="profile-wrap" id="profileWrap">
             <canvas id="profileCanvas" width="200" height="220"></canvas>
             <div class="help">
@@ -649,7 +185,6 @@
               <button id="profileClear">clear</button>
             </div>
           </div>
-
           <div class="param-wrap" id="paramWrap">
             <div class="param-badge">experimental</div>
             <div class="param-grid">
@@ -673,6 +208,7 @@
           </div>
         </div>
 
+        <!-- Dimensions -->
         <div class="panel-aero section">
           <h3 class="panel-title">Dimensions</h3>
           <label class="hull-toggle">
@@ -709,6 +245,7 @@
           </div>
         </div>
 
+        <!-- Material -->
         <div class="panel-aero section">
           <h3 class="panel-title">Material</h3>
           <select class="select-aero" id="materialSelect">
@@ -724,6 +261,33 @@
           <input type="text" class="text-aero" id="customBlock" placeholder="minecraft:cyan_concrete" value="minecraft:cyan_concrete" />
         </div>
 
+        <!-- Position -->
+        <div class="panel-aero section">
+          <h3 class="panel-title">Position</h3>
+          <div class="control">
+            <div class="control-row">
+              <span>offset X</span>
+              <span><input type="number" class="num-input" id="offXNum" min="-256" max="256" value="0" /> blocks</span>
+            </div>
+            <input type="range" id="offXInput" min="-256" max="256" value="0" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <span>offset Y</span>
+              <span><input type="number" class="num-input" id="offYNum" min="-256" max="256" value="0" /> blocks</span>
+            </div>
+            <input type="range" id="offYInput" min="-256" max="256" value="0" />
+          </div>
+          <div class="control">
+            <div class="control-row">
+              <span>offset Z</span>
+              <span><input type="number" class="num-input" id="offZNum" min="-256" max="256" value="0" /> blocks</span>
+            </div>
+            <input type="range" id="offZInput" min="-256" max="256" value="0" />
+          </div>
+        </div>
+
+        <!-- Ship Hull -->
         <div class="panel-aero section">
           <h3 class="panel-title">Ship Hull</h3>
           <label class="hull-toggle">
@@ -745,41 +309,11 @@
                 <option value="pod">Pod (spherical bowl with apex hatch)</option>
               </select>
             </div>
-            <div class="control">
-              <div class="control-row">
-                <span>length</span>
-                <span><input type="number" class="num-input" id="hullLNum" min="3" max="200" value="20" /> blocks</span>
-              </div>
-              <input type="range" id="hullLInput" min="3" max="200" value="20" />
-            </div>
-            <div class="control">
-              <div class="control-row">
-                <span>width</span>
-                <span><input type="number" class="num-input" id="hullWNum" min="3" max="60" value="10" /> blocks</span>
-              </div>
-              <input type="range" id="hullWInput" min="3" max="60" value="10" />
-            </div>
-            <div class="control">
-              <div class="control-row">
-                <span>depth</span>
-                <span><input type="number" class="num-input" id="hullDNum" min="2" max="40" value="6" /> blocks</span>
-              </div>
-              <input type="range" id="hullDInput" min="2" max="40" value="6" />
-            </div>
-            <div class="control">
-              <div class="control-row">
-                <span>wall thickness</span>
-                <span><input type="number" class="num-input" id="hullTNum" min="1" max="3" value="1" /> blocks</span>
-              </div>
-              <input type="range" id="hullTInput" min="1" max="3" value="1" />
-            </div>
-            <div class="control">
-              <div class="control-row">
-                <span>gap to balloon</span>
-                <span><input type="number" class="num-input" id="hullGapNum" min="0" max="20" value="2" /> blocks</span>
-              </div>
-              <input type="range" id="hullGapInput" min="0" max="20" value="2" />
-            </div>
+            <div class="control"><div class="control-row"><span>length</span><span><input type="number" class="num-input" id="hullLNum" min="3" max="200" value="20" /> blocks</span></div><input type="range" id="hullLInput" min="3" max="200" value="20" /></div>
+            <div class="control"><div class="control-row"><span>width</span><span><input type="number" class="num-input" id="hullWNum" min="3" max="60" value="10" /> blocks</span></div><input type="range" id="hullWInput" min="3" max="60" value="10" /></div>
+            <div class="control"><div class="control-row"><span>depth</span><span><input type="number" class="num-input" id="hullDNum" min="2" max="40" value="6" /> blocks</span></div><input type="range" id="hullDInput" min="2" max="40" value="6" /></div>
+            <div class="control"><div class="control-row"><span>wall thickness</span><span><input type="number" class="num-input" id="hullTNum" min="1" max="3" value="1" /> blocks</span></div><input type="range" id="hullTInput" min="1" max="3" value="1" /></div>
+            <div class="control"><div class="control-row"><span>gap to balloon</span><span><input type="number" class="num-input" id="hullGapNum" min="0" max="20" value="2" /> blocks</span></div><input type="range" id="hullGapInput" min="0" max="20" value="2" /></div>
             <div class="control">
               <div class="control-label">material</div>
               <select class="select-aero" id="hullMaterialSelect">
@@ -797,27 +331,15 @@
           </div>
         </div>
 
+        <!-- Stats -->
         <div class="panel-aero section">
           <h3 class="panel-title">Stats</h3>
           <div class="stats">
-            <div class="stat" title="Total non-air blocks in the structure">
-              <div class="label">blocks</div>
-              <div class="num" id="statBlocks">—</div>
-            </div>
-            <div class="stat" title="Hollow interior volume — 1 block ≈ 1m³">
-              <div class="label">interior</div>
-              <div class="num"><span id="statInterior">—</span><span class="unit">m³</span></div>
-            </div>
-            <div class="stat" title="1.5 kpg per block of interior volume, scaled by air pressure (100% at surface, drops as altitude increases).">
-              <div class="label">lift</div>
-              <div class="num"><span id="statLift">—</span><span class="unit">kpg</span></div>
-            </div>
-            <div class="stat" title="Total bounding-box envelope">
-              <div class="label">envelope</div>
-              <div class="num"><span id="statEnvelope">—</span><span class="unit">m³</span></div>
-            </div>
+            <div class="stat" title="Total non-air blocks in the structure"><div class="label">blocks</div><div class="num" id="statBlocks">—</div></div>
+            <div class="stat" title="Hollow interior volume — 1 block ≈ 1m³"><div class="label">interior</div><div class="num"><span id="statInterior">—</span><span class="unit">m³</span></div></div>
+            <div class="stat" title="1.5 kpg per block of interior volume, scaled by air pressure"><div class="label">lift</div><div class="num"><span id="statLift">—</span><span class="unit">kpg</span></div></div>
+            <div class="stat" title="Total bounding-box envelope"><div class="label">envelope</div><div class="num"><span id="statEnvelope">—</span><span class="unit">m³</span></div></div>
           </div>
-
           <div class="control" style="margin-top:10px;">
             <div class="control-row">
               <span>altitude</span>
@@ -825,9 +347,7 @@
             </div>
             <input type="range" id="altitudeInput" min="0" max="2048" value="0" />
           </div>
-
           <button class="btn-aero" id="downloadBtn">Download .nbt</button>
-
           <div class="instructions">
             <div class="step">// to load with Create's Schematic Table</div>
             1. place &amp; right-click a <span style="color:var(--text)">Schematic Table</span> in-game<br>
@@ -851,24 +371,15 @@
             </svg>
             <span id="rotateLabel">auto</span>
           </button>
-          <div class="orient-controls" id="orientControls" title="preview orientation (display only — does not affect the .nbt)">
-            <button class="orient-btn active" data-rot="0"   aria-label="upright">
-              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-                <path d="M7 10.5 v3 M9 10.5 v3"/>
-              </svg>
+          <div class="orient-controls" id="orientControls">
+            <button class="orient-btn active" data-rot="0" aria-label="upright">
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="8" cy="6" rx="4" ry="4.5"/><path d="M7 10.5 v3 M9 10.5 v3"/></svg>
             </button>
             <button class="orient-btn" data-rot="90" aria-label="on side">
-              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-                <path d="M7 10.5 v3 M9 10.5 v3"/>
-              </svg>
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="8" cy="6" rx="4" ry="4.5"/><path d="M7 10.5 v3 M9 10.5 v3"/></svg>
             </button>
             <button class="orient-btn" data-rot="180" aria-label="upside down">
-              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-                <path d="M7 10.5 v3 M9 10.5 v3"/>
-              </svg>
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="8" cy="6" rx="4" ry="4.5"/><path d="M7 10.5 v3 M9 10.5 v3"/></svg>
             </button>
           </div>
         </div>
@@ -888,235 +399,184 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
   <script type="module">
-    // ────────────────────────────────────────────────────────────
-    //   AERONAUT
-    //   Single-file generator. Three.js (r128) + pako.
-    // ────────────────────────────────────────────────────────────
-
-    // ─── Shape definitions ──────────────────────────────────────
+    // ── Shape definitions ────────────────────────────────────────
     const SHAPES = [
-      { id: 'hotair',   label: 'hot air',  hasRibs: false,
-        icon: `<path d="M15 4 C 6 4, 6 18, 15 18 C 24 18, 24 4, 15 4 Z M 12 18 L 14 26 L 16 26 L 18 18"/>` },
-      { id: 'sphere',   label: 'sphere',   hasRibs: false,
-        icon: `<circle cx="15" cy="15" r="11"/>` },
-      { id: 'ellipsoid', label: 'ellipsoid', hasRibs: false,
-        icon: `<ellipse cx="15" cy="15" rx="13" ry="5"/>` },
-      { id: 'capsule', label: 'capsule', hasRibs: false,
-        icon: `<path d="M8 10 Q 8 6, 12 6 L 18 6 Q 22 6, 22 10 L 22 20 Q 22 24, 18 24 L 12 24 Q 8 24, 8 20 Z"/>` },
-      { id: 'zeppelin', label: 'zeppelin', hasRibs: false,
-        icon: `<path d="M15 28 Q 12 23, 11 19 L 11 9 Q 11 3, 15 3 Q 19 3, 19 9 L 19 19 Q 18 23, 15 28 Z"/>` },
-      { id: 'pumpkin',  label: 'pumpkin',  hasRibs: true,
-        icon: `<circle cx="15" cy="15" r="11"/><path d="M15 4 C 11 8, 11 22, 15 26 M15 4 C 19 8, 19 22, 15 26 M4 15 L 26 15"/>` },
-      { id: 'onion',    label: 'onion',    hasRibs: false,
-        icon: `<path d="M15 3 L 13 10 C 5 12, 5 24, 15 26 C 25 24, 25 12, 17 10 Z"/>` },
-      { id: 'cube',     label: 'lantern',  hasRibs: false,
-        icon: `<path d="M6 8 Q 6 5, 9 5 L 21 5 Q 24 5, 24 8 L 24 22 Q 24 25, 21 25 L 9 25 Q 6 25, 6 22 Z"/>` },
-      { id: 'heart',    label: 'heart',    hasRibs: false,
-        icon: `<path d="M15 26 C 6 18, 4 12, 6 8 C 9 4, 13 6, 15 10 C 17 6, 21 4, 24 8 C 26 12, 24 18, 15 26 Z"/>` },
-      // ── airship hull profiles ──
-      { id: 'atyya',    label: 'atyya',    hasRibs: false,
-        icon: `<path d="M15 4 Q 24 6, 24 13 L 22 16 L 17 26 L 13 26 L 8 16 L 6 13 Q 6 6, 15 4 Z"/>` },
-      { id: 'npl',      label: 'npl',      hasRibs: false,
-        icon: `<path d="M15 4 Q 25 5, 25 13 Q 25 22, 15 26 Q 5 22, 5 13 Q 5 5, 15 4 Z" /><path d="M5 13 L 25 13" opacity="0.4"/>` },
-      { id: 'wang',     label: 'wang',     hasRibs: false,
-        icon: `<path d="M15 4 Q 27 11, 26 15 Q 27 19, 15 26 Q 3 19, 4 15 Q 3 11, 15 4 Z"/>` },
-      { id: 'custom',   label: 'custom',   hasRibs: false,
-        icon: `<path d="M15 4 L 15 26 M 15 6 Q 6 14, 15 22"/><circle cx="11" cy="10" r="1.4" fill="currentColor"/><circle cx="7"  cy="16" r="1.4" fill="currentColor"/><circle cx="11" cy="22" r="1.4" fill="currentColor"/>` },
-      // ── parametric three-silhouette mode (experimental) ──
-      { id: 'param',    label: 'param',    hasRibs: false,
-        icon: `<path d="M15 4 L 15 26 M 6 11 L 24 21 M 6 21 L 24 11"/><circle cx="22" cy="6" r="2.2" fill="currentColor" stroke="none"/>` },
+      { id:'hotair',    label:'hot air',   hasRibs:false, icon:`<path d="M15 4 C 6 4, 6 18, 15 18 C 24 18, 24 4, 15 4 Z M 12 18 L 14 26 L 16 26 L 18 18"/>` },
+      { id:'sphere',    label:'sphere',    hasRibs:false, icon:`<circle cx="15" cy="15" r="11"/>` },
+      { id:'ellipsoid', label:'ellipsoid', hasRibs:false, icon:`<ellipse cx="15" cy="15" rx="13" ry="5"/>` },
+      { id:'capsule',   label:'capsule',   hasRibs:false, icon:`<path d="M8 10 Q 8 6, 12 6 L 18 6 Q 22 6, 22 10 L 22 20 Q 22 24, 18 24 L 12 24 Q 8 24, 8 20 Z"/>` },
+      { id:'zeppelin',  label:'zeppelin',  hasRibs:false, icon:`<path d="M15 28 Q 12 23, 11 19 L 11 9 Q 11 3, 15 3 Q 19 3, 19 9 L 19 19 Q 18 23, 15 28 Z"/>` },
+      { id:'pumpkin',   label:'pumpkin',   hasRibs:true,  icon:`<circle cx="15" cy="15" r="11"/><path d="M15 4 C 11 8, 11 22, 15 26 M15 4 C 19 8, 19 22, 15 26 M4 15 L 26 15"/>` },
+      { id:'onion',     label:'onion',     hasRibs:false, icon:`<path d="M15 3 L 13 10 C 5 12, 5 24, 15 26 C 25 24, 25 12, 17 10 Z"/>` },
+      { id:'cube',      label:'lantern',   hasRibs:false, icon:`<path d="M6 8 Q 6 5, 9 5 L 21 5 Q 24 5, 24 8 L 24 22 Q 24 25, 21 25 L 9 25 Q 6 25, 6 22 Z"/>` },
+      { id:'heart',     label:'heart',     hasRibs:false, icon:`<path d="M15 26 C 6 18, 4 12, 6 8 C 9 4, 13 6, 15 10 C 17 6, 21 4, 24 8 C 26 12, 24 18, 15 26 Z"/>` },
+      { id:'atyya',     label:'atyya',     hasRibs:false, icon:`<path d="M15 4 Q 24 6, 24 13 L 22 16 L 17 26 L 13 26 L 8 16 L 6 13 Q 6 6, 15 4 Z"/>` },
+      { id:'npl',       label:'npl',       hasRibs:false, icon:`<path d="M15 4 Q 25 5, 25 13 Q 25 22, 15 26 Q 5 22, 5 13 Q 5 5, 15 4 Z"/><path d="M5 13 L 25 13" opacity="0.4"/>` },
+      { id:'wang',      label:'wang',      hasRibs:false, icon:`<path d="M15 4 Q 27 11, 26 15 Q 27 19, 15 26 Q 3 19, 4 15 Q 3 11, 15 4 Z"/>` },
+      { id:'custom',    label:'custom',    hasRibs:false, icon:`<path d="M15 4 L 15 26 M 15 6 Q 6 14, 15 22"/><circle cx="11" cy="10" r="1.4" fill="currentColor"/><circle cx="7" cy="16" r="1.4" fill="currentColor"/><circle cx="11" cy="22" r="1.4" fill="currentColor"/>` },
+      { id:'param',     label:'param',     hasRibs:false, icon:`<path d="M15 4 L 15 26 M 6 11 L 24 21 M 6 21 L 24 11"/><circle cx="22" cy="6" r="2.2" fill="currentColor" stroke="none"/>` },
     ];
 
-    // approximate Minecraft block colours
     const BLOCK_COLORS = {
-      'aeronautics:white_envelope':       0xece9dd,   // canvas/fabric off-white
-      'minecraft:white_wool':             0xe9ecec,
-      'minecraft:terracotta':             0x985e43,
-      'minecraft:oak_planks':             0xb08a59,
-      'minecraft:dark_oak_planks':        0x4a3017,
-      'minecraft:spruce_planks':          0x735037,
-      'minecraft:birch_planks':           0xc9b88a,
-      'minecraft:stripped_oak_log':       0xb1996b,
-      'minecraft:stripped_dark_oak_log':  0x4f3922,
-      'minecraft:glass':                  0xb0d8e8,
-      'minecraft:stripped_birch_log':     0xd3c789,
-      'minecraft:iron_block':             0xd8d8d8,
+      'aeronautics:white_envelope':      0xece9dd,
+      'minecraft:white_wool':            0xe9ecec,
+      'minecraft:terracotta':            0x985e43,
+      'minecraft:oak_planks':            0xb08a59,
+      'minecraft:dark_oak_planks':       0x4a3017,
+      'minecraft:spruce_planks':         0x735037,
+      'minecraft:birch_planks':          0xc9b88a,
+      'minecraft:stripped_oak_log':      0xb1996b,
+      'minecraft:stripped_dark_oak_log': 0x4f3922,
+      'minecraft:glass':                 0xb0d8e8,
+      'minecraft:stripped_birch_log':    0xd3c789,
+      'minecraft:iron_block':            0xd8d8d8,
     };
-    function colourFor(blockId) { return BLOCK_COLORS[blockId] ?? 0x8b8b90; }
+    function colourFor(id) { return BLOCK_COLORS[id] ?? 0x8b8b90; }
 
-    // ─── State ──────────────────────────────────────────────────
+    // ── Multi-balloon state ──────────────────────────────────────
+    let _nextId = 0;
+    function newBalloon(overrides = {}) {
+      return Object.assign({
+        id: _nextId++,
+        shape: 'hotair',
+        H: 24, W: 20, T: 1, ribs: 8,
+        block: 'aeronautics:white_envelope',
+        customBlock: 'minecraft:cyan_concrete',
+        customProfile: [
+          {y:0.05,r:0.15},{y:0.20,r:0.55},{y:0.50,r:0.85},{y:0.78,r:0.65},{y:0.95,r:0.20},
+        ],
+        paramFront: [{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}],
+        paramSide:  [{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}],
+        paramTop:   [{y:.10,r:.30},{y:.50,r:.95},{y:.90,r:.30}],
+        offsetX: 0, offsetY: 0, offsetZ: 0,
+      }, overrides);
+    }
+
     const state = {
-      shape: 'hotair',
-      H: 24, W: 20, T: 1, ribs: 8,
-      block: 'aeronautics:white_envelope',
-      customBlock: 'minecraft:cyan_concrete',
-      customProfile: [],     // array of {y: 0..1, r: 0..1}
-      // Three orthogonal silhouettes for 'param' (experimental) mode.
-      // Each is an array of {y: 0..1, r: 0..1} — y = position along the
-      // canvas's vertical axis, r = half-extent along the horizontal axis.
-      paramFront: [          // X half-width as a function of Y
-        { y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 },
-      ],
-      paramSide: [           // Z half-width as a function of Y
-        { y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 },
-      ],
-      paramTop: [            // X half-width as a function of Z
-        { y: 0.10, r: 0.30 }, { y: 0.50, r: 0.95 }, { y: 0.90, r: 0.30 },
-      ],
-      // Ship hull config — generated as a separate voxel volume below the balloon
+      balloons: [newBalloon()],
+      activeBalloonIdx: 0,
       hull: {
-        enabled: false,
-        style: 'box',           // box | boat | barge | galleon
-        L: 20,                  // length (X)
-        W: 10,                  // width  (Z)
-        D: 6,                   // depth  (Y) — hull height
-        T: 1,                   // wall + floor thickness
-        gap: 2,                 // empty blocks between hull deck and balloon
-        block: 'minecraft:oak_planks',
-        customBlock: 'minecraft:dark_oak_planks',
+        enabled:false, style:'box',
+        L:20, W:10, D:6, T:1, gap:2,
+        block:'minecraft:oak_planks',
+        customBlock:'minecraft:dark_oak_planks',
       },
     };
+    const ab = () => state.balloons[state.activeBalloonIdx];
 
-    // ─── Build shape buttons ────────────────────────────────────
+    function effectiveBlockId(b) { return (b.block === 'custom') ? b.customBlock : b.block; }
+
+    // ── Shape buttons ────────────────────────────────────────────
     const shapeGrid = document.getElementById('shapeGrid');
     SHAPES.forEach(s => {
-      const b = document.createElement('button');
-      b.className = 'shape-btn' + (s.id === state.shape ? ' active' : '');
-      b.dataset.shape = s.id;
-      b.innerHTML = `<svg viewBox="0 0 30 30">${s.icon}</svg><span>${s.label}</span>`;
-      b.onclick = () => {
-        state.shape = s.id;
-        document.querySelectorAll('.shape-btn').forEach(x => x.classList.toggle('active', x.dataset.shape === s.id));
+      const btn = document.createElement('button');
+      btn.className = 'shape-btn';
+      btn.dataset.shape = s.id;
+      btn.innerHTML = `<svg viewBox="0 0 30 30">${s.icon}</svg><span>${s.label}</span>`;
+      btn.onclick = () => {
+        ab().shape = s.id;
+        syncShapeButtons();
         document.getElementById('ribControl').style.display = s.hasRibs ? '' : 'none';
         document.getElementById('profileWrap').classList.toggle('show', s.id === 'custom');
         document.getElementById('paramWrap').classList.toggle('show', s.id === 'param');
+        updateBalloonRow(state.activeBalloonIdx);
         regenerate();
       };
-      shapeGrid.appendChild(b);
+      shapeGrid.appendChild(btn);
     });
+    function syncShapeButtons() {
+      const sh = ab().shape;
+      document.querySelectorAll('.shape-btn').forEach(x => x.classList.toggle('active', x.dataset.shape === sh));
+    }
 
-    // ─── Wire up controls ───────────────────────────────────────
-    // Each dimension has both a range slider and a number input. The slider
-    // always commits (clamps + syncs) on every change. The number input is
-    // more lenient mid-typing: while you're typing it only syncs state when
-    // the current value is in-range, and *never* overwrites the field. That
-    // way you can type "47" without "4" snapping up to the minimum the
-    // moment you press the first key. Final clamp happens on blur or Enter.
-    function bindRangeAndNum(rangeId, numId, key) {
+    // ── Range+number binder ──────────────────────────────────────
+    function bindRangeAndNum(rangeId, numId, get, set) {
       const range = document.getElementById(rangeId);
       const num   = document.getElementById(numId);
-      const min = +range.min;
-
+      const min   = +range.min;
       function commit(v) {
         if (Number.isNaN(v)) return;
         const max = +range.max;
-        const clamped = Math.max(min, Math.min(max, Math.round(v)));
-        state[key]  = clamped;
-        range.value = clamped;
-        num.value   = clamped;
+        const c = Math.max(min, Math.min(max, Math.round(v)));
+        set(c); range.value = c; num.value = c;
         regenerate();
       }
-
       range.addEventListener('input', () => commit(+range.value));
-
-      // Live-sync only when the typed value is already valid; leave the
-      // field alone so the user can keep typing.
       num.addEventListener('input', () => {
-        const v = parseFloat(num.value);
-        if (Number.isNaN(v)) return;
+        const v = parseFloat(num.value); if (Number.isNaN(v)) return;
         const max = +range.max;
-        if (v >= min && v <= max) {
-          const rounded = Math.round(v);
-          state[key]  = rounded;
-          range.value = rounded;
-          regenerate();
-        }
+        if (v >= min && v <= max) { set(Math.round(v)); range.value = Math.round(v); regenerate(); }
       });
-
-      // On blur or Enter: clamp + sync. Empty or junk → snap back to last
-      // good value.
       num.addEventListener('blur', () => {
         const v = parseFloat(num.value);
-        if (num.value === '' || Number.isNaN(v)) { num.value = state[key]; return; }
+        if (num.value === '' || Number.isNaN(v)) { num.value = get(); return; }
         commit(v);
       });
       num.addEventListener('keydown', e => { if (e.key === 'Enter') num.blur(); });
+      return () => { const v = get(); range.value = v; num.value = v; };
     }
-    bindRangeAndNum('heightInput',    'heightNum',    'H');
-    bindRangeAndNum('widthInput',     'widthNum',     'W');
-    bindRangeAndNum('thicknessInput', 'thicknessNum', 'T');
-    bindRangeAndNum('ribInput',       'ribNum',       'ribs');
 
-    // ─── Unstable mode ──────────────────────────────────────────
-    const unstableMode = document.getElementById('unstableMode');
-    const unstableSliders = [
-      { range: 'heightInput', num: 'heightNum', normalMax: 200 },
-      { range: 'widthInput',  num: 'widthNum',  normalMax: 200 },
-      { range: 'hullLInput',  num: 'hullLNum',  normalMax: 200 },
-    ];
-    unstableMode.addEventListener('change', () => {
-      const max = unstableMode.checked ? 400 : 200;
-      unstableSliders.forEach(({ range, num, normalMax }) => {
-        const r = document.getElementById(range);
-        const n = document.getElementById(num);
-        r.max = max;
-        n.max = max;
+    const syncH    = bindRangeAndNum('heightInput',    'heightNum',    () => ab().H,       v => { ab().H = v; updateBalloonRow(state.activeBalloonIdx); });
+    const syncW    = bindRangeAndNum('widthInput',     'widthNum',     () => ab().W,       v => { ab().W = v; updateBalloonRow(state.activeBalloonIdx); });
+    const syncT    = bindRangeAndNum('thicknessInput', 'thicknessNum', () => ab().T,       v => { ab().T = v; updateBalloonRow(state.activeBalloonIdx); });
+    const syncRibs = bindRangeAndNum('ribInput',       'ribNum',       () => ab().ribs,    v => ab().ribs = v);
+    const syncOffX = bindRangeAndNum('offXInput',      'offXNum',      () => ab().offsetX, v => { ab().offsetX = v; updateBalloonRow(state.activeBalloonIdx); });
+    const syncOffY = bindRangeAndNum('offYInput',      'offYNum',      () => ab().offsetY, v => { ab().offsetY = v; updateBalloonRow(state.activeBalloonIdx); });
+    const syncOffZ = bindRangeAndNum('offZInput',      'offZNum',      () => ab().offsetZ, v => { ab().offsetZ = v; updateBalloonRow(state.activeBalloonIdx); });
+
+    // ── Unstable mode ────────────────────────────────────────────
+    document.getElementById('unstableMode').addEventListener('change', function() {
+      const max = this.checked ? 400 : 200;
+      ['heightInput','widthInput','hullLInput'].forEach(id => {
+        document.getElementById(id).max = max;
+        document.getElementById(id.replace('Input','Num')).max = max;
       });
     });
 
+    // ── Material ─────────────────────────────────────────────────
     const matSelect   = document.getElementById('materialSelect');
     const customBlock = document.getElementById('customBlock');
     matSelect.addEventListener('change', () => {
       if (matSelect.value === 'custom') {
         customBlock.classList.add('show');
-        state.block = customBlock.value || 'minecraft:cyan_concrete';
+        ab().block = 'custom';
+        ab().customBlock = customBlock.value || 'minecraft:cyan_concrete';
       } else {
         customBlock.classList.remove('show');
-        state.block = matSelect.value;
+        ab().block = matSelect.value;
       }
+      updateBalloonRow(state.activeBalloonIdx);
       regenerate();
     });
     customBlock.addEventListener('input', () => {
       if (matSelect.value === 'custom') {
-        state.block = customBlock.value || 'minecraft:cyan_concrete';
+        ab().block = 'custom';
+        ab().customBlock = customBlock.value || 'minecraft:cyan_concrete';
+        updateBalloonRow(state.activeBalloonIdx);
         regenerate();
       }
     });
 
-    // ─── Ship hull controls ─────────────────────────────────────
-    const hullEnabled  = document.getElementById('hullEnabled');
-    const hullControls = document.getElementById('hullControls');
-    hullEnabled.addEventListener('change', () => {
-      state.hull.enabled = hullEnabled.checked;
-      hullControls.classList.toggle('show', hullEnabled.checked);
+    // ── Hull controls ────────────────────────────────────────────
+    document.getElementById('hullEnabled').addEventListener('change', function() {
+      state.hull.enabled = this.checked;
+      document.getElementById('hullControls').classList.toggle('show', this.checked);
       regenerate();
     });
-
-    // Range/number pair binder for the nested hull state object.
     function bindHullRange(rangeId, numId, key) {
       const range = document.getElementById(rangeId);
       const num   = document.getElementById(numId);
-      const min = +range.min;
+      const min   = +range.min;
       function commit(v) {
         if (Number.isNaN(v)) return;
         const max = +range.max;
-        const clamped = Math.max(min, Math.min(max, Math.round(v)));
-        state.hull[key] = clamped;
-        range.value = clamped;
-        num.value   = clamped;
-        regenerate();
+        const c = Math.max(min, Math.min(max, Math.round(v)));
+        state.hull[key] = c; range.value = c; num.value = c; regenerate();
       }
       range.addEventListener('input', () => commit(+range.value));
       num.addEventListener('input', () => {
-        const v = parseFloat(num.value);
-        if (Number.isNaN(v)) return;
-        const max = +range.max;
-        if (v >= min && v <= max) {
-          const rounded = Math.round(v);
-          state.hull[key] = rounded;
-          range.value = rounded;
-          regenerate();
-        }
+        const v = parseFloat(num.value); if (Number.isNaN(v)) return;
+        if (v >= min && v <= +range.max) { state.hull[key] = Math.round(v); range.value = Math.round(v); regenerate(); }
       });
       num.addEventListener('blur', () => {
         const v = parseFloat(num.value);
@@ -1125,1117 +585,625 @@
       });
       num.addEventListener('keydown', e => { if (e.key === 'Enter') num.blur(); });
     }
-    bindHullRange('hullLInput',   'hullLNum',   'L');
-    bindHullRange('hullWInput',   'hullWNum',   'W');
-    bindHullRange('hullDInput',   'hullDNum',   'D');
-    bindHullRange('hullTInput',   'hullTNum',   'T');
-    bindHullRange('hullGapInput', 'hullGapNum', 'gap');
-
-    const hullStyleSelect = document.getElementById('hullStyleSelect');
-    hullStyleSelect.addEventListener('change', () => {
-      state.hull.style = hullStyleSelect.value;
-      regenerate();
-    });
-
+    bindHullRange('hullLInput','hullLNum','L');
+    bindHullRange('hullWInput','hullWNum','W');
+    bindHullRange('hullDInput','hullDNum','D');
+    bindHullRange('hullTInput','hullTNum','T');
+    bindHullRange('hullGapInput','hullGapNum','gap');
+    document.getElementById('hullStyleSelect').addEventListener('change', function() { state.hull.style = this.value; regenerate(); });
     const hullMatSelect   = document.getElementById('hullMaterialSelect');
     const hullCustomBlock = document.getElementById('hullCustomBlock');
     hullMatSelect.addEventListener('change', () => {
-      if (hullMatSelect.value === 'custom') {
-        hullCustomBlock.classList.add('show');
-        state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks';
-      } else {
-        hullCustomBlock.classList.remove('show');
-        state.hull.block = hullMatSelect.value;
-      }
+      if (hullMatSelect.value === 'custom') { hullCustomBlock.classList.add('show'); state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks'; }
+      else { hullCustomBlock.classList.remove('show'); state.hull.block = hullMatSelect.value; }
       regenerate();
     });
     hullCustomBlock.addEventListener('input', () => {
-      if (hullMatSelect.value === 'custom') {
-        state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks';
-        regenerate();
-      }
+      if (hullMatSelect.value === 'custom') { state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks'; regenerate(); }
     });
 
-    // ─── Custom profile canvas ──────────────────────────────────
+    // ── Custom profile canvas ────────────────────────────────────
     const pCanvas = document.getElementById('profileCanvas');
     const pCtx    = pCanvas.getContext('2d');
-    let drawing = false;
-
-    function profileToScreen(y, r, w, h) {
-      // y=0 bottom → bottom of canvas; y=1 top
-      // r=0 → centerX; r=1 → leftEdge (we draw left half of silhouette)
-      const cx = w / 2;
-      return { x: cx - r * (w / 2 - 4), y: h - y * (h - 4) - 2 };
-    }
+    let profileDrawing = false;
+    function profileToScreen(y, r, w, h) { return { x: w/2 - r*(w/2-4), y: h - y*(h-4) - 2 }; }
     function screenToProfile(sx, sy, w, h) {
-      const cx = w / 2;
-      let r = (cx - sx) / (w / 2 - 4);
-      let y = (h - sy - 2) / (h - 4);
-      r = Math.max(0, Math.min(1, r));
-      y = Math.max(0, Math.min(1, y));
-      return { y, r };
+      return { y: Math.max(0,Math.min(1,(h-sy-2)/(h-4))), r: Math.max(0,Math.min(1,(w/2-sx)/(w/2-4))) };
     }
     function drawProfile() {
-      const w = pCanvas.width, h = pCanvas.height;
-      pCtx.clearRect(0, 0, w, h);
-      // axis line
-      pCtx.strokeStyle = 'rgba(200,149,42,.25)';
-      pCtx.lineWidth = 1;
-      pCtx.beginPath();
-      pCtx.moveTo(w/2, 0); pCtx.lineTo(w/2, h);
-      pCtx.stroke();
-      // mirrored fill of profile
-      if (state.customProfile.length > 1) {
-        const sorted = [...state.customProfile].sort((a,b) => a.y - b.y);
-        pCtx.fillStyle = 'rgba(200,149,42,.25)';
-        pCtx.strokeStyle = 'var(--brass)';
-        pCtx.strokeStyle = '#c8952a';
-        pCtx.lineWidth = 1.5;
+      const w=pCanvas.width, h=pCanvas.height;
+      pCtx.clearRect(0,0,w,h);
+      pCtx.strokeStyle='rgba(200,149,42,.25)'; pCtx.lineWidth=1;
+      pCtx.beginPath(); pCtx.moveTo(w/2,0); pCtx.lineTo(w/2,h); pCtx.stroke();
+      const prof = ab().customProfile;
+      if (prof.length > 1) {
+        const sorted = [...prof].sort((a,b)=>a.y-b.y);
+        pCtx.fillStyle='rgba(200,149,42,.25)'; pCtx.strokeStyle='#c8952a'; pCtx.lineWidth=1.5;
         pCtx.beginPath();
-        // left side from bottom up
-        sorted.forEach((p,i) => {
-          const s = profileToScreen(p.y, p.r, w, h);
-          if (i === 0) pCtx.moveTo(s.x, s.y); else pCtx.lineTo(s.x, s.y);
-        });
-        // mirror to right side, top to bottom
-        for (let i = sorted.length - 1; i >= 0; i--) {
-          const p = sorted[i];
-          const s = profileToScreen(p.y, -p.r, w, h);
-          pCtx.lineTo(s.x, s.y);
-        }
-        pCtx.closePath();
-        pCtx.fill();
-        pCtx.stroke();
+        sorted.forEach((p,i)=>{ const s=profileToScreen(p.y,p.r,w,h); if(i===0)pCtx.moveTo(s.x,s.y); else pCtx.lineTo(s.x,s.y); });
+        for(let i=sorted.length-1;i>=0;i--){ const s=profileToScreen(sorted[i].y,-sorted[i].r,w,h); pCtx.lineTo(s.x,s.y); }
+        pCtx.closePath(); pCtx.fill(); pCtx.stroke();
       }
     }
     function addProfilePoint(e) {
-      const rect = pCanvas.getBoundingClientRect();
-      const sx = (e.clientX - rect.left) * (pCanvas.width / rect.width);
-      const sy = (e.clientY - rect.top)  * (pCanvas.height / rect.height);
-      const p = screenToProfile(sx, sy, pCanvas.width, pCanvas.height);
-      // replace any existing point with similar y
-      state.customProfile = state.customProfile.filter(q => Math.abs(q.y - p.y) > 0.02);
-      state.customProfile.push(p);
-      drawProfile();
-      if (state.shape === 'custom') regenerate();
+      const rect=pCanvas.getBoundingClientRect();
+      const p=screenToProfile((e.clientX-rect.left)*(pCanvas.width/rect.width),(e.clientY-rect.top)*(pCanvas.height/rect.height),pCanvas.width,pCanvas.height);
+      ab().customProfile = ab().customProfile.filter(q=>Math.abs(q.y-p.y)>0.02);
+      ab().customProfile.push(p); drawProfile();
+      if (ab().shape==='custom') regenerate();
     }
-    pCanvas.addEventListener('mousedown', e => { drawing = true;  addProfilePoint(e); });
-    pCanvas.addEventListener('mousemove', e => { if (drawing) addProfilePoint(e); });
-    window.addEventListener('mouseup',     ()  => { drawing = false; });
-    pCanvas.addEventListener('touchstart', e => { drawing = true;  addProfilePoint(e.touches[0]); e.preventDefault(); });
-    pCanvas.addEventListener('touchmove',  e => { if (drawing) addProfilePoint(e.touches[0]); e.preventDefault(); });
-    pCanvas.addEventListener('touchend',   ()  => { drawing = false; });
+    pCanvas.addEventListener('mousedown',  e=>{profileDrawing=true; addProfilePoint(e);});
+    pCanvas.addEventListener('mousemove',  e=>{if(profileDrawing) addProfilePoint(e);});
+    window.addEventListener('mouseup',     ()=>{profileDrawing=false;});
+    pCanvas.addEventListener('touchstart', e=>{profileDrawing=true; addProfilePoint(e.touches[0]); e.preventDefault();});
+    pCanvas.addEventListener('touchmove',  e=>{if(profileDrawing) addProfilePoint(e.touches[0]); e.preventDefault();});
+    pCanvas.addEventListener('touchend',   ()=>{profileDrawing=false;});
+    document.getElementById('profileClear').onclick = () => { ab().customProfile=[]; drawProfile(); if(ab().shape==='custom') regenerate(); };
 
-    document.getElementById('profileClear').onclick = () => {
-      state.customProfile = [];
-      drawProfile();
-      if (state.shape === 'custom') regenerate();
-    };
-
-    // seed a starter profile so the user has something to riff on
-    state.customProfile = [
-      { y: 0.05, r: 0.15 },
-      { y: 0.20, r: 0.55 },
-      { y: 0.50, r: 0.85 },
-      { y: 0.78, r: 0.65 },
-      { y: 0.95, r: 0.20 },
-    ];
-    drawProfile();
-
-    // ─── Param (experimental 3-silhouette) canvases ─────────────
-    // Three independent "draggable profile" canvases — same UX as the custom
-    // canvas, just smaller and there's three of them. Each writes to a
-    // different state key (paramFront / paramSide / paramTop).
+    // ── Param canvases ───────────────────────────────────────────
+    let paramFrontCv, paramSideCv, paramTopCv;
     function setupParamCanvas(canvasId, profileKey) {
       const canvas = document.getElementById(canvasId);
-      const ctx = canvas.getContext('2d');
-      let drawing = false;
-
+      const ctx    = canvas.getContext('2d');
+      let drawing  = false;
       function redraw() {
-        const w = canvas.width, h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-        // center axis line
-        ctx.strokeStyle = 'rgba(200,149,42,.25)';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
-
-        const points = state[profileKey];
-        if (points.length < 2) return;
-        const sorted = [...points].sort((a, b) => a.y - b.y);
-        ctx.fillStyle = 'rgba(200,149,42,.25)';
-        ctx.strokeStyle = '#c8952a';
-        ctx.lineWidth = 1.4;
+        const w=canvas.width, h=canvas.height;
+        ctx.clearRect(0,0,w,h);
+        ctx.strokeStyle='rgba(200,149,42,.25)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(w/2,0); ctx.lineTo(w/2,h); ctx.stroke();
+        const pts = ab()[profileKey];
+        if (pts.length < 2) return;
+        const sorted=[...pts].sort((a,b)=>a.y-b.y);
+        ctx.fillStyle='rgba(200,149,42,.25)'; ctx.strokeStyle='#c8952a'; ctx.lineWidth=1.4;
         ctx.beginPath();
-        sorted.forEach((p, i) => {
-          const sx = w/2 - p.r * (w/2 - 4);
-          const sy = h - p.y * (h - 4) - 2;
-          if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
-        });
-        for (let i = sorted.length - 1; i >= 0; i--) {
-          const p = sorted[i];
-          const sx = w/2 + p.r * (w/2 - 4);
-          const sy = h - p.y * (h - 4) - 2;
-          ctx.lineTo(sx, sy);
-        }
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
+        sorted.forEach((p,i)=>{ const sx=w/2-p.r*(w/2-4),sy=h-p.y*(h-4)-2; if(i===0)ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy); });
+        for(let i=sorted.length-1;i>=0;i--){ const p=sorted[i]; ctx.lineTo(w/2+p.r*(w/2-4),h-p.y*(h-4)-2); }
+        ctx.closePath(); ctx.fill(); ctx.stroke();
       }
-
-      function addAt(clientX, clientY) {
-        const rect = canvas.getBoundingClientRect();
-        const sx = (clientX - rect.left) * (canvas.width  / rect.width);
-        const sy = (clientY - rect.top)  * (canvas.height / rect.height);
-        const cx = canvas.width / 2;
-        let r = (cx - sx) / (canvas.width/2 - 4);
-        let y = (canvas.height - sy - 2) / (canvas.height - 4);
-        r = Math.max(0, Math.min(1, Math.abs(r)));   // mirror — both halves contribute
-        y = Math.max(0, Math.min(1, y));
-        state[profileKey] = state[profileKey].filter(q => Math.abs(q.y - y) > 0.04);
-        state[profileKey].push({ y, r });
-        redraw();
-        if (state.shape === 'param') regenerate();
+      function addAt(cx, cy) {
+        const rect=canvas.getBoundingClientRect();
+        const sx=(cx-rect.left)*(canvas.width/rect.width), sy=(cy-rect.top)*(canvas.height/rect.height);
+        let r=Math.max(0,Math.min(1,Math.abs((canvas.width/2-sx)/(canvas.width/2-4))));
+        let y=Math.max(0,Math.min(1,(canvas.height-sy-2)/(canvas.height-4)));
+        ab()[profileKey]=ab()[profileKey].filter(q=>Math.abs(q.y-y)>0.04);
+        ab()[profileKey].push({y,r}); redraw();
+        if (ab().shape==='param') regenerate();
       }
-
-      canvas.addEventListener('mousedown', e => { drawing = true; addAt(e.clientX, e.clientY); });
-      canvas.addEventListener('mousemove', e => { if (drawing) addAt(e.clientX, e.clientY); });
-      window.addEventListener('mouseup',     ()  => { drawing = false; });
-      canvas.addEventListener('touchstart', e => { drawing = true; addAt(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); });
-      canvas.addEventListener('touchmove',  e => { if (drawing) addAt(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); });
-      canvas.addEventListener('touchend',    ()  => { drawing = false; });
-
+      canvas.addEventListener('mousedown', e=>{drawing=true; addAt(e.clientX,e.clientY);});
+      canvas.addEventListener('mousemove', e=>{if(drawing) addAt(e.clientX,e.clientY);});
+      window.addEventListener('mouseup', ()=>{drawing=false;});
+      canvas.addEventListener('touchstart',e=>{drawing=true; addAt(e.touches[0].clientX,e.touches[0].clientY); e.preventDefault();});
+      canvas.addEventListener('touchmove', e=>{if(drawing) addAt(e.touches[0].clientX,e.touches[0].clientY); e.preventDefault();});
+      canvas.addEventListener('touchend',  ()=>{drawing=false;});
       redraw();
       return { redraw };
     }
-    const paramFrontCv = setupParamCanvas('paramCanvas-front', 'paramFront');
-    const paramSideCv  = setupParamCanvas('paramCanvas-side',  'paramSide');
-    const paramTopCv   = setupParamCanvas('paramCanvas-top',   'paramTop');
-
+    paramFrontCv = setupParamCanvas('paramCanvas-front','paramFront');
+    paramSideCv  = setupParamCanvas('paramCanvas-side', 'paramSide');
+    paramTopCv   = setupParamCanvas('paramCanvas-top',  'paramTop');
     document.getElementById('paramClearAll').onclick = () => {
-      // reset to a neutral starter shape (lozenge-ish)
-      state.paramFront = [{ y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 }];
-      state.paramSide  = [{ y: 0.10, r: 0.20 }, { y: 0.50, r: 0.85 }, { y: 0.90, r: 0.20 }];
-      state.paramTop   = [{ y: 0.10, r: 0.30 }, { y: 0.50, r: 0.95 }, { y: 0.90, r: 0.30 }];
+      ab().paramFront=[{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}];
+      ab().paramSide =[{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}];
+      ab().paramTop  =[{y:.10,r:.30},{y:.50,r:.95},{y:.90,r:.30}];
       paramFrontCv.redraw(); paramSideCv.redraw(); paramTopCv.redraw();
-      if (state.shape === 'param') regenerate();
+      if (ab().shape==='param') regenerate();
     };
 
-    // Convert a {y, r} polyline into a function f(t) → r interpolated value.
-    function makePointProfile(points) {
-      if (points.length < 2) return () => 0;
-      const sorted = [...points].sort((a, b) => a.y - b.y);
-      return (t) => {
-        if (t < sorted[0].y || t > sorted[sorted.length - 1].y) return 0;
-        for (let i = 0; i < sorted.length - 1; i++) {
-          if (t >= sorted[i].y && t <= sorted[i+1].y) {
-            const u = (t - sorted[i].y) / (sorted[i+1].y - sorted[i].y || 1e-6);
-            return sorted[i].r * (1 - u) + sorted[i+1].r * u;
+    // ── Balloon list UI ──────────────────────────────────────────
+    function blockColorHex(blockId) {
+      const c=BLOCK_COLORS[blockId]; return c?'#'+c.toString(16).padStart(6,'0'):'#8b8b90';
+    }
+    function renderBalloonList() {
+      const list=document.getElementById('balloonList');
+      list.innerHTML='';
+      state.balloons.forEach((b,idx)=>{
+        const row=document.createElement('div');
+        row.className='balloon-row'+(idx===state.activeBalloonIdx?' active':'');
+        row.dataset.idx=idx;
+        const bid=effectiveBlockId(b), col=blockColorHex(bid);
+        const shp=SHAPES.find(s=>s.id===b.shape);
+        row.innerHTML=`
+          <div class="balloon-row-icon"><svg viewBox="0 0 30 30" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4">${shp?.icon||''}</svg></div>
+          <div class="balloon-row-info">
+            <span class="balloon-row-name">${b.shape} #${idx+1}</span>
+            <span class="balloon-row-meta">${b.W}×${b.H} · T${b.T}</span>
+          </div>
+          <span class="balloon-row-color" style="background:${col}" title="${bid}"></span>
+          <span class="balloon-row-pos" title="X,Y,Z offset">${b.offsetX},${b.offsetY},${b.offsetZ}</span>
+          <button class="balloon-row-btn balloon-row-dup" title="Duplicate">⊕</button>
+          <button class="balloon-row-btn balloon-row-del" title="Remove"${state.balloons.length===1?' disabled':''}>✕</button>`;
+        row.querySelector('.balloon-row-dup').addEventListener('click',e=>{e.stopPropagation();duplicateBalloon(idx);});
+        row.querySelector('.balloon-row-del').addEventListener('click',e=>{e.stopPropagation();removeBalloon(idx);});
+        row.addEventListener('click',()=>switchActiveBalloon(idx));
+        list.appendChild(row);
+      });
+    }
+    function updateBalloonRow(idx) {
+      const b=state.balloons[idx];
+      const row=document.querySelector(`.balloon-row[data-idx="${idx}"]`);
+      if (!row||!b) return;
+      const bid=effectiveBlockId(b), shp=SHAPES.find(s=>s.id===b.shape);
+      row.querySelector('.balloon-row-icon').innerHTML=`<svg viewBox="0 0 30 30" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4">${shp?.icon||''}</svg>`;
+      row.querySelector('.balloon-row-name').textContent=`${b.shape} #${idx+1}`;
+      row.querySelector('.balloon-row-meta').textContent=`${b.W}×${b.H} · T${b.T}`;
+      const colEl=row.querySelector('.balloon-row-color'); colEl.style.background=blockColorHex(bid); colEl.title=bid;
+      row.querySelector('.balloon-row-pos').textContent=`${b.offsetX},${b.offsetY},${b.offsetZ}`;
+    }
+    function switchActiveBalloon(idx) {
+      if (state.activeBalloonIdx===idx) return;
+      state.activeBalloonIdx=idx;
+      document.querySelectorAll('.balloon-row').forEach((r,i)=>r.classList.toggle('active',i===idx));
+      syncControlsToActiveBalloon();
+      regenerate();
+    }
+    function syncControlsToActiveBalloon() {
+      const b=ab();
+      syncShapeButtons();
+      const shp=SHAPES.find(s=>s.id===b.shape);
+      document.getElementById('ribControl').style.display=shp?.hasRibs?'':'none';
+      document.getElementById('profileWrap').classList.toggle('show',b.shape==='custom');
+      document.getElementById('paramWrap').classList.toggle('show',b.shape==='param');
+      syncH(); syncW(); syncT(); syncRibs();
+      syncOffX(); syncOffY(); syncOffZ();
+      // Material
+      if (b.block in BLOCK_COLORS || b.block==='aeronautics:white_envelope') {
+        matSelect.value=b.block; customBlock.classList.remove('show');
+      } else {
+        matSelect.value='custom'; customBlock.value=b.customBlock; customBlock.classList.add('show');
+      }
+      drawProfile();
+      paramFrontCv.redraw(); paramSideCv.redraw(); paramTopCv.redraw();
+    }
+    function duplicateBalloon(idx) {
+      const copy=JSON.parse(JSON.stringify(state.balloons[idx]));
+      copy.id=_nextId++; copy.offsetX+=copy.W+2;
+      state.balloons.splice(idx+1,0,copy);
+      state.activeBalloonIdx=idx+1;
+      renderBalloonList(); syncControlsToActiveBalloon(); regenerate();
+    }
+    function removeBalloon(idx) {
+      if (state.balloons.length<=1) return;
+      state.balloons.splice(idx,1);
+      if (state.activeBalloonIdx>=state.balloons.length) state.activeBalloonIdx=state.balloons.length-1;
+      renderBalloonList(); syncControlsToActiveBalloon(); regenerate();
+    }
+    document.getElementById('addBalloonBtn').onclick=()=>{
+      const base=ab();
+      const copy=JSON.parse(JSON.stringify(base));
+      copy.id=_nextId++; copy.offsetX=base.offsetX+base.W+2;
+      state.balloons.push(copy);
+      state.activeBalloonIdx=state.balloons.length-1;
+      renderBalloonList(); syncControlsToActiveBalloon(); regenerate();
+    };
+
+    // ── Profile functions ────────────────────────────────────────
+    const longAxisShapes=new Set(['zeppelin','ellipsoid','capsule','atyya','npl','wang']);
+
+    function makeProfile(shape, W, H, customProfile=[]) {
+      const halfW=W/2;
+      switch(shape) {
+        case 'hotair': {
+          const yPeak=0.62*H, minR=halfW*0.15;
+          return y=>{
+            if(y<0||y>H)return 0;
+            if(y<=yPeak){const t=y/yPeak;return minR+(halfW-minR)*Math.sin(t*Math.PI/2);}
+            const t=(y-yPeak)/(H-yPeak);return halfW*Math.sqrt(Math.max(0,1-t*t));
+          };
+        }
+        case 'sphere': case 'ellipsoid': {
+          const hH=H/2;
+          return y=>{const dy=(y-hH)/hH;if(Math.abs(dy)>1)return 0;return halfW*Math.sqrt(1-dy*dy);};
+        }
+        case 'capsule': {
+          const capR=Math.min(halfW,H/2);
+          return y=>{
+            if(y<0||y>H)return 0;
+            if(y<capR){const dy=(capR-y)/capR;return halfW*Math.sqrt(Math.max(0,1-dy*dy));}
+            if(y>H-capR){const dy=(y-(H-capR))/capR;return halfW*Math.sqrt(Math.max(0,1-dy*dy));}
+            return halfW;
+          };
+        }
+        case 'zeppelin': {
+          const tE=H*.22,nS=H*.84;
+          return y=>{
+            if(y<0||y>H)return 0;
+            if(y<=tE){const t=y/tE;return halfW*Math.pow(t,.55);}
+            if(y>=nS){const t=(y-nS)/(H-nS);return halfW*Math.sqrt(Math.max(0,1-t*t));}
+            return halfW;
+          };
+        }
+        case 'cube': return y=>{if(y<0||y>H)return 0;const t=(y-H/2)/(H/2);return halfW*(1-Math.pow(Math.abs(t),3.5)*.85);};
+        case 'onion': {
+          const yEq=H*.35;
+          return y=>{
+            if(y<0||y>H)return 0;
+            if(y<=yEq){const t=y/yEq;return halfW*.20+(halfW-halfW*.20)*Math.pow(t,.55);}
+            const t=(y-yEq)/(H-yEq);return halfW*Math.pow(Math.max(0,1-t),.85)*(1+.18*Math.sin(Math.PI*t));
+          };
+        }
+        case 'heart': {
+          const samples=[],N=200;
+          let yMin=Infinity,yMax=-Infinity,xMax=0;
+          for(let i=0;i<=N;i++){
+            const t=(i/N)*Math.PI,x=16*Math.sin(t)**3,yh=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+            samples.push([x,yh]);if(yh<yMin)yMin=yh;if(yh>yMax)yMax=yh;if(x>xMax)xMax=x;
           }
+          const yR=yMax-yMin,lutN=H*4,lut=new Float32Array(lutN+1);
+          for(let k=0;k<=lutN;k++){
+            const yT=(k/lutN)*H;let bR=0;
+            for(let i=0;i<samples.length-1;i++){
+              const ya=(samples[i][1]-yMin)/yR*H,yb=(samples[i+1][1]-yMin)/yR*H;
+              if((ya<=yT&&yb>=yT)||(yb<=yT&&ya>=yT)){const tt=ya===yb?0:(yT-ya)/(yb-ya),x=samples[i][0]+tt*(samples[i+1][0]-samples[i][0]);if(x>bR)bR=x;}
+            }
+            lut[k]=(bR/xMax)*halfW;
+          }
+          return y=>{if(y<0||y>H)return 0;const k=(y/H)*lutN,k0=Math.floor(k),k1=Math.min(lutN,k0+1),t=k-k0;return lut[k0]*(1-t)+lut[k1]*t;};
+        }
+        case 'atyya': {
+          const yP=.65*H;
+          return y=>{if(y<0||y>H)return 0;if(y<=yP){const t=y/yP;return halfW*Math.pow(t,.62);}const t=(y-yP)/(H-yP);return halfW*Math.sqrt(Math.max(0,1-t*t));};
+        }
+        case 'npl': {
+          const yJ=.60*H;
+          return y=>{if(y<0||y>H)return 0;if(y<=yJ){const t=(yJ-y)/yJ;return halfW*Math.sqrt(Math.max(0,1-t*t));}const t=(y-yJ)/(H-yJ);return halfW*Math.sqrt(Math.max(0,1-t*t));};
+        }
+        case 'wang': {
+          const a=2.6,b=1.7,ps=.08;
+          return y=>{if(y<0||y>H)return 0;const t=y/H,peak=.5+ps*.5,u=t<peak?t/peak:(1-t)/(1-peak);return halfW*Math.pow(Math.max(0,1-Math.pow(1-u,a)),1/b);};
+        }
+        case 'custom': {
+          if(customProfile.length<2)return()=>0;
+          const sorted=[...customProfile].sort((a,b)=>a.y-b.y);
+          return y=>{
+            const yn=y/H;
+            if(yn<sorted[0].y||yn>sorted[sorted.length-1].y)return 0;
+            for(let i=0;i<sorted.length-1;i++){
+              if(yn>=sorted[i].y&&yn<=sorted[i+1].y){const t=(yn-sorted[i].y)/(sorted[i+1].y-sorted[i].y||1e-6);return(sorted[i].r*(1-t)+sorted[i+1].r*t)*halfW;}
+            }
+            return 0;
+          };
+        }
+        default: return()=>0;
+      }
+    }
+
+    function solidPumpkin(x,y,z,W,H,ribs){
+      const halfW=W/2,halfH=H/2,cx=halfW,cy=halfH,cz=halfW;
+      const dy=(y-cy)/halfH; if(Math.abs(dy)>1)return false;
+      const baseR=halfW*Math.sqrt(1-dy*dy),dx=x-cx,dz=z-cz,r=Math.sqrt(dx*dx+dz*dz);
+      const groove=halfW*.16*.5*(1-Math.cos(ribs*Math.atan2(dz,dx)));
+      return r<=baseR-groove;
+    }
+
+    function makePointProfile(pts){
+      if(pts.length<2)return()=>0;
+      const sorted=[...pts].sort((a,b)=>a.y-b.y);
+      return t=>{
+        if(t<sorted[0].y||t>sorted[sorted.length-1].y)return 0;
+        for(let i=0;i<sorted.length-1;i++){
+          if(t>=sorted[i].y&&t<=sorted[i+1].y){const u=(t-sorted[i].y)/(sorted[i+1].y-sorted[i].y||1e-6);return sorted[i].r*(1-u)+sorted[i+1].r*u;}
         }
         return 0;
       };
     }
 
-    // Airship-hull shapes orient themselves along the longer axis. When the
-    // user makes one of these wider than tall (W > H) the cigar lies on its
-    // side — long axis = X, cross-section in the YZ plane — instead of being
-    // squashed into a flat oblate disc. Other shapes (hot-air, sphere, onion,
-    // lantern, heart, custom, pumpkin) always revolve around Y because they
-    // have intrinsic top/bottom features.
-    const longAxisShapes = new Set(['zeppelin', 'ellipsoid', 'capsule', 'atyya', 'npl', 'wang']);
-
-    // ─── Voxelization ───────────────────────────────────────────
-    // Returns { mask, sizeX, sizeY, sizeZ }. The mask is a Uint8Array of
-    // length sizeX*sizeY*sizeZ with 1 = solid, 0 = empty.
-    function buildSolidMask() {
-      const W = state.W, H = state.H;
-      const horizontal = longAxisShapes.has(state.shape) && W > H;
-
-      let sizeX, sizeY, sizeZ;
-      if (horizontal) {
-        // long axis along X, circular cross-section of diameter H in the YZ plane
-        sizeX = W; sizeY = H; sizeZ = H;
-      } else {
-        // standard: long axis along Y, circular cross-section of diameter W in XZ
-        sizeX = W; sizeY = H; sizeZ = W;
-      }
-
-      const mask = new Uint8Array(sizeX * sizeY * sizeZ);
-      const idx = (x, y, z) => x + sizeX * (y + sizeY * z);
-
-      if (state.shape === 'pumpkin') {
-        // pumpkin keeps Y-axis revolution (theta grooves are defined around Y)
-        for (let z = 0; z < sizeZ; z++) {
-          for (let y = 0; y < sizeY; y++) {
-            for (let x = 0; x < sizeX; x++) {
-              const px = x + 0.5, py = y + 0.5, pz = z + 0.5;
-              mask[idx(x, y, z)] =
-                solidPumpkin(px, py, pz, sizeX, sizeY, state.ribs) ? 1 : 0;
-            }
-          }
-        }
-      } else if (state.shape === 'param') {
-        // Visual hull from three orthogonal silhouettes (experimental).
-        // Front (XY): r_front(y) → X half-width
-        // Side  (YZ): r_side(y)  → Z half-width
-        // Top   (XZ): r_top(z)   → X half-width
-        // A voxel is solid iff it lies inside *all three* projections, i.e.
-        //   |x-cx| ≤ min(rFront(y), rTop(z))   AND   |z-cz| ≤ rSide(y)
-        const halfX = sizeX / 2, halfY = sizeY / 2, halfZ = sizeZ / 2;
-        const fFront = makePointProfile(state.paramFront);
-        const fSide  = makePointProfile(state.paramSide);
-        const fTop   = makePointProfile(state.paramTop);
-        for (let z = 0; z < sizeZ; z++) {
-          const tz = (z + 0.5) / sizeZ;
-          const rXfromZ = fTop(tz) * halfX;
-          const dz0 = z + 0.5 - halfZ;
-          for (let y = 0; y < sizeY; y++) {
-            const ty = (y + 0.5) / sizeY;
-            const rXfromY = fFront(ty) * halfX;
-            const rZfromY = fSide(ty)  * halfZ;
-            const xBound  = Math.min(rXfromY, rXfromZ);
-            const zBound  = rZfromY;
-            if (xBound <= 0 || zBound <= 0 || Math.abs(dz0) > zBound) {
-              continue;  // whole row is outside; leave mask as 0
-            }
-            for (let x = 0; x < sizeX; x++) {
-              const dx0 = x + 0.5 - halfX;
-              if (Math.abs(dx0) <= xBound) mask[idx(x, y, z)] = 1;
-            }
+    // ── Voxelization ─────────────────────────────────────────────
+    function buildSolidMaskForBalloon(b) {
+      const W=b.W, H=b.H;
+      const horizontal=longAxisShapes.has(b.shape)&&W>H;
+      let sX,sY,sZ;
+      if(horizontal){sX=W;sY=H;sZ=H;}else{sX=W;sY=H;sZ=W;}
+      const mask=new Uint8Array(sX*sY*sZ);
+      const idx=(x,y,z)=>x+sX*(y+sY*z);
+      if(b.shape==='pumpkin'){
+        for(let z=0;z<sZ;z++)for(let y=0;y<sY;y++)for(let x=0;x<sX;x++)
+          mask[idx(x,y,z)]=solidPumpkin(x+.5,y+.5,z+.5,sX,sY,b.ribs)?1:0;
+      } else if(b.shape==='param'){
+        const hX=sX/2,hZ=sZ/2;
+        const fF=makePointProfile(b.paramFront),fS=makePointProfile(b.paramSide),fT=makePointProfile(b.paramTop);
+        for(let z=0;z<sZ;z++){
+          const tz=(z+.5)/sZ,rXZ=fT(tz)*hX,dz0=z+.5-hZ;
+          for(let y=0;y<sY;y++){
+            const ty=(y+.5)/sY,rXY=fF(ty)*hX,rZY=fS(ty)*hZ,xB=Math.min(rXY,rXZ);
+            if(xB<=0||rZY<=0||Math.abs(dz0)>rZY)continue;
+            for(let x=0;x<sX;x++){if(Math.abs(x+.5-hX)<=xB)mask[idx(x,y,z)]=1;}
           }
         }
       } else {
-        // makeProfile signature: (shape, diameterAxis, longAxis). Swap the args
-        // when revolving around X so the profile is parameterised along the
-        // correct axis.
-        const profile = horizontal
-          ? makeProfile(state.shape, sizeY, sizeX)
-          : makeProfile(state.shape, sizeX, sizeY);
-
-        for (let z = 0; z < sizeZ; z++) {
-          for (let y = 0; y < sizeY; y++) {
-            for (let x = 0; x < sizeX; x++) {
-              const px = x + 0.5, py = y + 0.5, pz = z + 0.5;
-              let u, r;
-              if (horizontal) {
-                u = px;
-                const dy = py - sizeY / 2, dz = pz - sizeZ / 2;
-                r = Math.sqrt(dy * dy + dz * dz);
-              } else {
-                u = py;
-                const dx = px - sizeX / 2, dz = pz - sizeZ / 2;
-                r = Math.sqrt(dx * dx + dz * dz);
-              }
-              mask[idx(x, y, z)] = (r <= profile(u)) ? 1 : 0;
-            }
-          }
+        const profile=horizontal?makeProfile(b.shape,sY,sX,b.customProfile):makeProfile(b.shape,sX,sY,b.customProfile);
+        for(let z=0;z<sZ;z++)for(let y=0;y<sY;y++)for(let x=0;x<sX;x++){
+          let u,r;
+          if(horizontal){u=x+.5;const dy=y+.5-sY/2,dz=z+.5-sZ/2;r=Math.sqrt(dy*dy+dz*dz);}
+          else{u=y+.5;const dx=x+.5-sX/2,dz=z+.5-sZ/2;r=Math.sqrt(dx*dx+dz*dz);}
+          mask[idx(x,y,z)]=(r<=profile(u))?1:0;
         }
       }
-      return { mask, sizeX, sizeY, sizeZ };
+      return{mask,sizeX:sX,sizeY:sY,sizeZ:sZ};
     }
 
-    // ─── Profile functions per shape ────────────────────────────
-    function makeProfile(shape, W, H) {
-      const halfW = W / 2;
-      switch (shape) {
-        case 'hotair': {
-          // Smooth teardrop: a narrow throat at the bottom (small basket opening) that
-          // grows in a quarter-sine into a rounded dome at the top. Single continuous
-          // curve, no kink — the previous cone-into-ellipsoid version had a visible
-          // shoulder where the two pieces met.
-          const yPeak = 0.62 * H;
-          const minR  = halfW * 0.15;          // small opening for the basket
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y <= yPeak) {
-              const t = y / yPeak;             // 0 at throat → 1 at peak
-              return minR + (halfW - minR) * Math.sin(t * Math.PI / 2);
-            }
-            // upper rounded dome — quarter ellipse from peak to apex
-            const t = (y - yPeak) / (H - yPeak);
-            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
-          };
-        }
-        case 'sphere': {
-          // Ellipsoid (rounded all the way through — tapers smoothly end to end)
-          const halfH = H / 2;
-          return (y) => {
-            const dy = (y - halfH) / halfH;
-            if (Math.abs(dy) > 1) return 0;
-            return halfW * Math.sqrt(1 - dy * dy);
-          };
-        }
-        case 'ellipsoid': {
-          // True ellipsoid of revolution.
-          // Radius at height y: r(y) = a * sqrt(1 - ((y-b)/b)^2) where:
-          //   a = halfW (equatorial radius), b = H/2 (polar radius).
-          // When H == W this collapses to a sphere (geometrically correct).
-          const halfH = H / 2;
-          return (y) => {
-            const dy = (y - halfH) / halfH;
-            if (Math.abs(dy) > 1) return 0;
-            return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
-          };
-        }
-        case 'capsule': {
-          // Capsule — cylindrical body with hemispherical end caps. Symmetric.
-          // This is the old (previously mislabeled) "ellipsoid" profile.
-          const capR = Math.min(halfW, H / 2);
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y < capR) {
-              const dy = (capR - y) / capR;
-              return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
-            }
-            if (y > H - capR) {
-              const dy = (y - (H - capR)) / capR;
-              return halfW * Math.sqrt(Math.max(0, 1 - dy * dy));
-            }
-            return halfW; // straight cylindrical body
-          };
-        }
-        case 'zeppelin': {
-          // Real zeppelin hull — asymmetric. Modeled on Hindenburg-class airships:
-          // a short blunt rounded nose, a long cylindrical mid-body, and a noticeably
-          // longer pointed tail. When the long-axis logic flips the shape horizontal
-          // (W > H), the tail ends up at u=0 and the nose at u=L.
-          const tailFrac = 0.22;          // tail (pointed end)
-          const noseFrac = 0.16;          // nose (blunt rounded end)
-          const tailEnd   = H * tailFrac;
-          const noseStart = H * (1 - noseFrac);
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y <= tailEnd) {
-              // Pointed tail — concave-up power curve grows slowly near the tip,
-              // approaches halfW at the body junction.
-              const t = y / tailEnd;
-              return halfW * Math.pow(t, 0.55);
-            }
-            if (y >= noseStart) {
-              // Blunt rounded nose — quarter ellipse from halfW down to 0.
-              const t = (y - noseStart) / (H - noseStart);
-              return halfW * Math.sqrt(Math.max(0, 1 - t * t));
-            }
-            // straight cylindrical body
-            return halfW;
-          };
-        }
-        case 'cube': {
-          // "Lantern" — paper-lantern barrel. Surface of revolution with a wide,
-          // nearly-flat middle that tapers (but doesn't pinch to a point) at the
-          // top and bottom. Previously this was a rounded cuboid SDF, which read
-          // as just a plain cube unless you were inspecting the corners closely.
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            const t = (y - H / 2) / (H / 2);  // -1 .. +1
-            // Power curve: ~flat across the middle, narrows quickly past |t|≈0.7
-            const f = 1 - Math.pow(Math.abs(t), 3.5) * 0.85;
-            return halfW * f;
-          };
-        }
-        case 'onion': {
-          const yEq = H * 0.35;
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y <= yEq) {
-              const t = y / yEq;
-              return halfW * 0.20 + (halfW - halfW * 0.20) * Math.pow(t, 0.55);
-            }
-            const t = (y - yEq) / (H - yEq);
-            return halfW * Math.pow(Math.max(0, 1 - t), 0.85) * (1 + 0.18 * Math.sin(Math.PI * t));
-          };
-        }
-        case 'heart': {
-          // sample heart curve t in [0, π] → (xRaw, yRaw)
-          // x = 16 sin³t; y = 13 cos t − 5 cos 2t − 2 cos 3t − cos 4t
-          const samples = [];
-          const N = 200;
-          let yMin =  Infinity, yMax = -Infinity, xMax = 0;
-          for (let i = 0; i <= N; i++) {
-            const t = (i / N) * Math.PI;
-            const x = 16 * Math.sin(t) ** 3;
-            const yh = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            samples.push([x, yh]);
-            if (yh < yMin) yMin = yh;
-            if (yh > yMax) yMax = yh;
-            if (x  > xMax) xMax = x;
-          }
-          // remap (xRaw, yRaw) → (radius 0..halfW, height 0..H) where yMin → 0, yMax → H
-          const yRange = yMax - yMin;
-          // build dense lookup r(yNorm)
-          const lutN = H * 4;
-          const lut = new Float32Array(lutN + 1);
-          for (let k = 0; k <= lutN; k++) {
-            const yTarget = (k / lutN) * H;
-            // find samples bracketing this height
-            let bestR = 0;
-            for (let i = 0; i < samples.length - 1; i++) {
-              const ya = (samples[i][1] - yMin) / yRange * H;
-              const yb = (samples[i+1][1] - yMin) / yRange * H;
-              if ((ya <= yTarget && yb >= yTarget) || (yb <= yTarget && ya >= yTarget)) {
-                const t = ya === yb ? 0 : (yTarget - ya) / (yb - ya);
-                const x = samples[i][0] + t * (samples[i+1][0] - samples[i][0]);
-                if (x > bestR) bestR = x;
-              }
-            }
-            lut[k] = (bestR / xMax) * halfW;
-          }
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            const k = (y / H) * lutN;
-            const k0 = Math.floor(k), k1 = Math.min(lutN, k0 + 1);
-            const t = k - k0;
-            return lut[k0] * (1 - t) + lut[k1] * t;
-          };
-        }
-        case 'atyya': {
-          // GNVR-style optimal-drag airship hull (after Atyya 2023). Asymmetric:
-          // long gentle taper at the tail (bottom), rounded blunt nose at the top,
-          // max diameter shifted upward toward the nose at ~65% of total height.
-          const yPeak = 0.65 * H;
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y <= yPeak) {
-              // tail — concave-up power-law taper, slow growth near the tip
-              const t = y / yPeak;
-              return halfW * Math.pow(t, 0.62);
-            }
-            // nose — quarter ellipse, blunt rounded curvature
-            const t = (y - yPeak) / (H - yPeak);
-            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
-          };
-        }
-        case 'npl': {
-          // NPL two-ellipse hull. Two pure ellipses sharing a common max radius
-          // at the join, with different lengths above and below — gives an
-          // asymmetric oval distinct from the symmetric sphere/ellipsoid.
-          const yJoin = 0.60 * H;
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            if (y <= yJoin) {
-              // lower ellipse — longer, ~quarter ellipse from r=0 at base to halfW at join
-              const t = (yJoin - y) / yJoin;
-              return halfW * Math.sqrt(Math.max(0, 1 - t * t));
-            }
-            // upper ellipse — shorter, quarter ellipse from halfW at join to 0 at top
-            const t = (y - yJoin) / (H - yJoin);
-            return halfW * Math.sqrt(Math.max(0, 1 - t * t));
-          };
-        }
-        case 'wang': {
-          // Wang-style parametric hull — superellipse with bulge factor a > 2 and
-          // taper factor b < 2. Fatter through the middle than a pure ellipsoid,
-          // with a slight upward shift of the peak for an airship-ish profile.
-          const a = 2.6, b = 1.7;
-          const peakShift = 0.08;             // small upward bias of the peak
-          return (y) => {
-            if (y < 0 || y > H) return 0;
-            const t = y / H;                          // t ∈ [0, 1]
-            const peak = 0.5 + peakShift * 0.5;       // peak position in t-space (~0.54)
-            // Normalize distance to peak asymmetrically: 0→0, peak→0, 1→0
-            const u = t < peak
-              ? t / peak                              // 0..1 on the left side
-              : (1 - t) / (1 - peak);                // 1..0 on the right side
-            return halfW * Math.pow(Math.max(0, 1 - Math.pow(1 - u, a)), 1 / b);
-          };
-        }
-        case 'custom': {
-          if (state.customProfile.length < 2) return () => 0;
-          const sorted = [...state.customProfile].sort((a,b) => a.y - b.y);
-          return (y) => {
-            const yn = y / H;
-            if (yn < sorted[0].y || yn > sorted[sorted.length - 1].y) return 0;
-            for (let i = 0; i < sorted.length - 1; i++) {
-              if (yn >= sorted[i].y && yn <= sorted[i+1].y) {
-                const t = (yn - sorted[i].y) / (sorted[i+1].y - sorted[i].y || 1e-6);
-                return (sorted[i].r * (1 - t) + sorted[i+1].r * t) * halfW;
-              }
-            }
-            return 0;
-          };
-        }
-        default:
-          return () => 0;
-      }
-    }
-
-    // pumpkin: ellipsoid minus θ-dependent grooves
-    function solidPumpkin(x, y, z, W, H, ribs) {
-      const halfW = W / 2, halfH = H / 2;
-      const cx = halfW, cz = halfW, cy = halfH;
-      const dy = (y - cy) / halfH;
-      if (Math.abs(dy) > 1) return false;
-      const baseR = halfW * Math.sqrt(1 - dy * dy);
-      const dx = x - cx, dz = z - cz;
-      const r = Math.sqrt(dx*dx + dz*dz);
-      const theta = Math.atan2(dz, dx);
-      // Grooves: subtract a smooth bump that's 0 at ridge, max at valley
-      const groove = halfW * 0.16 * 0.5 * (1 - Math.cos(ribs * theta));
-      return r <= baseR - groove;
-    }
-
-    // ─── Erosion → shell ────────────────────────────────────────
-    function erode3D(mask, sX, sY, sZ) {
-      const out = new Uint8Array(mask.length);
-      const idx = (x, y, z) => x + sX * (y + sY * z);
-      for (let z = 0; z < sZ; z++) {
-        for (let y = 0; y < sY; y++) {
-          for (let x = 0; x < sX; x++) {
-            const i = idx(x, y, z);
-            if (!mask[i]) continue;
-            if (x === 0 || x === sX-1 || y === 0 || y === sY-1 || z === 0 || z === sZ-1) continue;
-            if (mask[idx(x-1,y,z)] && mask[idx(x+1,y,z)] &&
-                mask[idx(x,y-1,z)] && mask[idx(x,y+1,z)] &&
-                mask[idx(x,y,z-1)] && mask[idx(x,y,z+1)]) {
-              out[i] = 1;
-            }
-          }
-        }
+    function erode3D(mask,sX,sY,sZ){
+      const out=new Uint8Array(mask.length);
+      const idx=(x,y,z)=>x+sX*(y+sY*z);
+      for(let z=0;z<sZ;z++)for(let y=0;y<sY;y++)for(let x=0;x<sX;x++){
+        const i=idx(x,y,z);if(!mask[i])continue;
+        if(x===0||x===sX-1||y===0||y===sY-1||z===0||z===sZ-1)continue;
+        if(mask[idx(x-1,y,z)]&&mask[idx(x+1,y,z)]&&mask[idx(x,y-1,z)]&&mask[idx(x,y+1,z)]&&mask[idx(x,y,z-1)]&&mask[idx(x,y,z+1)])out[i]=1;
       }
       return out;
     }
 
-    // ─── Ship hull voxelization ─────────────────────────────────
-    // Builds an open-top hull volume with floor + walls of thickness T.
-    // Returns blocks in local hull coordinates: x ∈ [0, L), y ∈ [0, D), z ∈ [0, W).
-    // The "solid" mask describes the outline of the hull's hollow interior; the
-    // shell is then derived by eroding only horizontally and downward (so the
-    // top stays open — no deck/roof). For shapes whose top isn't flat (canoe,
-    // disc, …) the erosion uses a per-column topY map so each column's apex is
-    // treated as "open sky" rather than as a solid neighbour.
-    function buildHull() {
-      const { L, W, D, T, style } = state.hull;
-      const idx = (x, y, z) => x + L * (y + D * z);
+    // ── Hull voxelization ────────────────────────────────────────
+    function buildHull(){
+      const{L,W,D,T,style}=state.hull;
+      const idx=(x,y,z)=>x+L*(y+D*z);
+      const solid=new Uint8Array(L*D*W);
+      for(let z=0;z<W;z++)for(let y=0;y<D;y++)for(let x=0;x<L;x++){
+        const tx=(x+.5)/L,ty=D>1?y/(D-1):1,dz=z+.5-W/2;let s;
+        switch(style){
+          case'box':s=true;break;
+          case'boat':{let lf=tx<.25?Math.sin(tx*2*Math.PI):tx>.75?Math.sin((1-tx)*2*Math.PI):1;s=Math.abs(dz)<=(W/2)*lf*(.45+.55*ty);break;}
+          case'barge':{const df=ty<.18?.85+(ty/.18)*.15:1;s=Math.abs(dz)<=(W/2)*df;break;}
+          case'galleon':{let lf=tx<.20?.45+Math.sin((tx/.20)*Math.PI/2)*.55:tx>.85?.78+((1-tx)/.15)*.22:1;s=Math.abs(dz)<=(W/2)*lf*(.55+.45*Math.sqrt(ty));break;}
+          case'canoe':s=Math.abs(dz)<=(W/2)*Math.sin(Math.PI*tx)*(.20+.80*ty);break;
+          case'catamaran':{let lf=Math.max(0,tx<.20?Math.sin(tx*2.5*Math.PI):tx>.80?Math.sin((1-tx)*2.5*Math.PI):1);const each=(W*.18)*lf*(.35+.65*ty),offs=W*.30;s=Math.abs(dz-(-offs))<=each||Math.abs(dz-offs)<=each;break;}
+          case'twincanoe':{const lf=Math.sin(Math.PI*tx),each=(W*.18)*lf*(.20+.80*ty),offs=W*.30;s=Math.abs(dz-(-offs))<=each||Math.abs(dz-offs)<=each;break;}
+          case'disc':{const dxN=(x+.5-L/2)/(L/2),dzN=dz/(W/2);let lf;if(ty<.10)lf=.85+(ty/.10)*.15;else if(ty<.55)lf=1;else if(ty<.80)lf=1-((ty-.55)/.25)*.30;else lf=.70-((ty-.80)/.20)*.40;s=(dxN*dxN+dzN*dzN)<=lf*lf;break;}
+          case'pod':{const dxN=(x+.5-L/2)/(L/2),dzN=dz/(W/2),dyN=2*ty-1,lf=Math.max(.25,Math.sqrt(Math.max(0,1-dyN*dyN)));s=(dxN*dxN+dzN*dzN)<=lf*lf;break;}
+          default:s=Math.abs(dz)<=W/2;
+        }
+        if(s)solid[idx(x,y,z)]=1;
+      }
+      let inner=solid;
+      for(let i=0;i<T;i++)inner=erode3D(inner,L,D,W);
+      const shell=new Uint8Array(solid.length);
+      for(let i=0;i<solid.length;i++)if(solid[i]&&!inner[i])shell[i]=1;
+      // Open top
+      let maxTop=-1;
+      for(let z=0;z<W&&maxTop<D-1;z++)for(let x=0;x<L&&maxTop<D-1;x++)
+        for(let y=D-1;y>maxTop;y--)if(solid[idx(x,y,z)]){maxTop=y;break;}
+      if(maxTop>=0){
+        const y=maxTop;
+        for(let z=0;z<W;z++)for(let x=0;x<L;x++){
+          if(!shell[idx(x,y,z)])continue;
+          const xm=x>0&&solid[idx(x-1,y,z)],xp=x<L-1&&solid[idx(x+1,y,z)];
+          const zm=z>0&&solid[idx(x,y,z-1)],zp=z<W-1&&solid[idx(x,y,z+1)];
+          if(xm&&xp&&zm&&zp)shell[idx(x,y,z)]=0;
+        }
+      }
+      const blocks=[];
+      for(let z=0;z<W;z++)for(let y=0;y<D;y++)for(let x=0;x<L;x++)if(shell[idx(x,y,z)])blocks.push({x,y,z});
+      return{blocks,sizeX:L,sizeY:D,sizeZ:W};
+    }
 
-      // 1) Build the solid hull-volume mask
-      const solid = new Uint8Array(L * D * W);
-      for (let z = 0; z < W; z++) {
-        for (let y = 0; y < D; y++) {
-          for (let x = 0; x < L; x++) {
-            const tx = (x + 0.5) / L;             // 0..1 along length
-            const ty = D > 1 ? y / (D - 1) : 1;   // 0..1 from keel up to deck
-            const dz = z + 0.5 - W / 2;
-            let isSolid;
-            switch (style) {
-              case 'box': {
-                isSolid = true;
-                break;
-              }
-              case 'boat': {
-                // Sine-bell taper at bow & stern (first/last 25%) + V-hull keel.
-                let lf = (tx < 0.25) ? Math.sin(tx * 2 * Math.PI)
-                       : (tx > 0.75) ? Math.sin((1 - tx) * 2 * Math.PI) : 1;
-                const df = 0.45 + 0.55 * ty;
-                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
-                break;
-              }
-              case 'barge': {
-                // Flat-bottom, square ends, slight inward chamfer near the keel.
-                const df = ty < 0.18 ? 0.85 + (ty / 0.18) * 0.15 : 1.0;
-                isSolid = Math.abs(dz) <= (W / 2) * df;
-                break;
-              }
-              case 'galleon': {
-                // Pointed bow, wider rounded stern, curved sides fattest at deck.
-                let lf = (tx < 0.20) ? 0.45 + Math.sin((tx / 0.20) * Math.PI / 2) * 0.55
-                       : (tx > 0.85) ? 0.78 + ((1 - tx) / 0.15) * 0.22 : 1;
-                const df = 0.55 + 0.45 * Math.sqrt(ty);
-                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
-                break;
-              }
-              case 'canoe': {
-                // Symmetric pointy bow & stern (full sine bell), sharp V-keel.
-                // Footprint is a leaf shape — no flat midship.
-                const lf = Math.sin(Math.PI * tx);
-                const df = 0.20 + 0.80 * ty;
-                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
-                break;
-              }
-              case 'catamaran': {
-                // Two slim parallel hulls separated by a central air gap.
-                let lf = (tx < 0.20) ? Math.sin(tx * 2.5 * Math.PI)
-                       : (tx > 0.80) ? Math.sin((1 - tx) * 2.5 * Math.PI) : 1;
-                lf = Math.max(0, lf);
-                const df = 0.35 + 0.65 * ty;
-                const each = (W * 0.18) * lf * df;
-                const offs = W * 0.30;
-                isSolid = (Math.abs(dz - (-offs)) <= each) ||
-                          (Math.abs(dz -  offs)   <= each);
-                break;
-              }
-              case 'twincanoe': {
-                // Catamaran of canoes — two parallel pointy hulls with a sharp
-                // V-keel and full sine-bell length taper (no flat midship).
-                const lf = Math.sin(Math.PI * tx);
-                const df = 0.20 + 0.80 * ty;
-                const each = (W * 0.18) * lf * df;
-                const offs = W * 0.30;
-                isSolid = (Math.abs(dz - (-offs)) <= each) ||
-                          (Math.abs(dz -  offs)   <= each);
-                break;
-              }
-              case 'disc': {
-                // Flying saucer: flat cylindrical body + a small cockpit dome on
-                // top. Most of the hull is full-radius, so the wall forms a clean
-                // continuous shell instead of stair-stepping through a thin lens.
-                const dxN = (x + 0.5 - L / 2) / (L / 2);   // -1..1
-                const dzN = dz / (W / 2);                   // -1..1
-                let lf;
-                if (ty < 0.10)      lf = 0.85 + (ty / 0.10) * 0.15;            // soft keel chamfer
-                else if (ty < 0.55) lf = 1.0;                                   // saucer body
-                else if (ty < 0.80) lf = 1.0 - ((ty - 0.55) / 0.25) * 0.30;     // bevelled rim
-                else                lf = 0.70 - ((ty - 0.80) / 0.20) * 0.40;   // cockpit dome
-                isSolid = (dxN * dxN + dzN * dzN) <= lf * lf;
-                break;
-              }
-              case 'pod': {
-                // Spherical pod — full sphere/ellipsoid centred on the hull.
-                // Cross-section follows true sphere geometry top to bottom; a
-                // tiny radius clamp keeps the very poles from collapsing to a
-                // single voxel, and the open-top erosion leaves a hatch at the
-                // apex. The keel curves naturally as the sphere's underside.
-                const dxN = (x + 0.5 - L / 2) / (L / 2);
-                const dzN = dz / (W / 2);
-                const dyN = 2 * ty - 1;          // -1 at keel, +1 at apex
-                const lf  = Math.max(0.25, Math.sqrt(Math.max(0, 1 - dyN * dyN)));
-                isSolid = (dxN * dxN + dzN * dzN) <= lf * lf;
-                break;
-              }
-              default:
-                isSolid = Math.abs(dz) <= W / 2;
+    // ── Multi-balloon shell + hollow-intersection export ─────────
+    // Shell block of balloon i is removed if it falls inside the eroded
+    // interior of any other balloon j — this prevents floating blocks
+    // inside another balloon's hollow cavity.
+    function buildShellAndStats(){
+      const balloonData=state.balloons.map(b=>{
+        const{mask:solid,sizeX,sizeY,sizeZ}=buildSolidMaskForBalloon(b);
+        let inner=solid;
+        for(let i=0;i<b.T;i++)inner=erode3D(inner,sizeX,sizeY,sizeZ);
+        return{b,solid,inner,sizeX,sizeY,sizeZ,blockId:effectiveBlockId(b)};
+      });
+
+      // Balloon world bounds
+      let bMinX=Infinity,bMinY=Infinity,bMinZ=Infinity,bMaxX=-Infinity,bMaxY=-Infinity,bMaxZ=-Infinity;
+      for(const d of balloonData){
+        bMinX=Math.min(bMinX,d.b.offsetX);bMinY=Math.min(bMinY,d.b.offsetY);bMinZ=Math.min(bMinZ,d.b.offsetZ);
+        bMaxX=Math.max(bMaxX,d.b.offsetX+d.sizeX);bMaxY=Math.max(bMaxY,d.b.offsetY+d.sizeY);bMaxZ=Math.max(bMaxZ,d.b.offsetZ+d.sizeZ);
+      }
+
+      // Palette
+      const palMap=new Map([['minecraft:air',0]]);let nPI=1;
+      for(const d of balloonData)if(!palMap.has(d.blockId))palMap.set(d.blockId,nPI++);
+
+      // Hull
+      const hullData=state.hull.enabled?buildHull():null;
+      const hBid=state.hull.block==='custom'?state.hull.customBlock:state.hull.block;
+      let hOX=0,hOY=0,hOZ=0;
+      if(hullData){
+        if(!palMap.has(hBid))palMap.set(hBid,nPI++);
+        hOX=Math.floor((bMinX+bMaxX)/2-hullData.sizeX/2);
+        hOZ=Math.floor((bMinZ+bMaxZ)/2-hullData.sizeZ/2);
+        hOY=bMinY-state.hull.gap-hullData.sizeY;
+      }
+
+      let wMinX=bMinX,wMinY=bMinY,wMinZ=bMinZ,wMaxX=bMaxX,wMaxY=bMaxY,wMaxZ=bMaxZ;
+      if(hullData){
+        wMinX=Math.min(wMinX,hOX);wMaxX=Math.max(wMaxX,hOX+hullData.sizeX);
+        wMinZ=Math.min(wMinZ,hOZ);wMaxZ=Math.max(wMaxZ,hOZ+hullData.sizeZ);
+        wMinY=Math.min(wMinY,hOY);
+      }
+      const wSX=wMaxX-wMinX,wSY=wMaxY-wMinY,wSZ=wMaxZ-wMinZ;
+
+      const blocks=[];let balloonCount=0,interiorCount=0;
+      for(let bi=0;bi<balloonData.length;bi++){
+        const{b,solid,inner,sizeX,sizeY,sizeZ,blockId}=balloonData[bi];
+        const matIdx=palMap.get(blockId);
+        const idx=(x,y,z)=>x+sizeX*(y+sizeY*z);
+        for(let lz=0;lz<sizeZ;lz++)for(let ly=0;ly<sizeY;ly++)for(let lx=0;lx<sizeX;lx++){
+          if(!solid[idx(lx,ly,lz)]||inner[idx(lx,ly,lz)])continue;
+          const wx=lx+b.offsetX,wy=ly+b.offsetY,wz=lz+b.offsetZ;
+          let blocked=false;
+          for(let bj=0;bj<balloonData.length&&!blocked;bj++){
+            if(bj===bi)continue;
+            const od=balloonData[bj];
+            const ox=wx-od.b.offsetX,oy=wy-od.b.offsetY,oz=wz-od.b.offsetZ;
+            if(ox>=0&&ox<od.sizeX&&oy>=0&&oy<od.sizeY&&oz>=0&&oz<od.sizeZ){
+              const oi=(a,c,e)=>a+od.sizeX*(c+od.sizeY*e);
+              if(od.inner[oi(ox,oy,oz)])blocked=true;
             }
-            if (isSolid) solid[idx(x, y, z)] = 1;
           }
+          if(!blocked){blocks.push({x:wx-wMinX,y:wy-wMinY,z:wz-wMinZ,mat:matIdx});balloonCount++;}
         }
+        for(let i=0;i<inner.length;i++)if(inner[i])interiorCount++;
       }
 
-      // 2) Erode T times — same plain 6-neighbour erosion the balloon uses.
-      //    Treats every OOB direction as exterior, producing a watertight
-      //    closed shell with no pinhole gaps along curved surfaces.
-      let inner = solid;
-      for (let i = 0; i < T; i++) inner = erode3D(inner, L, D, W);
-
-      // 3) Closed-shell mask (solid AND NOT inner — same convention as balloon).
-      const shell = new Uint8Array(solid.length);
-      for (let i = 0; i < solid.length; i++)
-        if (solid[i] && !inner[i]) shell[i] = 1;
-
-      // 4) Open the top. Find the highest y reached by any column (MAX_TOP),
-      //    then strip the "deck interior" at that y — every shell voxel whose
-      //    4 horizontal neighbours at the same y are also solid. Voxels on the
-      //    rim (≥1 horizontal neighbour outside the cross-section) keep their
-      //    place as the deck/cockpit edge, so a small hatch is left where the
-      //    cross-section narrows (pod / saucer apex) and a full open deck where
-      //    it doesn't (box / boat / barge / canoe / catamaran / galleon).
-      let maxTop = -1;
-      for (let z = 0; z < W && maxTop < D - 1; z++) {
-        for (let x = 0; x < L && maxTop < D - 1; x++) {
-          for (let y = D - 1; y > maxTop; y--) {
-            if (solid[idx(x, y, z)]) { maxTop = y; break; }
-          }
-        }
-      }
-      if (maxTop >= 0) {
-        const y = maxTop;
-        for (let z = 0; z < W; z++) {
-          for (let x = 0; x < L; x++) {
-            if (!shell[idx(x, y, z)]) continue;
-            const xm = x > 0     && solid[idx(x-1, y, z)];
-            const xp = x < L - 1 && solid[idx(x+1, y, z)];
-            const zm = z > 0     && solid[idx(x, y, z-1)];
-            const zp = z < W - 1 && solid[idx(x, y, z+1)];
-            if (xm && xp && zm && zp) shell[idx(x, y, z)] = 0;
-          }
-        }
+      let hullCount=0;
+      if(hullData){
+        const hmi=palMap.get(hBid);
+        for(const hb of hullData.blocks){blocks.push({x:hb.x+hOX-wMinX,y:hb.y+hOY-wMinY,z:hb.z+hOZ-wMinZ,mat:hmi});hullCount++;}
       }
 
-      const blocks = [];
-      for (let z = 0; z < W; z++)
-        for (let y = 0; y < D; y++)
-          for (let x = 0; x < L; x++)
-            if (shell[idx(x, y, z)])
-              blocks.push({ x, y, z });
+      const palette=Array.from(palMap.entries()).sort((a,b)=>a[1]-b[1]).map(([id])=>id);
+      const balloonBounds=balloonData.map(d=>({x:d.b.offsetX-wMinX,y:d.b.offsetY-wMinY,z:d.b.offsetZ-wMinZ,sizeX:d.sizeX,sizeY:d.sizeY,sizeZ:d.sizeZ}));
 
-      return { blocks, sizeX: L, sizeY: D, sizeZ: W };
+      return{blocks,palette,blockCount:balloonCount+hullCount,balloonCount,hullCount,interiorCount,envelope:wSX*wSY*wSZ,sizeX:wSX,sizeY:wSY,sizeZ:wSZ,balloonBounds};
     }
 
-    function buildShellAndStats() {
-      const T = state.T;
-      const { mask: solid, sizeX: bX, sizeY: bY, sizeZ: bZ } = buildSolidMask();
-      let inner = solid;
-      for (let i = 0; i < T; i++) inner = erode3D(inner, bX, bY, bZ);
-      const shell = new Uint8Array(solid.length);
-      let balloonCount = 0, interiorCount = 0, solidCount = 0;
-      for (let i = 0; i < solid.length; i++) {
-        if (solid[i]) solidCount++;
-        if (inner[i]) interiorCount++;
-        if (solid[i] && !inner[i]) { shell[i] = 1; balloonCount++; }
-      }
+    // ── Three.js preview ─────────────────────────────────────────
+    const canvas=document.getElementById('threeCanvas');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    const scene=new THREE.Scene();
+    const camera=new THREE.PerspectiveCamera(45,1,.1,1000);
+    scene.add(new THREE.AmbientLight(0xffffff,.45));
+    const kl=new THREE.DirectionalLight(0xfff1d6,.85);kl.position.set(5,10,7);scene.add(kl);
+    const rl=new THREE.DirectionalLight(0x6688aa,.35);rl.position.set(-6,-2,-8);scene.add(rl);
+    const axes=new THREE.AxesHelper(3);axes.position.set(-.5,-.5,-.5);scene.add(axes);
+    const root=new THREE.Group();scene.add(root);
 
-      // Build optional ship hull
-      const hullData = state.hull.enabled ? buildHull() : null;
+    function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+    new ResizeObserver(resize).observe(canvas);resize();
 
-      // Combined bounding box: balloon stacks on top of hull (with `gap` air rows between).
-      let sizeX, sizeY, sizeZ, balloonOffX, balloonOffY, balloonOffZ;
-      let hullOffX = 0, hullOffY = 0, hullOffZ = 0;
-      if (hullData) {
-        sizeX = Math.max(bX, hullData.sizeX);
-        sizeY = bY + state.hull.gap + hullData.sizeY;
-        sizeZ = Math.max(bZ, hullData.sizeZ);
-        balloonOffX = Math.floor((sizeX - bX) / 2);
-        balloonOffY = hullData.sizeY + state.hull.gap;
-        balloonOffZ = Math.floor((sizeZ - bZ) / 2);
-        hullOffX    = Math.floor((sizeX - hullData.sizeX) / 2);
-        hullOffY    = 0;
-        hullOffZ    = Math.floor((sizeZ - hullData.sizeZ) / 2);
-      } else {
-        sizeX = bX; sizeY = bY; sizeZ = bZ;
-        balloonOffX = balloonOffY = balloonOffZ = 0;
-      }
-
-      // Collect block positions, tagged with palette index (mat).
-      // mat = 1 → balloon material, mat = 2 → hull material.
-      const blocks = [];
-      const idxB = (x, y, z) => x + bX * (y + bY * z);
-      for (let z = 0; z < bZ; z++)
-        for (let y = 0; y < bY; y++)
-          for (let x = 0; x < bX; x++)
-            if (shell[idxB(x, y, z)])
-              blocks.push({
-                x: x + balloonOffX,
-                y: y + balloonOffY,
-                z: z + balloonOffZ,
-                mat: 1,
-              });
-
-      let hullCount = 0;
-      if (hullData) {
-        for (const b of hullData.blocks) {
-          blocks.push({
-            x: b.x + hullOffX,
-            y: b.y + hullOffY,
-            z: b.z + hullOffZ,
-            mat: 2,
-          });
-          hullCount++;
-        }
-      }
-
-      return {
-        blocks,
-        blockCount: balloonCount + hullCount,
-        balloonCount, hullCount,
-        interiorCount, solidCount,
-        envelope: sizeX * sizeY * sizeZ,
-        sizeX, sizeY, sizeZ,
-      };
-    }
-
-    // ─── Three.js preview ───────────────────────────────────────
-    const canvas = document.getElementById('threeCanvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const scene  = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.45));
-    const keyLight = new THREE.DirectionalLight(0xfff1d6, 0.85);
-    keyLight.position.set(5, 10, 7);
-    scene.add(keyLight);
-    const rimLight = new THREE.DirectionalLight(0x6688aa, 0.35);
-    rimLight.position.set(-6, -2, -8);
-    scene.add(rimLight);
-
-    const axes = new THREE.AxesHelper(3);
-    axes.position.set(-0.5, -0.5, -0.5);
-    scene.add(axes);
-
-    let bboxMesh = null;
-    let mesh = null;       // balloon
-    let hullMesh = null;   // ship hull
-    const root = new THREE.Group();
-    scene.add(root);
-
-    function resize() {
-      const w = canvas.clientWidth, h = canvas.clientHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    }
-    new ResizeObserver(resize).observe(canvas);
-    resize();
-
-    // simple orbit controls (manual — avoids extra script)
-    let yaw = 0.6, pitch = 0.45, dist = 50;
-    let rotateEnabled = true;        // master toggle (button) — false = never rotate
-    let interacting = false;
-    let lastInteract = 0;
-
-    const rotateToggle = document.getElementById('rotateToggle');
-    const rotateLabel  = document.getElementById('rotateLabel');
-    rotateToggle.addEventListener('click', () => {
-      rotateEnabled = !rotateEnabled;
-      rotateToggle.classList.toggle('on',  rotateEnabled);
-      rotateToggle.classList.toggle('off', !rotateEnabled);
-      rotateToggle.setAttribute('aria-pressed', rotateEnabled);
-      rotateLabel.textContent = rotateEnabled ? 'auto' : 'paused';
+    let yaw=.6,pitch=.45,dist=50,rotateEnabled=true,interacting=false,lastInteract=0;
+    const rotateToggle=document.getElementById('rotateToggle');
+    rotateToggle.addEventListener('click',()=>{
+      rotateEnabled=!rotateEnabled;
+      rotateToggle.classList.toggle('on',rotateEnabled);rotateToggle.classList.toggle('off',!rotateEnabled);
+      rotateToggle.setAttribute('aria-pressed',rotateEnabled);
+      document.getElementById('rotateLabel').textContent=rotateEnabled?'auto':'paused';
     });
-
-    // Display-only orientation buttons. These tilt the `root` group (visual transform
-    // applied at render time only) — the underlying voxel data in `lastStats.blocks`
-    // and therefore the NBT export are completely unaffected.
-    const orientControls = document.getElementById('orientControls');
-    orientControls.querySelectorAll('.orient-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        orientControls.querySelectorAll('.orient-btn').forEach(x => x.classList.remove('active'));
-        btn.classList.add('active');
-        const deg = parseInt(btn.dataset.rot, 10);
-        root.rotation.z = deg * Math.PI / 180;
+    document.getElementById('orientControls').querySelectorAll('.orient-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.orient-btn').forEach(x=>x.classList.remove('active'));
+        btn.classList.add('active');root.rotation.z=parseInt(btn.dataset.rot,10)*Math.PI/180;
       });
     });
+    canvas.addEventListener('pointerdown',e=>{interacting=true;lastInteract=performance.now();canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointermove',e=>{if(!interacting)return;yaw-=e.movementX*.008;pitch=Math.max(-Math.PI/2+.1,Math.min(Math.PI/2-.1,pitch-e.movementY*.008));});
+    canvas.addEventListener('pointerup',()=>{interacting=false;});
+    canvas.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(8,Math.min(200,dist+e.deltaY*.05));},{passive:false});
 
-    canvas.addEventListener('pointerdown', (e) => {
-      interacting = true;
-      lastInteract = performance.now();
-      canvas.setPointerCapture(e.pointerId);
-    });
-    canvas.addEventListener('pointermove', (e) => {
-      if (!interacting) return;
-      yaw   -= e.movementX * 0.008;
-      pitch -= e.movementY * 0.008;
-      pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
-    });
-    canvas.addEventListener('pointerup',  () => { interacting = false; });
-    canvas.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      dist = Math.max(8, Math.min(200, dist + e.deltaY * 0.05));
-    }, { passive: false });
-
-    function rebuildMesh(stats) {
-      if (mesh)     { root.remove(mesh);     mesh.geometry.dispose();     mesh.material.dispose();     mesh = null; }
-      if (hullMesh) { root.remove(hullMesh); hullMesh.geometry.dispose(); hullMesh.material.dispose(); hullMesh = null; }
-      if (bboxMesh) { root.remove(bboxMesh); bboxMesh.geometry.dispose(); bboxMesh.material.dispose(); bboxMesh = null; }
-
-      const { blocks, sizeX, sizeY, sizeZ } = stats;
-
-      // Build one InstancedMesh per material (palette index).
-      function makeMesh(subset, blockId) {
-        if (subset.length === 0) return null;
-        const colour  = colourFor(blockId);
-        const isGlass = blockId.includes('glass');
-        const geom = new THREE.BoxGeometry(1, 1, 1);
-        const matr = new THREE.MeshStandardMaterial({
-          color: colour,
-          roughness: isGlass ? 0.05 : 0.85,
-          metalness: blockId.includes('iron') ? 0.6 : 0.0,
-          transparent: isGlass,
-          opacity: isGlass ? 0.45 : 1.0,
+    function rebuildMesh(stats){
+      while(root.children.length){const c=root.children[0];c.geometry?.dispose();c.material?.dispose();root.remove(c);}
+      const{blocks,sizeX,sizeY,sizeZ,palette,balloonBounds}=stats;
+      // Group by material → one InstancedMesh per block type
+      const byMat=new Map();
+      for(const b of blocks){if(!byMat.has(b.mat))byMat.set(b.mat,[]);byMat.get(b.mat).push(b);}
+      byMat.forEach((subset,mi)=>{
+        const bid=palette[mi];if(!bid||bid==='minecraft:air')return;
+        const isG=bid.includes('glass');
+        const geom=new THREE.BoxGeometry(1,1,1);
+        const matr=new THREE.MeshStandardMaterial({color:colourFor(bid),roughness:isG?.05:.85,metalness:bid.includes('iron')?.6:0,transparent:isG,opacity:isG?.45:1});
+        const inst=new THREE.InstancedMesh(geom,matr,subset.length);
+        const m=new THREE.Matrix4();
+        subset.forEach((b,i)=>{m.makeTranslation(b.x+.5-sizeX/2,b.y+.5-sizeY/2,b.z+.5-sizeZ/2);inst.setMatrixAt(i,m);});
+        inst.instanceMatrix.needsUpdate=true;root.add(inst);
+      });
+      // Per-balloon bounding boxes when multiple balloons
+      if(balloonBounds&&balloonBounds.length>1){
+        balloonBounds.forEach((bb,bi)=>{
+          const isActive=bi===state.activeBalloonIdx;
+          const bg=new THREE.BoxGeometry(bb.sizeX,bb.sizeY,bb.sizeZ);
+          const wm=new THREE.LineBasicMaterial({color:isActive?0xc8952a:0x4466aa,transparent:true,opacity:isActive?.40:.15});
+          const bm=new THREE.LineSegments(new THREE.EdgesGeometry(bg),wm);
+          bm.position.set(bb.x+bb.sizeX/2-sizeX/2,bb.y+bb.sizeY/2-sizeY/2,bb.z+bb.sizeZ/2-sizeZ/2);
+          root.add(bm);
         });
-        const inst = new THREE.InstancedMesh(geom, matr, subset.length);
-        const m = new THREE.Matrix4();
-        subset.forEach((b, i) => {
-          m.makeTranslation(b.x + 0.5 - sizeX/2, b.y + 0.5 - sizeY/2, b.z + 0.5 - sizeZ/2);
-          inst.setMatrixAt(i, m);
-        });
-        inst.instanceMatrix.needsUpdate = true;
-        return inst;
       }
-
-      const balloonBlocks = blocks.filter(b => b.mat === 1);
-      const hullBlocks    = blocks.filter(b => b.mat === 2);
-
-      mesh     = makeMesh(balloonBlocks, state.block);
-      hullMesh = makeMesh(hullBlocks,    state.hull.block);
-      if (mesh)     root.add(mesh);
-      if (hullMesh) root.add(hullMesh);
-
-      // wireframe envelope
-      const bgeom = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
-      const wireMat = new THREE.LineBasicMaterial({ color: 0xc8952a, transparent: true, opacity: 0.18 });
-      bboxMesh = new THREE.LineSegments(new THREE.EdgesGeometry(bgeom), wireMat);
-      root.add(bboxMesh);
-
-      // adjust camera distance to fit
-      dist = Math.max(sizeX, sizeY, sizeZ) * 1.7;
+      // Overall wireframe
+      const bg=new THREE.BoxGeometry(sizeX,sizeY,sizeZ);
+      root.add(new THREE.LineSegments(new THREE.EdgesGeometry(bg),new THREE.LineBasicMaterial({color:0xc8952a,transparent:true,opacity:.18})));
+      dist=Math.max(sizeX,sizeY,sizeZ)*1.7;
     }
 
-    function animate() {
+    function animate(){
       requestAnimationFrame(animate);
-      // Auto-rotate only when the toggle is on, the user isn't actively dragging,
-      // and we've been idle for 2.5s (so a quick orbit doesn't immediately resume).
-      const idle = !interacting && (performance.now() - lastInteract > 2500);
-      if (rotateEnabled && idle) yaw += 0.0035;
-      const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      const cp = Math.cos(pitch), sp = Math.sin(pitch);
-      camera.position.set(dist * cp * sy, dist * sp, dist * cp * cy);
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
+      if(rotateEnabled&&!interacting&&performance.now()-lastInteract>2500)yaw+=.0035;
+      const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+      camera.position.set(dist*cp*sy,dist*sp,dist*cp*cy);camera.lookAt(0,0,0);
+      renderer.render(scene,camera);
     }
     animate();
 
-    // ─── NBT writer (vanilla structure format) ──────────────────
-    class NBTWriter {
-      constructor() {
-        this.buf = new Uint8Array(4096);
-        this.len = 0;
-      }
-      _ensure(n) {
-        if (this.len + n <= this.buf.length) return;
-        let cap = this.buf.length;
-        while (cap < this.len + n) cap *= 2;
-        const nb = new Uint8Array(cap);
-        nb.set(this.buf);
-        this.buf = nb;
-      }
-      byte(v)  { this._ensure(1); this.buf[this.len++] = v & 0xff; }
-      short(v) { this._ensure(2); this.buf[this.len++] = (v >> 8) & 0xff; this.buf[this.len++] = v & 0xff; }
-      int(v)   { this._ensure(4);
-        this.buf[this.len++] = (v >>> 24) & 0xff;
-        this.buf[this.len++] = (v >>> 16) & 0xff;
-        this.buf[this.len++] = (v >>>  8) & 0xff;
-        this.buf[this.len++] =  v         & 0xff;
-      }
-      str(s) {
-        const utf = new TextEncoder().encode(s);
-        this.short(utf.length);
-        this._ensure(utf.length);
-        this.buf.set(utf, this.len);
-        this.len += utf.length;
-      }
-      bytes() { return this.buf.subarray(0, this.len); }
+    // ── NBT writer ───────────────────────────────────────────────
+    class NBTWriter{
+      constructor(){this.buf=new Uint8Array(4096);this.len=0;}
+      _ensure(n){if(this.len+n<=this.buf.length)return;let c=this.buf.length;while(c<this.len+n)c*=2;const nb=new Uint8Array(c);nb.set(this.buf);this.buf=nb;}
+      byte(v){this._ensure(1);this.buf[this.len++]=v&0xff;}
+      short(v){this._ensure(2);this.buf[this.len++]=(v>>8)&0xff;this.buf[this.len++]=v&0xff;}
+      int(v){this._ensure(4);this.buf[this.len++]=(v>>>24)&0xff;this.buf[this.len++]=(v>>>16)&0xff;this.buf[this.len++]=(v>>>8)&0xff;this.buf[this.len++]=v&0xff;}
+      str(s){const u=new TextEncoder().encode(s);this.short(u.length);this._ensure(u.length);this.buf.set(u,this.len);this.len+=u.length;}
+      bytes(){return this.buf.subarray(0,this.len);}
     }
 
-    // palette is an array of block IDs; entry [0] should be 'minecraft:air'.
-    // Each block's `mat` field is the index into this palette.
-    function writeNBT(blocks, sizeX, sizeY, sizeZ, palette) {
-      const w = new NBTWriter();
-      // root TAG_Compound with empty name
-      w.byte(10); w.str('');
-
-      // DataVersion
-      w.byte(3); w.str('DataVersion'); w.int(3955);
-
-      // size: List<Int>[3]
-      w.byte(9); w.str('size');
-      w.byte(3); w.int(3);
-      w.int(sizeX); w.int(sizeY); w.int(sizeZ);
-
-      // entities: List<Compound>[0]
-      w.byte(9); w.str('entities');
-      w.byte(10); w.int(0);
-
-      // blocks: List<Compound>
-      w.byte(9); w.str('blocks');
-      w.byte(10); w.int(blocks.length);
-      for (const b of blocks) {
-        // pos: List<Int>[3]
-        w.byte(9); w.str('pos');
-        w.byte(3); w.int(3);
-        w.int(b.x); w.int(b.y); w.int(b.z);
-        // state: Int (palette index)
-        w.byte(3); w.str('state'); w.int(b.mat ?? 1);
-        // end of compound
-        w.byte(0);
-      }
-
-      // palette: List<Compound>
-      w.byte(9); w.str('palette');
-      w.byte(10); w.int(palette.length);
-      for (const blockId of palette) {
-        w.byte(8); w.str('Name'); w.str(blockId);
-        w.byte(0);
-      }
-
-      // close root compound
-      w.byte(0);
-      return w.bytes();
+    function writeNBT(blocks,sX,sY,sZ,palette){
+      const w=new NBTWriter();
+      w.byte(10);w.str('');
+      w.byte(3);w.str('DataVersion');w.int(3955);
+      w.byte(9);w.str('size');w.byte(3);w.int(3);w.int(sX);w.int(sY);w.int(sZ);
+      w.byte(9);w.str('entities');w.byte(10);w.int(0);
+      w.byte(9);w.str('blocks');w.byte(10);w.int(blocks.length);
+      for(const b of blocks){w.byte(9);w.str('pos');w.byte(3);w.int(3);w.int(b.x);w.int(b.y);w.int(b.z);w.byte(3);w.str('state');w.int(b.mat??1);w.byte(0);}
+      w.byte(9);w.str('palette');w.byte(10);w.int(palette.length);
+      for(const id of palette){w.byte(8);w.str('Name');w.str(id);w.byte(0);}
+      w.byte(0);return w.bytes();
     }
 
-    // ─── Stats UI ────────────────────────────────────────────────
-    const statBlocks   = document.getElementById('statBlocks');
-    const statInterior = document.getElementById('statInterior');
-    const statLift     = document.getElementById('statLift');
-    const statPressure = document.getElementById('statPressure');
-    const statEnvelope = document.getElementById('statEnvelope');
-    const overlayText  = document.getElementById('overlayText');
+    // ── Stats & altitude ─────────────────────────────────────────
+    const statBlocks=document.getElementById('statBlocks');
+    const statInterior=document.getElementById('statInterior');
+    const statLift=document.getElementById('statLift');
+    const statPressure=document.getElementById('statPressure');
+    const statEnvelope=document.getElementById('statEnvelope');
+    const overlayText=document.getElementById('overlayText');
+    const altIn=document.getElementById('altitudeInput');
+    const altNum=document.getElementById('altitudeNum');
+    function getAirPressure(){return Math.pow(.5,(parseFloat(altIn.value)||0)/256);}
+    altIn.addEventListener('input',()=>{altNum.value=altIn.value;updateLiftStat();});
+    altNum.addEventListener('input',()=>{altIn.value=altNum.value;updateLiftStat();});
+    function updateLiftStat(){if(!lastStats)return;const p=getAirPressure();statLift.textContent=fmt(Math.round(lastStats.interiorCount*1.5*p));statPressure.textContent=`(${Math.round(p*100)}% pressure)`;}
+    function fmt(n){if(n>=10000)return(n/1000).toFixed(1)+'k';return String(n);}
 
-    // Altitude ↔ air pressure
-    const altitudeInput = document.getElementById('altitudeInput');
-    const altitudeNum   = document.getElementById('altitudeNum');
-    function getAirPressure() {
-      const alt = parseFloat(altitudeInput.value) || 0;
-      // Exponential decay: halves every 256 blocks
-      return Math.pow(0.5, alt / 256);
-    }
-    altitudeInput.addEventListener('input', () => {
-      altitudeNum.value = altitudeInput.value;
-      updateLiftStat();
-    });
-    altitudeNum.addEventListener('input', () => {
-      altitudeInput.value = altitudeNum.value;
-      updateLiftStat();
-    });
-    function updateLiftStat() {
-      if (!lastStats) return;
-      const pressure = getAirPressure();
-      const liftKg = Math.round(lastStats.interiorCount * 1.5 * pressure);
-      statLift.textContent = fmt(liftKg);
-      statPressure.textContent = `(${Math.round(pressure * 100)}% pressure)`;
-    }
-
-    function fmt(n) {
-      if (n >= 10000) return (n / 1000).toFixed(1) + 'k';
-      return String(n);
+    let lastStats=null;
+    function regenerate(){
+      const t0=performance.now();
+      const stats=buildShellAndStats();
+      lastStats=stats;rebuildMesh(stats);
+      statBlocks.textContent=fmt(stats.blockCount);
+      statInterior.textContent=fmt(stats.interiorCount);
+      const p=getAirPressure();
+      statLift.textContent=fmt(Math.round(stats.interiorCount*1.5*p));
+      statPressure.textContent=`(${Math.round(p*100)}% pressure)`;
+      statEnvelope.textContent=fmt(stats.envelope);
+      const ms=(performance.now()-t0).toFixed(0);
+      const multi=state.balloons.length>1?` ×${state.balloons.length}`:'';
+      const hBit=state.hull.enabled?` + ${state.hull.style} hull`:'';
+      overlayText.textContent=`${ab().shape}${multi}${hBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
     }
 
-    let lastStats = null;
-    function regenerate() {
-      const t0 = performance.now();
-      const stats = buildShellAndStats();
-      lastStats = stats;
-      rebuildMesh(stats);
-
-      statBlocks.textContent   = fmt(stats.blockCount);
-      statInterior.textContent = fmt(stats.interiorCount);
-      const pressure = getAirPressure();
-      const liftKg = Math.round(stats.interiorCount * 1.5 * pressure);
-      statLift.textContent     = fmt(liftKg);
-      statPressure.textContent = `(${Math.round(pressure * 100)}% pressure)`;
-      statEnvelope.textContent = fmt(stats.envelope);
-
-      const ms = (performance.now() - t0).toFixed(0);
-      const hullBit = state.hull.enabled ? ` + ${state.hull.style} hull` : '';
-      overlayText.textContent = `${state.shape}${hullBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
-    }
-
-    // ─── Download ────────────────────────────────────────────────
-    document.getElementById('downloadBtn').onclick = () => {
-      if (!lastStats) return;
-      const { blocks, sizeX, sizeY, sizeZ } = lastStats;
-      if (blocks.length === 0) {
-        alert('No blocks to export — try larger dimensions or a different shape.');
-        return;
-      }
-      // Palette layout:
-      //   [0] minecraft:air, [1] balloon block, [2] hull block (if enabled)
-      const palette = ['minecraft:air', state.block];
-      if (state.hull.enabled) palette.push(state.hull.block);
-      const nbtBytes = writeNBT(blocks, sizeX, sizeY, sizeZ, palette);
-      const gzipped  = pako.gzip(nbtBytes);
-      const safeName = state.block.replace(/^minecraft:/, '').replace(/[^a-z0-9_]/gi, '');
-      const suffix   = state.hull.enabled ? '_hull' : '';
-      const filename = `aeronaut_${state.shape}_${sizeX}x${sizeY}x${sizeZ}${suffix}_${safeName}.nbt`;
-      const blob = new Blob([gzipped], { type: 'application/octet-stream' });
-      const url  = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename;
-      document.body.appendChild(a); a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // ── Download ─────────────────────────────────────────────────
+    document.getElementById('downloadBtn').onclick=()=>{
+      if(!lastStats)return;
+      const{blocks,sizeX,sizeY,sizeZ,palette}=lastStats;
+      if(blocks.length===0){alert('No blocks to export — try larger dimensions or a different shape.');return;}
+      const nbt=writeNBT(blocks,sizeX,sizeY,sizeZ,palette);
+      const gz=pako.gzip(nbt);
+      const multi=state.balloons.length>1?`x${state.balloons.length}_`:'';
+      const safe=effectiveBlockId(ab()).replace(/^minecraft:/,'').replace(/[^a-z0-9_]/gi,'');
+      const suffix=state.hull.enabled?'_hull':'';
+      const blob=new Blob([gz],{type:'application/octet-stream'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=`aeronaut_${multi}${sizeX}x${sizeY}x${sizeZ}${suffix}_${safe}.nbt`;
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
 
-    // first build
+    // ── Init ─────────────────────────────────────────────────────
+    renderBalloonList();
+    syncControlsToActiveBalloon();
     regenerate();
   </script>
 </body>
