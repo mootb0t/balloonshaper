@@ -808,14 +808,22 @@
               <div class="label">interior</div>
               <div class="num"><span id="statInterior">—</span><span class="unit">m³</span></div>
             </div>
-            <div class="stat" title="Approximate &amp; for fun: assumes ~0.4 kg lift per m³ (heated air vs ambient).">
+            <div class="stat" title="1.5 kpg per block of interior volume, scaled by air pressure (100% at surface, drops as altitude increases).">
               <div class="label">lift</div>
-              <div class="num"><span id="statLift">—</span><span class="unit">kg</span></div>
+              <div class="num"><span id="statLift">—</span><span class="unit">kpg</span></div>
             </div>
             <div class="stat" title="Total bounding-box envelope">
               <div class="label">envelope</div>
               <div class="num"><span id="statEnvelope">—</span><span class="unit">m³</span></div>
             </div>
+          </div>
+
+          <div class="control" style="margin-top:10px;">
+            <div class="control-row">
+              <span>altitude</span>
+              <span><input type="number" class="num-input" id="altitudeNum" min="0" max="2048" value="0" /> blocks &nbsp;<span id="statPressure" style="opacity:0.6;font-size:0.85em;">(100% pressure)</span></span>
+            </div>
+            <input type="range" id="altitudeInput" min="0" max="2048" value="0" />
           </div>
 
           <button class="btn-aero" id="downloadBtn">Download .nbt</button>
@@ -2148,8 +2156,33 @@
     const statBlocks   = document.getElementById('statBlocks');
     const statInterior = document.getElementById('statInterior');
     const statLift     = document.getElementById('statLift');
+    const statPressure = document.getElementById('statPressure');
     const statEnvelope = document.getElementById('statEnvelope');
     const overlayText  = document.getElementById('overlayText');
+
+    // Altitude ↔ air pressure
+    const altitudeInput = document.getElementById('altitudeInput');
+    const altitudeNum   = document.getElementById('altitudeNum');
+    function getAirPressure() {
+      const alt = parseFloat(altitudeInput.value) || 0;
+      // Exponential decay: halves every 256 blocks
+      return Math.pow(0.5, alt / 256);
+    }
+    altitudeInput.addEventListener('input', () => {
+      altitudeNum.value = altitudeInput.value;
+      updateLiftStat();
+    });
+    altitudeNum.addEventListener('input', () => {
+      altitudeInput.value = altitudeNum.value;
+      updateLiftStat();
+    });
+    function updateLiftStat() {
+      if (!lastStats) return;
+      const pressure = getAirPressure();
+      const liftKg = Math.round(lastStats.interiorCount * 1.5 * pressure);
+      statLift.textContent = fmt(liftKg);
+      statPressure.textContent = `(${Math.round(pressure * 100)}% pressure)`;
+    }
 
     function fmt(n) {
       if (n >= 10000) return (n / 1000).toFixed(1) + 'k';
@@ -2165,9 +2198,10 @@
 
       statBlocks.textContent   = fmt(stats.blockCount);
       statInterior.textContent = fmt(stats.interiorCount);
-      // ~0.4 kg/m³ lift — very approximate
-      const liftKg = Math.round(stats.interiorCount * 0.4);
+      const pressure = getAirPressure();
+      const liftKg = Math.round(stats.interiorCount * 1.5 * pressure);
       statLift.textContent     = fmt(liftKg);
+      statPressure.textContent = `(${Math.round(pressure * 100)}% pressure)`;
       statEnvelope.textContent = fmt(stats.envelope);
 
       const ms = (performance.now() - t0).toFixed(0);
