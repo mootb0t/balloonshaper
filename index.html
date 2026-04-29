@@ -552,6 +552,58 @@
     /* Section spacing */
     .section + .section { margin-top: 16px; }
 
+    /* Ship hull toggle */
+    .hull-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      user-select: none;
+    }
+    .hull-toggle input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line-aero);
+      border-radius: 3px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color .12s, background .12s;
+      flex-shrink: 0;
+      margin: 0;
+    }
+    .hull-toggle input[type="checkbox"]:hover { border-color: rgba(200,149,42,.45); }
+    .hull-toggle input[type="checkbox"]:checked {
+      background: var(--brass);
+      border-color: var(--brass);
+    }
+    .hull-toggle input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: solid #1a1306;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .hull-toggle:hover { color: var(--text); }
+    .hull-controls { display: none; }
+    .hull-controls.show { display: block; }
+    .control-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+
     .preview-credit {
       margin-top: 10px;
       font-family: var(--mono);
@@ -664,6 +716,74 @@
             <option value="custom">Custom block ID…</option>
           </select>
           <input type="text" class="text-aero" id="customBlock" placeholder="minecraft:cyan_concrete" value="minecraft:cyan_concrete" />
+        </div>
+
+        <div class="panel-aero section">
+          <h3 class="panel-title">Ship Hull</h3>
+          <label class="hull-toggle">
+            <input type="checkbox" id="hullEnabled" />
+            <span>Add ship hull below balloon</span>
+          </label>
+          <div class="hull-controls" id="hullControls">
+            <div class="control" style="margin-top:14px">
+              <div class="control-label">style</div>
+              <select class="select-aero" id="hullStyleSelect">
+                <option value="box">Box (rectangular, open-top)</option>
+                <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
+                <option value="barge">Barge (flat-bottom, square ends)</option>
+                <option value="galleon">Galleon (curved sides, raised stern)</option>
+              </select>
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <span>length</span>
+                <span><input type="number" class="num-input" id="hullLNum" min="3" max="120" value="20" /> blocks</span>
+              </div>
+              <input type="range" id="hullLInput" min="3" max="120" value="20" />
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <span>width</span>
+                <span><input type="number" class="num-input" id="hullWNum" min="3" max="60" value="10" /> blocks</span>
+              </div>
+              <input type="range" id="hullWInput" min="3" max="60" value="10" />
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <span>depth</span>
+                <span><input type="number" class="num-input" id="hullDNum" min="2" max="40" value="6" /> blocks</span>
+              </div>
+              <input type="range" id="hullDInput" min="2" max="40" value="6" />
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <span>wall thickness</span>
+                <span><input type="number" class="num-input" id="hullTNum" min="1" max="3" value="1" /> blocks</span>
+              </div>
+              <input type="range" id="hullTInput" min="1" max="3" value="1" />
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <span>gap to balloon</span>
+                <span><input type="number" class="num-input" id="hullGapNum" min="0" max="20" value="2" /> blocks</span>
+              </div>
+              <input type="range" id="hullGapInput" min="0" max="20" value="2" />
+            </div>
+            <div class="control">
+              <div class="control-label">material</div>
+              <select class="select-aero" id="hullMaterialSelect">
+                <option value="minecraft:oak_planks">Oak Planks</option>
+                <option value="minecraft:dark_oak_planks">Dark Oak Planks</option>
+                <option value="minecraft:spruce_planks">Spruce Planks</option>
+                <option value="minecraft:birch_planks">Birch Planks</option>
+                <option value="minecraft:stripped_oak_log">Stripped Oak Log</option>
+                <option value="minecraft:stripped_dark_oak_log">Stripped Dark Oak Log</option>
+                <option value="minecraft:iron_block">Iron Block</option>
+                <option value="custom">Custom block ID…</option>
+              </select>
+              <input type="text" class="text-aero" id="hullCustomBlock" placeholder="minecraft:dark_oak_planks" value="minecraft:dark_oak_planks" />
+            </div>
+          </div>
         </div>
 
         <div class="panel-aero section">
@@ -787,13 +907,18 @@
 
     // approximate Minecraft block colours
     const BLOCK_COLORS = {
-      'aeronautics:white_envelope':   0xece9dd,   // canvas/fabric off-white
-      'minecraft:white_wool':         0xe9ecec,
-      'minecraft:terracotta':         0x985e43,
-      'minecraft:oak_planks':         0xb08a59,
-      'minecraft:glass':              0xb0d8e8,
-      'minecraft:stripped_birch_log': 0xd3c789,
-      'minecraft:iron_block':         0xd8d8d8,
+      'aeronautics:white_envelope':       0xece9dd,   // canvas/fabric off-white
+      'minecraft:white_wool':             0xe9ecec,
+      'minecraft:terracotta':             0x985e43,
+      'minecraft:oak_planks':             0xb08a59,
+      'minecraft:dark_oak_planks':        0x4a3017,
+      'minecraft:spruce_planks':          0x735037,
+      'minecraft:birch_planks':           0xc9b88a,
+      'minecraft:stripped_oak_log':       0xb1996b,
+      'minecraft:stripped_dark_oak_log':  0x4f3922,
+      'minecraft:glass':                  0xb0d8e8,
+      'minecraft:stripped_birch_log':     0xd3c789,
+      'minecraft:iron_block':             0xd8d8d8,
     };
     function colourFor(blockId) { return BLOCK_COLORS[blockId] ?? 0x8b8b90; }
 
@@ -816,6 +941,18 @@
       paramTop: [            // X half-width as a function of Z
         { y: 0.10, r: 0.30 }, { y: 0.50, r: 0.95 }, { y: 0.90, r: 0.30 },
       ],
+      // Ship hull config — generated as a separate voxel volume below the balloon
+      hull: {
+        enabled: false,
+        style: 'box',           // box | boat | barge | galleon
+        L: 20,                  // length (X)
+        W: 10,                  // width  (Z)
+        D: 6,                   // depth  (Y) — hull height
+        T: 1,                   // wall + floor thickness
+        gap: 2,                 // empty blocks between hull deck and balloon
+        block: 'minecraft:oak_planks',
+        customBlock: 'minecraft:dark_oak_planks',
+      },
     };
 
     // ─── Build shape buttons ────────────────────────────────────
@@ -901,6 +1038,77 @@
     customBlock.addEventListener('input', () => {
       if (matSelect.value === 'custom') {
         state.block = customBlock.value || 'minecraft:cyan_concrete';
+        regenerate();
+      }
+    });
+
+    // ─── Ship hull controls ─────────────────────────────────────
+    const hullEnabled  = document.getElementById('hullEnabled');
+    const hullControls = document.getElementById('hullControls');
+    hullEnabled.addEventListener('change', () => {
+      state.hull.enabled = hullEnabled.checked;
+      hullControls.classList.toggle('show', hullEnabled.checked);
+      regenerate();
+    });
+
+    // Range/number pair binder for the nested hull state object.
+    function bindHullRange(rangeId, numId, key) {
+      const range = document.getElementById(rangeId);
+      const num   = document.getElementById(numId);
+      const min = +range.min, max = +range.max;
+      function commit(v) {
+        if (Number.isNaN(v)) return;
+        const clamped = Math.max(min, Math.min(max, Math.round(v)));
+        state.hull[key] = clamped;
+        range.value = clamped;
+        num.value   = clamped;
+        regenerate();
+      }
+      range.addEventListener('input', () => commit(+range.value));
+      num.addEventListener('input', () => {
+        const v = parseFloat(num.value);
+        if (Number.isNaN(v)) return;
+        if (v >= min && v <= max) {
+          const rounded = Math.round(v);
+          state.hull[key] = rounded;
+          range.value = rounded;
+          regenerate();
+        }
+      });
+      num.addEventListener('blur', () => {
+        const v = parseFloat(num.value);
+        if (num.value === '' || Number.isNaN(v)) { num.value = state.hull[key]; return; }
+        commit(v);
+      });
+      num.addEventListener('keydown', e => { if (e.key === 'Enter') num.blur(); });
+    }
+    bindHullRange('hullLInput',   'hullLNum',   'L');
+    bindHullRange('hullWInput',   'hullWNum',   'W');
+    bindHullRange('hullDInput',   'hullDNum',   'D');
+    bindHullRange('hullTInput',   'hullTNum',   'T');
+    bindHullRange('hullGapInput', 'hullGapNum', 'gap');
+
+    const hullStyleSelect = document.getElementById('hullStyleSelect');
+    hullStyleSelect.addEventListener('change', () => {
+      state.hull.style = hullStyleSelect.value;
+      regenerate();
+    });
+
+    const hullMatSelect   = document.getElementById('hullMaterialSelect');
+    const hullCustomBlock = document.getElementById('hullCustomBlock');
+    hullMatSelect.addEventListener('change', () => {
+      if (hullMatSelect.value === 'custom') {
+        hullCustomBlock.classList.add('show');
+        state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks';
+      } else {
+        hullCustomBlock.classList.remove('show');
+        state.hull.block = hullMatSelect.value;
+      }
+      regenerate();
+    });
+    hullCustomBlock.addEventListener('input', () => {
+      if (hullMatSelect.value === 'custom') {
+        state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks';
         regenerate();
       }
     });
@@ -1444,29 +1652,168 @@
       return out;
     }
 
+    // ─── Ship hull voxelization ─────────────────────────────────
+    // Builds an open-top hull volume with floor + walls of thickness T.
+    // Returns blocks in local hull coordinates: x ∈ [0, L), y ∈ [0, D), z ∈ [0, W).
+    // The "solid" mask describes the outline of the hull's hollow interior; the
+    // shell is then derived by eroding only horizontally and downward (so the
+    // top is left open — no deck/roof).
+    function buildHull() {
+      const { L, W, D, T, style } = state.hull;
+      const idx = (x, y, z) => x + L * (y + D * z);
+
+      // 1) Build the solid hull-volume mask
+      const solid = new Uint8Array(L * D * W);
+      for (let z = 0; z < W; z++) {
+        for (let y = 0; y < D; y++) {
+          for (let x = 0; x < L; x++) {
+            const tx = (x + 0.5) / L;             // 0..1 along length
+            const ty = D > 1 ? y / (D - 1) : 1;   // 0..1 from keel up to deck
+            const dz = z + 0.5 - W / 2;
+            let halfWidth;
+            switch (style) {
+              case 'box': {
+                halfWidth = W / 2;
+                break;
+              }
+              case 'boat': {
+                // Sine-bell taper at the bow & stern (first/last 25%) plus a
+                // V-hull cross-section that narrows toward the keel.
+                let lenFactor;
+                if (tx < 0.25)      lenFactor = Math.sin(tx * 2 * Math.PI);
+                else if (tx > 0.75) lenFactor = Math.sin((1 - tx) * 2 * Math.PI);
+                else                lenFactor = 1;
+                const depthFactor = 0.45 + 0.55 * ty;
+                halfWidth = (W / 2) * lenFactor * depthFactor;
+                break;
+              }
+              case 'barge': {
+                // Flat-bottom, square ends, a tiny inward chamfer near the keel.
+                const depthFactor = ty < 0.18 ? 0.85 + (ty / 0.18) * 0.15 : 1.0;
+                halfWidth = (W / 2) * depthFactor;
+                break;
+              }
+              case 'galleon': {
+                // Pointed bow at x=0, slightly wider rounded stern at x=L.
+                // Curved sides — fattest at the deck, narrower at the keel.
+                let lenFactor;
+                if (tx < 0.20)      lenFactor = 0.45 + Math.sin((tx / 0.20) * Math.PI / 2) * 0.55;
+                else if (tx > 0.85) lenFactor = 0.78 + ((1 - tx) / 0.15) * 0.22;
+                else                lenFactor = 1;
+                const depthFactor = 0.55 + 0.45 * Math.sqrt(ty);
+                halfWidth = (W / 2) * lenFactor * depthFactor;
+                break;
+              }
+              default:
+                halfWidth = W / 2;
+            }
+            if (Math.abs(dz) <= halfWidth) solid[idx(x, y, z)] = 1;
+          }
+        }
+      }
+
+      // 2) Erode T times — but treat "above the volume" (y+1 OOB) as interior so
+      //    the deck never grows a roof. Floor (y-1 OOB) is treated as exterior so
+      //    the bottom T layers stay in the shell.
+      let inner = solid.slice();
+      for (let i = 0; i < T; i++) {
+        const next = new Uint8Array(inner.length);
+        for (let z = 0; z < W; z++) {
+          for (let y = 0; y < D; y++) {
+            for (let x = 0; x < L; x++) {
+              if (!inner[idx(x, y, z)]) continue;
+              const xm = x > 0     ? inner[idx(x-1, y, z)] : 0;
+              const xp = x < L - 1 ? inner[idx(x+1, y, z)] : 0;
+              const zm = z > 0     ? inner[idx(x, y, z-1)] : 0;
+              const zp = z < W - 1 ? inner[idx(x, y, z+1)] : 0;
+              const ym = y > 0     ? inner[idx(x, y-1, z)] : 0;
+              const yp = y < D - 1 ? inner[idx(x, y+1, z)] : 1; // open top
+              if (xm && xp && zm && zp && ym && yp) next[idx(x, y, z)] = 1;
+            }
+          }
+        }
+        inner = next;
+      }
+
+      const blocks = [];
+      for (let z = 0; z < W; z++)
+        for (let y = 0; y < D; y++)
+          for (let x = 0; x < L; x++)
+            if (solid[idx(x, y, z)] && !inner[idx(x, y, z)])
+              blocks.push({ x, y, z });
+
+      return { blocks, sizeX: L, sizeY: D, sizeZ: W };
+    }
+
     function buildShellAndStats() {
       const T = state.T;
-      const { mask: solid, sizeX, sizeY, sizeZ } = buildSolidMask();
+      const { mask: solid, sizeX: bX, sizeY: bY, sizeZ: bZ } = buildSolidMask();
       let inner = solid;
-      for (let i = 0; i < T; i++) inner = erode3D(inner, sizeX, sizeY, sizeZ);
+      for (let i = 0; i < T; i++) inner = erode3D(inner, bX, bY, bZ);
       const shell = new Uint8Array(solid.length);
-      let blockCount = 0, interiorCount = 0, solidCount = 0;
+      let balloonCount = 0, interiorCount = 0, solidCount = 0;
       for (let i = 0; i < solid.length; i++) {
         if (solid[i]) solidCount++;
         if (inner[i]) interiorCount++;
-        if (solid[i] && !inner[i]) { shell[i] = 1; blockCount++; }
+        if (solid[i] && !inner[i]) { shell[i] = 1; balloonCount++; }
       }
-      // collect block positions
+
+      // Build optional ship hull
+      const hullData = state.hull.enabled ? buildHull() : null;
+
+      // Combined bounding box: balloon stacks on top of hull (with `gap` air rows between).
+      let sizeX, sizeY, sizeZ, balloonOffX, balloonOffY, balloonOffZ;
+      let hullOffX = 0, hullOffY = 0, hullOffZ = 0;
+      if (hullData) {
+        sizeX = Math.max(bX, hullData.sizeX);
+        sizeY = bY + state.hull.gap + hullData.sizeY;
+        sizeZ = Math.max(bZ, hullData.sizeZ);
+        balloonOffX = Math.floor((sizeX - bX) / 2);
+        balloonOffY = hullData.sizeY + state.hull.gap;
+        balloonOffZ = Math.floor((sizeZ - bZ) / 2);
+        hullOffX    = Math.floor((sizeX - hullData.sizeX) / 2);
+        hullOffY    = 0;
+        hullOffZ    = Math.floor((sizeZ - hullData.sizeZ) / 2);
+      } else {
+        sizeX = bX; sizeY = bY; sizeZ = bZ;
+        balloonOffX = balloonOffY = balloonOffZ = 0;
+      }
+
+      // Collect block positions, tagged with palette index (mat).
+      // mat = 1 → balloon material, mat = 2 → hull material.
       const blocks = [];
-      const idx = (x, y, z) => x + sizeX * (y + sizeY * z);
-      for (let z = 0; z < sizeZ; z++)
-        for (let y = 0; y < sizeY; y++)
-          for (let x = 0; x < sizeX; x++)
-            if (shell[idx(x,y,z)]) blocks.push({ x, y, z });
+      const idxB = (x, y, z) => x + bX * (y + bY * z);
+      for (let z = 0; z < bZ; z++)
+        for (let y = 0; y < bY; y++)
+          for (let x = 0; x < bX; x++)
+            if (shell[idxB(x, y, z)])
+              blocks.push({
+                x: x + balloonOffX,
+                y: y + balloonOffY,
+                z: z + balloonOffZ,
+                mat: 1,
+              });
+
+      let hullCount = 0;
+      if (hullData) {
+        for (const b of hullData.blocks) {
+          blocks.push({
+            x: b.x + hullOffX,
+            y: b.y + hullOffY,
+            z: b.z + hullOffZ,
+            mat: 2,
+          });
+          hullCount++;
+        }
+      }
 
       return {
-        blocks, blockCount, interiorCount, solidCount,
-        envelope: sizeX * sizeY * sizeZ, sizeX, sizeY, sizeZ,
+        blocks,
+        blockCount: balloonCount + hullCount,
+        balloonCount, hullCount,
+        interiorCount, solidCount,
+        envelope: sizeX * sizeY * sizeZ,
+        sizeX, sizeY, sizeZ,
       };
     }
 
@@ -1491,7 +1838,8 @@
     scene.add(axes);
 
     let bboxMesh = null;
-    let mesh = null;
+    let mesh = null;       // balloon
+    let hullMesh = null;   // ship hull
     const root = new THREE.Group();
     scene.add(root);
 
@@ -1551,37 +1899,42 @@
     }, { passive: false });
 
     function rebuildMesh(stats) {
-      if (mesh) { root.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); mesh = null; }
+      if (mesh)     { root.remove(mesh);     mesh.geometry.dispose();     mesh.material.dispose();     mesh = null; }
+      if (hullMesh) { root.remove(hullMesh); hullMesh.geometry.dispose(); hullMesh.material.dispose(); hullMesh = null; }
       if (bboxMesh) { root.remove(bboxMesh); bboxMesh.geometry.dispose(); bboxMesh.material.dispose(); bboxMesh = null; }
 
       const { blocks, sizeX, sizeY, sizeZ } = stats;
 
-      const blockId = state.block;
-      const colour = colourFor(blockId);
-      const isGlass = blockId.includes('glass');
-
-      const geom = new THREE.BoxGeometry(1, 1, 1);
-      const mat = new THREE.MeshStandardMaterial({
-        color: colour,
-        roughness: isGlass ? 0.05 : 0.85,
-        metalness: blockId.includes('iron') ? 0.6 : 0.0,
-        transparent: isGlass,
-        opacity: isGlass ? 0.45 : 1.0,
-      });
-
-      if (blocks.length > 0) {
-        mesh = new THREE.InstancedMesh(geom, mat, blocks.length);
-        const m = new THREE.Matrix4();
-        blocks.forEach((b, i) => {
-          m.makeTranslation(b.x + 0.5 - sizeX/2, b.y + 0.5 - sizeY/2, b.z + 0.5 - sizeZ/2);
-          mesh.setMatrixAt(i, m);
+      // Build one InstancedMesh per material (palette index).
+      function makeMesh(subset, blockId) {
+        if (subset.length === 0) return null;
+        const colour  = colourFor(blockId);
+        const isGlass = blockId.includes('glass');
+        const geom = new THREE.BoxGeometry(1, 1, 1);
+        const matr = new THREE.MeshStandardMaterial({
+          color: colour,
+          roughness: isGlass ? 0.05 : 0.85,
+          metalness: blockId.includes('iron') ? 0.6 : 0.0,
+          transparent: isGlass,
+          opacity: isGlass ? 0.45 : 1.0,
         });
-        mesh.instanceMatrix.needsUpdate = true;
-        root.add(mesh);
-      } else {
-        // dispose unused geom/mat to avoid leaks
-        geom.dispose(); mat.dispose();
+        const inst = new THREE.InstancedMesh(geom, matr, subset.length);
+        const m = new THREE.Matrix4();
+        subset.forEach((b, i) => {
+          m.makeTranslation(b.x + 0.5 - sizeX/2, b.y + 0.5 - sizeY/2, b.z + 0.5 - sizeZ/2);
+          inst.setMatrixAt(i, m);
+        });
+        inst.instanceMatrix.needsUpdate = true;
+        return inst;
       }
+
+      const balloonBlocks = blocks.filter(b => b.mat === 1);
+      const hullBlocks    = blocks.filter(b => b.mat === 2);
+
+      mesh     = makeMesh(balloonBlocks, state.block);
+      hullMesh = makeMesh(hullBlocks,    state.hull.block);
+      if (mesh)     root.add(mesh);
+      if (hullMesh) root.add(hullMesh);
 
       // wireframe envelope
       const bgeom = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
@@ -1639,7 +1992,9 @@
       bytes() { return this.buf.subarray(0, this.len); }
     }
 
-    function writeNBT(blocks, sizeX, sizeY, sizeZ, blockId) {
+    // palette is an array of block IDs; entry [0] should be 'minecraft:air'.
+    // Each block's `mat` field is the index into this palette.
+    function writeNBT(blocks, sizeX, sizeY, sizeZ, palette) {
       const w = new NBTWriter();
       // root TAG_Compound with empty name
       w.byte(10); w.str('');
@@ -1664,21 +2019,19 @@
         w.byte(9); w.str('pos');
         w.byte(3); w.int(3);
         w.int(b.x); w.int(b.y); w.int(b.z);
-        // state: Int
-        w.byte(3); w.str('state'); w.int(1);
+        // state: Int (palette index)
+        w.byte(3); w.str('state'); w.int(b.mat ?? 1);
         // end of compound
         w.byte(0);
       }
 
       // palette: List<Compound>
       w.byte(9); w.str('palette');
-      w.byte(10); w.int(2);
-      // [0] minecraft:air
-      w.byte(8); w.str('Name'); w.str('minecraft:air');
-      w.byte(0);
-      // [1] chosen block
-      w.byte(8); w.str('Name'); w.str(blockId);
-      w.byte(0);
+      w.byte(10); w.int(palette.length);
+      for (const blockId of palette) {
+        w.byte(8); w.str('Name'); w.str(blockId);
+        w.byte(0);
+      }
 
       // close root compound
       w.byte(0);
@@ -1712,7 +2065,8 @@
       statEnvelope.textContent = fmt(stats.envelope);
 
       const ms = (performance.now() - t0).toFixed(0);
-      overlayText.textContent = `${state.shape} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
+      const hullBit = state.hull.enabled ? ` + ${state.hull.style} hull` : '';
+      overlayText.textContent = `${state.shape}${hullBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
     }
 
     // ─── Download ────────────────────────────────────────────────
@@ -1723,10 +2077,15 @@
         alert('No blocks to export — try larger dimensions or a different shape.');
         return;
       }
-      const nbtBytes = writeNBT(blocks, sizeX, sizeY, sizeZ, state.block);
+      // Palette layout:
+      //   [0] minecraft:air, [1] balloon block, [2] hull block (if enabled)
+      const palette = ['minecraft:air', state.block];
+      if (state.hull.enabled) palette.push(state.hull.block);
+      const nbtBytes = writeNBT(blocks, sizeX, sizeY, sizeZ, palette);
       const gzipped  = pako.gzip(nbtBytes);
       const safeName = state.block.replace(/^minecraft:/, '').replace(/[^a-z0-9_]/gi, '');
-      const filename = `aeronaut_${state.shape}_${sizeX}x${sizeY}x${sizeZ}_${safeName}.nbt`;
+      const suffix   = state.hull.enabled ? '_hull' : '';
+      const filename = `aeronaut_${state.shape}_${sizeX}x${sizeY}x${sizeZ}${suffix}_${safeName}.nbt`;
       const blob = new Blob([gzipped], { type: 'application/octet-stream' });
       const url  = URL.createObjectURL(blob);
       const a = document.createElement('a');
