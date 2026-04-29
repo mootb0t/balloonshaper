@@ -552,6 +552,15 @@
     /* Section spacing */
     .section + .section { margin-top: 16px; }
 
+    .preview-credit {
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: .04em;
+    }
+
     .footer-note {
       margin-top: 22px;
       font-family: var(--mono);
@@ -690,38 +699,41 @@
       </div>
 
       <!-- RIGHT: 3D preview -->
-      <div class="preview-wrap">
-        <canvas id="threeCanvas"></canvas>
-        <div class="preview-overlay">
-          <span class="dot"></span><span id="overlayText">building…</span>
+      <div>
+        <div class="preview-wrap">
+          <canvas id="threeCanvas"></canvas>
+          <div class="preview-overlay">
+            <span class="dot"></span><span id="overlayText">building…</span>
+          </div>
+          <button class="rotate-toggle on" id="rotateToggle" title="toggle auto-rotate" aria-label="toggle auto-rotate" aria-pressed="true">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13.5 8 a 5.5 5.5 0 1 1 -1.6 -3.9"/>
+              <path d="M11 1.2 v 3.5 h 3.5"/>
+            </svg>
+            <span id="rotateLabel">auto</span>
+          </button>
+          <div class="orient-controls" id="orientControls" title="preview orientation (display only — does not affect the .nbt)">
+            <button class="orient-btn active" data-rot="0"   aria-label="upright">
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+                <path d="M7 10.5 v3 M9 10.5 v3"/>
+              </svg>
+            </button>
+            <button class="orient-btn" data-rot="90" aria-label="on side">
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+                <path d="M7 10.5 v3 M9 10.5 v3"/>
+              </svg>
+            </button>
+            <button class="orient-btn" data-rot="180" aria-label="upside down">
+              <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
+                <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
+                <path d="M7 10.5 v3 M9 10.5 v3"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <button class="rotate-toggle on" id="rotateToggle" title="toggle auto-rotate" aria-label="toggle auto-rotate" aria-pressed="true">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13.5 8 a 5.5 5.5 0 1 1 -1.6 -3.9"/>
-            <path d="M11 1.2 v 3.5 h 3.5"/>
-          </svg>
-          <span id="rotateLabel">auto</span>
-        </button>
-        <div class="orient-controls" id="orientControls" title="preview orientation (display only — does not affect the .nbt)">
-          <button class="orient-btn active" data-rot="0"   aria-label="upright">
-            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-              <path d="M7 10.5 v3 M9 10.5 v3"/>
-            </svg>
-          </button>
-          <button class="orient-btn" data-rot="90" aria-label="on side">
-            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-              <path d="M7 10.5 v3 M9 10.5 v3"/>
-            </svg>
-          </button>
-          <button class="orient-btn" data-rot="180" aria-label="upside down">
-            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4">
-              <ellipse cx="8" cy="6" rx="4" ry="4.5"/>
-              <path d="M7 10.5 v3 M9 10.5 v3"/>
-            </svg>
-          </button>
-        </div>
+        <div class="preview-credit">Tool developed by mootvey</div>
       </div>
     </div>
 
