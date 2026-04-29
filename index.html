@@ -732,6 +732,11 @@
                 <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
                 <option value="barge">Barge (flat-bottom, square ends)</option>
                 <option value="galleon">Galleon (curved sides, raised stern)</option>
+                <option value="canoe">Canoe (pointed both ends, sharp V-keel)</option>
+                <option value="catamaran">Catamaran (twin parallel hulls)</option>
+                <option value="twincanoe">Twin Canoe (twin pointed hulls, V-keel)</option>
+                <option value="disc">Saucer (flat UFO body + cockpit dome)</option>
+                <option value="pod">Pod (spherical bowl with apex hatch)</option>
               </select>
             </div>
             <div class="control">
@@ -1657,7 +1662,9 @@
     // Returns blocks in local hull coordinates: x ∈ [0, L), y ∈ [0, D), z ∈ [0, W).
     // The "solid" mask describes the outline of the hull's hollow interior; the
     // shell is then derived by eroding only horizontally and downward (so the
-    // top is left open — no deck/roof).
+    // top stays open — no deck/roof). For shapes whose top isn't flat (canoe,
+    // disc, …) the erosion uses a per-column topY map so each column's apex is
+    // treated as "open sky" rather than as a solid neighbour.
     function buildHull() {
       const { L, W, D, T, style } = state.hull;
       const idx = (x, y, z) => x + L * (y + D * z);
@@ -1670,76 +1677,145 @@
             const tx = (x + 0.5) / L;             // 0..1 along length
             const ty = D > 1 ? y / (D - 1) : 1;   // 0..1 from keel up to deck
             const dz = z + 0.5 - W / 2;
-            let halfWidth;
+            let isSolid;
             switch (style) {
               case 'box': {
-                halfWidth = W / 2;
+                isSolid = true;
                 break;
               }
               case 'boat': {
-                // Sine-bell taper at the bow & stern (first/last 25%) plus a
-                // V-hull cross-section that narrows toward the keel.
-                let lenFactor;
-                if (tx < 0.25)      lenFactor = Math.sin(tx * 2 * Math.PI);
-                else if (tx > 0.75) lenFactor = Math.sin((1 - tx) * 2 * Math.PI);
-                else                lenFactor = 1;
-                const depthFactor = 0.45 + 0.55 * ty;
-                halfWidth = (W / 2) * lenFactor * depthFactor;
+                // Sine-bell taper at bow & stern (first/last 25%) + V-hull keel.
+                let lf = (tx < 0.25) ? Math.sin(tx * 2 * Math.PI)
+                       : (tx > 0.75) ? Math.sin((1 - tx) * 2 * Math.PI) : 1;
+                const df = 0.45 + 0.55 * ty;
+                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
                 break;
               }
               case 'barge': {
-                // Flat-bottom, square ends, a tiny inward chamfer near the keel.
-                const depthFactor = ty < 0.18 ? 0.85 + (ty / 0.18) * 0.15 : 1.0;
-                halfWidth = (W / 2) * depthFactor;
+                // Flat-bottom, square ends, slight inward chamfer near the keel.
+                const df = ty < 0.18 ? 0.85 + (ty / 0.18) * 0.15 : 1.0;
+                isSolid = Math.abs(dz) <= (W / 2) * df;
                 break;
               }
               case 'galleon': {
-                // Pointed bow at x=0, slightly wider rounded stern at x=L.
-                // Curved sides — fattest at the deck, narrower at the keel.
-                let lenFactor;
-                if (tx < 0.20)      lenFactor = 0.45 + Math.sin((tx / 0.20) * Math.PI / 2) * 0.55;
-                else if (tx > 0.85) lenFactor = 0.78 + ((1 - tx) / 0.15) * 0.22;
-                else                lenFactor = 1;
-                const depthFactor = 0.55 + 0.45 * Math.sqrt(ty);
-                halfWidth = (W / 2) * lenFactor * depthFactor;
+                // Pointed bow, wider rounded stern, curved sides fattest at deck.
+                let lf = (tx < 0.20) ? 0.45 + Math.sin((tx / 0.20) * Math.PI / 2) * 0.55
+                       : (tx > 0.85) ? 0.78 + ((1 - tx) / 0.15) * 0.22 : 1;
+                const df = 0.55 + 0.45 * Math.sqrt(ty);
+                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
+                break;
+              }
+              case 'canoe': {
+                // Symmetric pointy bow & stern (full sine bell), sharp V-keel.
+                // Footprint is a leaf shape — no flat midship.
+                const lf = Math.sin(Math.PI * tx);
+                const df = 0.20 + 0.80 * ty;
+                isSolid = Math.abs(dz) <= (W / 2) * lf * df;
+                break;
+              }
+              case 'catamaran': {
+                // Two slim parallel hulls separated by a central air gap.
+                let lf = (tx < 0.20) ? Math.sin(tx * 2.5 * Math.PI)
+                       : (tx > 0.80) ? Math.sin((1 - tx) * 2.5 * Math.PI) : 1;
+                lf = Math.max(0, lf);
+                const df = 0.35 + 0.65 * ty;
+                const each = (W * 0.18) * lf * df;
+                const offs = W * 0.30;
+                isSolid = (Math.abs(dz - (-offs)) <= each) ||
+                          (Math.abs(dz -  offs)   <= each);
+                break;
+              }
+              case 'twincanoe': {
+                // Catamaran of canoes — two parallel pointy hulls with a sharp
+                // V-keel and full sine-bell length taper (no flat midship).
+                const lf = Math.sin(Math.PI * tx);
+                const df = 0.20 + 0.80 * ty;
+                const each = (W * 0.18) * lf * df;
+                const offs = W * 0.30;
+                isSolid = (Math.abs(dz - (-offs)) <= each) ||
+                          (Math.abs(dz -  offs)   <= each);
+                break;
+              }
+              case 'disc': {
+                // Flying saucer: flat cylindrical body + a small cockpit dome on
+                // top. Most of the hull is full-radius, so the wall forms a clean
+                // continuous shell instead of stair-stepping through a thin lens.
+                const dxN = (x + 0.5 - L / 2) / (L / 2);   // -1..1
+                const dzN = dz / (W / 2);                   // -1..1
+                let lf;
+                if (ty < 0.10)      lf = 0.85 + (ty / 0.10) * 0.15;            // soft keel chamfer
+                else if (ty < 0.55) lf = 1.0;                                   // saucer body
+                else if (ty < 0.80) lf = 1.0 - ((ty - 0.55) / 0.25) * 0.30;     // bevelled rim
+                else                lf = 0.70 - ((ty - 0.80) / 0.20) * 0.40;   // cockpit dome
+                isSolid = (dxN * dxN + dzN * dzN) <= lf * lf;
+                break;
+              }
+              case 'pod': {
+                // Spherical pod — full sphere/ellipsoid centred on the hull.
+                // Cross-section follows true sphere geometry top to bottom; a
+                // tiny radius clamp keeps the very poles from collapsing to a
+                // single voxel, and the open-top erosion leaves a hatch at the
+                // apex. The keel curves naturally as the sphere's underside.
+                const dxN = (x + 0.5 - L / 2) / (L / 2);
+                const dzN = dz / (W / 2);
+                const dyN = 2 * ty - 1;          // -1 at keel, +1 at apex
+                const lf  = Math.max(0.25, Math.sqrt(Math.max(0, 1 - dyN * dyN)));
+                isSolid = (dxN * dxN + dzN * dzN) <= lf * lf;
                 break;
               }
               default:
-                halfWidth = W / 2;
+                isSolid = Math.abs(dz) <= W / 2;
             }
-            if (Math.abs(dz) <= halfWidth) solid[idx(x, y, z)] = 1;
+            if (isSolid) solid[idx(x, y, z)] = 1;
           }
         }
       }
 
-      // 2) Erode T times — but treat "above the volume" (y+1 OOB) as interior so
-      //    the deck never grows a roof. Floor (y-1 OOB) is treated as exterior so
-      //    the bottom T layers stay in the shell.
-      let inner = solid.slice();
-      for (let i = 0; i < T; i++) {
-        const next = new Uint8Array(inner.length);
-        for (let z = 0; z < W; z++) {
-          for (let y = 0; y < D; y++) {
-            for (let x = 0; x < L; x++) {
-              if (!inner[idx(x, y, z)]) continue;
-              const xm = x > 0     ? inner[idx(x-1, y, z)] : 0;
-              const xp = x < L - 1 ? inner[idx(x+1, y, z)] : 0;
-              const zm = z > 0     ? inner[idx(x, y, z-1)] : 0;
-              const zp = z < W - 1 ? inner[idx(x, y, z+1)] : 0;
-              const ym = y > 0     ? inner[idx(x, y-1, z)] : 0;
-              const yp = y < D - 1 ? inner[idx(x, y+1, z)] : 1; // open top
-              if (xm && xp && zm && zp && ym && yp) next[idx(x, y, z)] = 1;
-            }
+      // 2) Erode T times — same plain 6-neighbour erosion the balloon uses.
+      //    Treats every OOB direction as exterior, producing a watertight
+      //    closed shell with no pinhole gaps along curved surfaces.
+      let inner = solid;
+      for (let i = 0; i < T; i++) inner = erode3D(inner, L, D, W);
+
+      // 3) Closed-shell mask (solid AND NOT inner — same convention as balloon).
+      const shell = new Uint8Array(solid.length);
+      for (let i = 0; i < solid.length; i++)
+        if (solid[i] && !inner[i]) shell[i] = 1;
+
+      // 4) Open the top. Find the highest y reached by any column (MAX_TOP),
+      //    then strip the "deck interior" at that y — every shell voxel whose
+      //    4 horizontal neighbours at the same y are also solid. Voxels on the
+      //    rim (≥1 horizontal neighbour outside the cross-section) keep their
+      //    place as the deck/cockpit edge, so a small hatch is left where the
+      //    cross-section narrows (pod / saucer apex) and a full open deck where
+      //    it doesn't (box / boat / barge / canoe / catamaran / galleon).
+      let maxTop = -1;
+      for (let z = 0; z < W && maxTop < D - 1; z++) {
+        for (let x = 0; x < L && maxTop < D - 1; x++) {
+          for (let y = D - 1; y > maxTop; y--) {
+            if (solid[idx(x, y, z)]) { maxTop = y; break; }
           }
         }
-        inner = next;
+      }
+      if (maxTop >= 0) {
+        const y = maxTop;
+        for (let z = 0; z < W; z++) {
+          for (let x = 0; x < L; x++) {
+            if (!shell[idx(x, y, z)]) continue;
+            const xm = x > 0     && solid[idx(x-1, y, z)];
+            const xp = x < L - 1 && solid[idx(x+1, y, z)];
+            const zm = z > 0     && solid[idx(x, y, z-1)];
+            const zp = z < W - 1 && solid[idx(x, y, z+1)];
+            if (xm && xp && zm && zp) shell[idx(x, y, z)] = 0;
+          }
+        }
       }
 
       const blocks = [];
       for (let z = 0; z < W; z++)
         for (let y = 0; y < D; y++)
           for (let x = 0; x < L; x++)
-            if (solid[idx(x, y, z)] && !inner[idx(x, y, z)])
+            if (shell[idx(x, y, z)])
               blocks.push({ x, y, z });
 
       return { blocks, sizeX: L, sizeY: D, sizeZ: W };
