@@ -145,31 +145,34 @@
     .hull-controls.show { display: block; }
     .control-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 6px; }
 
-    .preview-credit { margin-top: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .04em; }
-    .preview-credit a { color: var(--brass); text-decoration: none; }
-    .preview-credit a:hover { text-decoration: underline; }
-    .footer-note { margin-top: 22px; font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .04em; }
-    .footer-note a { color: var(--brass); text-decoration: none; }
-    .footer-note a:hover { text-decoration: underline; }
+    .preview-credit { position: absolute; bottom: 10px; left: 0; right: 0; font-family: var(--mono); font-size: 11px; color: rgba(168,176,187,.6); text-align: center; letter-spacing: .04em; pointer-events: none; }
+    .preview-credit a { color: var(--brass-dim); text-decoration: none; pointer-events: auto; }
+    .preview-credit a:hover { color: var(--brass); text-decoration: underline; }
+    /* Scroll hint — sticky to bottom of left scrollable column */
+    .scroll-hint { position: sticky; bottom: 0; padding: 10px 2px 8px; font-family: var(--mono); font-size: 11px; color: rgba(200,149,42,.9); letter-spacing: .06em; display: flex; align-items: center; gap: 6px; background: var(--bg-aero); animation: hint-pulse 3.5s ease-in-out infinite; pointer-events: none; transition: opacity .3s; }
+    .scroll-hint.hidden { opacity: 0; pointer-events: none; }
+    .scroll-hint::before { content: "←"; font-size: 14px; }
+    @keyframes hint-pulse { 0%,100% { opacity: .65; transform: translateX(0); } 50% { opacity: 1; transform: translateX(-5px); } }
+    @media (max-width: 920px) { .scroll-hint { display: none; } }
+    .footer-note { display: none; }
 
-    /* Independent scroll: left column scrolls, right column (preview) stays fixed */
+    /* 100vh layout — page never scrolls; only the left config panel does */
+    html, body { height: 100%; overflow: hidden; }
+    .aero-wrap { height: 100%; display: flex; flex-direction: column; padding-bottom: 18px; overflow: hidden; }
+    .aero-header { flex-shrink: 0; }
     @media (min-width: 921px) {
+      .layout { flex: 1; min-height: 0; align-items: stretch; }
       .layout > div:first-child {
-        position: sticky;
-        top: 22px;
-        max-height: calc(100vh - 44px);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(200,149,42,.25) transparent;
+        height: 100%; overflow-y: auto; overscroll-behavior: contain;
+        scrollbar-width: auto;
+        scrollbar-color: rgba(200,149,42,.45) rgba(255,255,255,.05);
       }
-      .layout > div:first-child::-webkit-scrollbar { width: 4px; }
-      .layout > div:first-child::-webkit-scrollbar-track { background: transparent; }
-      .layout > div:first-child::-webkit-scrollbar-thumb { background: rgba(200,149,42,.25); border-radius: 2px; }
-      .layout > div:last-child {
-        position: sticky;
-        top: 22px;
-      }
+      .layout > div:first-child::-webkit-scrollbar { width: 6px; }
+      .layout > div:first-child::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 3px; }
+      .layout > div:first-child::-webkit-scrollbar-thumb { background: rgba(200,149,42,.45); border-radius: 3px; }
+      .layout > div:first-child::-webkit-scrollbar-thumb:hover { background: rgba(200,149,42,.8); }
+      .layout > div:last-child { height: 100%; display: flex; flex-direction: column; }
+      .preview-wrap { flex: 1; height: auto; }
     }
   </style>
 </head>
@@ -375,6 +378,7 @@
             3. pick the file in the Table → take the empty schematic → fire it with a <span style="color:var(--text)">Schematicannon</span>
           </div>
         </div>
+        <div class="scroll-hint">pssst.. you can scroll the config panel!</div>
       </div>
 
       <!-- RIGHT: 3D preview -->
@@ -402,16 +406,11 @@
               <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><ellipse cx="8" cy="6" rx="4" ry="4.5"/><path d="M7 10.5 v3 M9 10.5 v3"/></svg>
             </button>
           </div>
-        </div>
-        <div class="preview-credit">
-          Tool developed by mootvey<br />
-          <a href="https://buymeacoffee.com/mootvey" target="_blank" rel="noopener">Buy me a coffee</a>
+          <div class="preview-credit">
+            Tool developed by mootvey &nbsp;·&nbsp; <a href="https://buymeacoffee.com/mootvey" target="_blank" rel="noopener">Buy me a coffee</a> &nbsp;·&nbsp; for <a href="https://www.curseforge.com/minecraft/mc-mods/create-aeronautics" target="_blank" rel="noopener">Create: Aeronautics</a>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="footer-note">
-      For <a href="https://www.curseforge.com/minecraft/mc-mods/create-aeronautics" target="_blank" rel="noopener">Create: Aeronautics</a> · uses vanilla structure NBT (1.21+) · all generation runs in your browser
     </div>
   </div>
 
@@ -1231,6 +1230,11 @@
     renderBalloonList();
     syncControlsToActiveBalloon();
     regenerate();
+
+    // Hide scroll hint once the user scrolls the config panel
+    const leftCol = document.querySelector('.layout > div:first-child');
+    const scrollHint = document.querySelector('.scroll-hint');
+    leftCol.addEventListener('scroll', () => { if(leftCol.scrollTop > 10) scrollHint.classList.add('hidden'); }, { passive: true });
   </script>
 </body>
 </html>
