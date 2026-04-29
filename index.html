@@ -673,6 +673,10 @@
 
         <div class="panel-aero section">
           <h3 class="panel-title">Dimensions</h3>
+          <label class="hull-toggle">
+            <input type="checkbox" id="unstableMode" />
+            <span>⚠️ Unstable mode (max 400)</span>
+          </label>
           <div class="control">
             <div class="control-row">
               <span>height</span>
@@ -1027,6 +1031,23 @@
     bindRangeAndNum('widthInput',     'widthNum',     'W');
     bindRangeAndNum('thicknessInput', 'thicknessNum', 'T');
     bindRangeAndNum('ribInput',       'ribNum',       'ribs');
+
+    // ─── Unstable mode ──────────────────────────────────────────
+    const unstableMode = document.getElementById('unstableMode');
+    const unstableSliders = [
+      { range: 'heightInput', num: 'heightNum', normalMax: 200 },
+      { range: 'widthInput',  num: 'widthNum',  normalMax: 200 },
+      { range: 'hullLInput',  num: 'hullLNum',  normalMax: 200 },
+    ];
+    unstableMode.addEventListener('change', () => {
+      const max = unstableMode.checked ? 400 : 200;
+      unstableSliders.forEach(({ range, num, normalMax }) => {
+        const r = document.getElementById(range);
+        const n = document.getElementById(num);
+        r.max = max;
+        n.max = max;
+      });
+    });
 
     const matSelect   = document.getElementById('materialSelect');
     const customBlock = document.getElementById('customBlock');
