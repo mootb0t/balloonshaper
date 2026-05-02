@@ -143,6 +143,8 @@
     .hull-toggle:hover { color: var(--text); }
     .hull-controls { display: none; }
     .hull-controls.show { display: block; }
+    .prop-cfg { display: none; }
+    .prop-cfg.show { display: block; }
     .control-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 6px; }
 
     .preview-credit { position: absolute; bottom: 10px; left: 0; right: 0; font-family: var(--mono); font-size: 11px; color: rgba(168,176,187,.6); text-align: center; letter-spacing: .04em; pointer-events: none; }
@@ -321,15 +323,27 @@
             <div class="control" style="margin-top:14px">
               <div class="control-label">style</div>
               <select class="select-aero" id="hullStyleSelect">
-                <option value="box">Box (rectangular, open-top)</option>
-                <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
-                <option value="barge">Barge (flat-bottom, square ends)</option>
-                <option value="galleon">Galleon (curved sides, raised stern)</option>
-                <option value="canoe">Canoe (pointed both ends, sharp V-keel)</option>
-                <option value="catamaran">Catamaran (twin parallel hulls)</option>
-                <option value="twincanoe">Twin Canoe (twin pointed hulls, V-keel)</option>
-                <option value="disc">Saucer (flat UFO body + cockpit dome)</option>
-                <option value="pod">Pod (spherical bowl with apex hatch)</option>
+                <optgroup label="Classic">
+                  <option value="box">Box (rectangular, open-top)</option>
+                  <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
+                  <option value="barge">Barge (flat-bottom, square ends)</option>
+                  <option value="galleon">Galleon (curved sides, raised stern)</option>
+                  <option value="canoe">Canoe (pointed both ends, sharp V-keel)</option>
+                  <option value="catamaran">Catamaran (twin parallel hulls)</option>
+                  <option value="twincanoe">Twin Canoe (twin pointed hulls, V-keel)</option>
+                  <option value="disc">Saucer (flat UFO body + cockpit dome)</option>
+                  <option value="pod">Pod (spherical bowl with apex hatch)</option>
+                </optgroup>
+                <optgroup label="New">
+                  <option value="drakkar">Drakkar (Viking longship, symmetric pointed)</option>
+                  <option value="junk">Junk (flat-bottom, raised stern castle)</option>
+                  <option value="trimaran">Trimaran (3 parallel hulls, big center)</option>
+                  <option value="trireme">Trireme (long galley, pointed ram bow)</option>
+                  <option value="dinghy">Dinghy (small flared rowboat)</option>
+                  <option value="submarine">Submarine (fully enclosed pill, top hatch)</option>
+                  <option value="pyramid">Pyramid (stepped tapered pyramid hull)</option>
+                  <option value="hex">Hex Hull (hexagonal cross-section)</option>
+                </optgroup>
               </select>
             </div>
             <div class="control"><div class="control-row"><span>length</span><span><input type="number" class="num-input" id="hullLNum" min="3" max="200" value="20" /> blocks</span></div><input type="range" id="hullLInput" min="3" max="200" value="20" /></div>
@@ -350,6 +364,137 @@
                 <option value="custom">Custom block ID…</option>
               </select>
               <input type="text" class="text-aero" id="hullCustomBlock" placeholder="minecraft:dark_oak_planks" value="minecraft:dark_oak_planks" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Propellors -->
+        <div class="panel-aero section">
+          <h3 class="panel-title">Propellors</h3>
+          <label class="hull-toggle">
+            <input type="checkbox" id="propEnabled" />
+            <span>Add propellors (white wool hub + create:white_sail blades)</span>
+          </label>
+          <div class="hull-controls" id="propControls">
+            <div class="control" style="margin-top:14px">
+              <div class="control-label">type</div>
+              <select class="select-aero" id="propTypeSelect">
+                <optgroup label="Rear-mount shapes">
+                  <option value="airfoil">Airfoil (tapered swept-back blades)</option>
+                  <option value="helix">Helix (3D screw / auger)</option>
+                  <option value="scimitar">Scimitar (heavily curved blades)</option>
+                  <option value="paddle">Paddle (wide flat slabs)</option>
+                  <option value="dihedral">Dihedral (V-shaped blades, splayed up)</option>
+                  <option value="ducted">Ducted fan (blades in a ring shroud)</option>
+                </optgroup>
+                <optgroup label="Simple mount patterns">
+                  <option value="rear">Rear single cross (cardinal blades)</option>
+                  <option value="twin">Twin sides (port &amp; starboard pair)</option>
+                  <option value="quad">Quad rotor (4 small lifters under balloon)</option>
+                  <option value="lift">Belly lifter (one big rotor, fat hub)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Airfoil -->
+            <div class="prop-cfg" data-prop="airfoil">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="afBladesNum" min="2" max="8" value="3" /></span></div><input type="range" id="afBladesInput" min="2" max="8" value="3" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="afLenNum" min="2" max="40" value="12" /> blocks</span></div><input type="range" id="afLenInput" min="2" max="40" value="12" /></div>
+              <div class="control"><div class="control-row"><span>root chord</span><span><input type="number" class="num-input" id="afRootNum" min="1" max="12" value="4" /> blocks</span></div><input type="range" id="afRootInput" min="1" max="12" value="4" /></div>
+              <div class="control"><div class="control-row"><span>tip chord</span><span><input type="number" class="num-input" id="afTipNum" min="1" max="12" value="2" /> blocks</span></div><input type="range" id="afTipInput" min="1" max="12" value="2" /></div>
+              <div class="control"><div class="control-row"><span>sweep °</span><span><input type="number" class="num-input" id="afSweepNum" min="0" max="80" value="30" /> °</span></div><input type="range" id="afSweepInput" min="0" max="80" value="30" /></div>
+              <div class="control"><div class="control-row"><span>thickness (along axis)</span><span><input type="number" class="num-input" id="afThickNum" min="1" max="6" value="1" /> blocks</span></div><input type="range" id="afThickInput" min="1" max="6" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="afOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="afOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="afHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="afHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Helix -->
+            <div class="prop-cfg" data-prop="helix">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="hxBladesNum" min="1" max="6" value="2" /></span></div><input type="range" id="hxBladesInput" min="1" max="6" value="2" /></div>
+              <div class="control"><div class="control-row"><span>length (along axis)</span><span><input type="number" class="num-input" id="hxLenNum" min="3" max="40" value="14" /> blocks</span></div><input type="range" id="hxLenInput" min="3" max="40" value="14" /></div>
+              <div class="control"><div class="control-row"><span>radius</span><span><input type="number" class="num-input" id="hxRadNum" min="1" max="15" value="4" /> blocks</span></div><input type="range" id="hxRadInput" min="1" max="15" value="4" /></div>
+              <div class="control"><div class="control-row"><span>twist (total °)</span><span><input type="number" class="num-input" id="hxTwistNum" min="90" max="1440" value="540" /> °</span></div><input type="range" id="hxTwistInput" min="90" max="1440" value="540" /></div>
+              <div class="control"><div class="control-row"><span>blade thickness</span><span><input type="number" class="num-input" id="hxThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="hxThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="hxOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="hxOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="hxHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="hxHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Scimitar -->
+            <div class="prop-cfg" data-prop="scimitar">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="scBladesNum" min="2" max="6" value="3" /></span></div><input type="range" id="scBladesInput" min="2" max="6" value="3" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="scLenNum" min="3" max="40" value="14" /> blocks</span></div><input type="range" id="scLenInput" min="3" max="40" value="14" /></div>
+              <div class="control"><div class="control-row"><span>root chord</span><span><input type="number" class="num-input" id="scRootNum" min="1" max="10" value="3" /> blocks</span></div><input type="range" id="scRootInput" min="1" max="10" value="3" /></div>
+              <div class="control"><div class="control-row"><span>tip chord</span><span><input type="number" class="num-input" id="scTipNum" min="1" max="8" value="1" /> blocks</span></div><input type="range" id="scTipInput" min="1" max="8" value="1" /></div>
+              <div class="control"><div class="control-row"><span>sweep ° (heavy)</span><span><input type="number" class="num-input" id="scSweepNum" min="30" max="160" value="80" /> °</span></div><input type="range" id="scSweepInput" min="30" max="160" value="80" /></div>
+              <div class="control"><div class="control-row"><span>thickness (along axis)</span><span><input type="number" class="num-input" id="scThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="scThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="scOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="scOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="scHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="scHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Paddle -->
+            <div class="prop-cfg" data-prop="paddle">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="pdBladesNum" min="2" max="8" value="4" /></span></div><input type="range" id="pdBladesInput" min="2" max="8" value="4" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="pdLenNum" min="2" max="30" value="8" /> blocks</span></div><input type="range" id="pdLenInput" min="2" max="30" value="8" /></div>
+              <div class="control"><div class="control-row"><span>width (chord)</span><span><input type="number" class="num-input" id="pdWidNum" min="1" max="12" value="3" /> blocks</span></div><input type="range" id="pdWidInput" min="1" max="12" value="3" /></div>
+              <div class="control"><div class="control-row"><span>thickness (along axis)</span><span><input type="number" class="num-input" id="pdThickNum" min="1" max="6" value="1" /> blocks</span></div><input type="range" id="pdThickInput" min="1" max="6" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="pdOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="pdOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="pdHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="pdHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Dihedral (V-shaped blades that splay up along axis) -->
+            <div class="prop-cfg" data-prop="dihedral">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="dhBladesNum" min="2" max="6" value="4" /></span></div><input type="range" id="dhBladesInput" min="2" max="6" value="4" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="dhLenNum" min="3" max="30" value="10" /> blocks</span></div><input type="range" id="dhLenInput" min="3" max="30" value="10" /></div>
+              <div class="control"><div class="control-row"><span>chord</span><span><input type="number" class="num-input" id="dhChordNum" min="1" max="10" value="3" /> blocks</span></div><input type="range" id="dhChordInput" min="1" max="10" value="3" /></div>
+              <div class="control"><div class="control-row"><span>dihedral ° (axial splay)</span><span><input type="number" class="num-input" id="dhAngNum" min="-60" max="60" value="25" /> °</span></div><input type="range" id="dhAngInput" min="-60" max="60" value="25" /></div>
+              <div class="control"><div class="control-row"><span>thickness</span><span><input type="number" class="num-input" id="dhThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="dhThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="dhOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="dhOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="dhHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="dhHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Ducted fan (blades surrounded by a ring) -->
+            <div class="prop-cfg" data-prop="ducted">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="duBladesNum" min="3" max="12" value="6" /></span></div><input type="range" id="duBladesInput" min="3" max="12" value="6" /></div>
+              <div class="control"><div class="control-row"><span>fan radius</span><span><input type="number" class="num-input" id="duRadNum" min="3" max="20" value="6" /> blocks</span></div><input type="range" id="duRadInput" min="3" max="20" value="6" /></div>
+              <div class="control"><div class="control-row"><span>chord (blade width)</span><span><input type="number" class="num-input" id="duChordNum" min="1" max="6" value="2" /> blocks</span></div><input type="range" id="duChordInput" min="1" max="6" value="2" /></div>
+              <div class="control"><div class="control-row"><span>shroud thickness</span><span><input type="number" class="num-input" id="duShroudNum" min="1" max="3" value="1" /> blocks</span></div><input type="range" id="duShroudInput" min="1" max="3" value="1" /></div>
+              <div class="control"><div class="control-row"><span>shroud depth (along axis)</span><span><input type="number" class="num-input" id="duDepthNum" min="1" max="8" value="2" /> blocks</span></div><input type="range" id="duDepthInput" min="1" max="8" value="2" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="duOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="duOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="duHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="duHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Rear single -->
+            <div class="prop-cfg" data-prop="rear">
+              <div class="control"><div class="control-row"><span>blade length</span><span><input type="number" class="num-input" id="rearLenNum" min="1" max="30" value="4" /> blocks</span></div><input type="range" id="rearLenInput" min="1" max="30" value="4" /></div>
+              <div class="control"><div class="control-row"><span>blade count</span><span><input type="number" class="num-input" id="rearCntNum" min="2" max="8" value="4" /></span></div><input type="range" id="rearCntInput" min="2" max="8" value="4" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="rearOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="rearOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="rearHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="rearHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Twin sides -->
+            <div class="prop-cfg" data-prop="twin">
+              <div class="control"><div class="control-row"><span>blade length</span><span><input type="number" class="num-input" id="twinLenNum" min="1" max="20" value="3" /> blocks</span></div><input type="range" id="twinLenInput" min="1" max="20" value="3" /></div>
+              <div class="control"><div class="control-row"><span>blade count</span><span><input type="number" class="num-input" id="twinCntNum" min="2" max="8" value="4" /></span></div><input type="range" id="twinCntInput" min="2" max="8" value="4" /></div>
+              <div class="control"><div class="control-row"><span>side offset</span><span><input type="number" class="num-input" id="twinOffNum" min="-10" max="30" value="2" /> blocks</span></div><input type="range" id="twinOffInput" min="-10" max="30" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="twinHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="twinHFInput" min="-100" max="200" value="50" /></div>
+              <div class="control"><div class="control-row"><span>forward (% of balloon)</span><span><input type="number" class="num-input" id="twinFFNum" min="-50" max="150" value="50" /> %</span></div><input type="range" id="twinFFInput" min="-50" max="150" value="50" /></div>
+            </div>
+
+            <!-- Quad rotor -->
+            <div class="prop-cfg" data-prop="quad">
+              <div class="control"><div class="control-row"><span>blade length</span><span><input type="number" class="num-input" id="quadLenNum" min="1" max="15" value="2" /> blocks</span></div><input type="range" id="quadLenInput" min="1" max="15" value="2" /></div>
+              <div class="control"><div class="control-row"><span>blade count</span><span><input type="number" class="num-input" id="quadCntNum" min="2" max="6" value="4" /></span></div><input type="range" id="quadCntInput" min="2" max="6" value="4" /></div>
+              <div class="control"><div class="control-row"><span>spread X</span><span><input type="number" class="num-input" id="quadSXNum" min="2" max="60" value="8" /> blocks</span></div><input type="range" id="quadSXInput" min="2" max="60" value="8" /></div>
+              <div class="control"><div class="control-row"><span>spread Z</span><span><input type="number" class="num-input" id="quadSZNum" min="2" max="60" value="8" /> blocks</span></div><input type="range" id="quadSZInput" min="2" max="60" value="8" /></div>
+              <div class="control"><div class="control-row"><span>depth below</span><span><input type="number" class="num-input" id="quadDBNum" min="1" max="30" value="4" /> blocks</span></div><input type="range" id="quadDBInput" min="1" max="30" value="4" /></div>
+            </div>
+
+            <!-- Belly lifter -->
+            <div class="prop-cfg" data-prop="lift">
+              <div class="control"><div class="control-row"><span>blade length</span><span><input type="number" class="num-input" id="liftLenNum" min="2" max="40" value="6" /> blocks</span></div><input type="range" id="liftLenInput" min="2" max="40" value="6" /></div>
+              <div class="control"><div class="control-row"><span>blade count</span><span><input type="number" class="num-input" id="liftCntNum" min="2" max="8" value="6" /></span></div><input type="range" id="liftCntInput" min="2" max="8" value="6" /></div>
+              <div class="control"><div class="control-row"><span>hub size</span><span><input type="number" class="num-input" id="liftHubNum" min="1" max="5" value="2" /> blocks</span></div><input type="range" id="liftHubInput" min="1" max="5" value="2" /></div>
+              <div class="control"><div class="control-row"><span>depth below</span><span><input type="number" class="num-input" id="liftDBNum" min="1" max="30" value="5" /> blocks</span></div><input type="range" id="liftDBInput" min="1" max="30" value="5" /></div>
             </div>
           </div>
         </div>
@@ -449,6 +594,7 @@
       'minecraft:glass':                 0xb0d8e8,
       'minecraft:stripped_birch_log':    0xd3c789,
       'minecraft:iron_block':            0xd8d8d8,
+      'create:white_sail':               0xf0f0f0,
     };
     function colourFor(id) { return BLOCK_COLORS[id] ?? 0x8b8b90; }
 
@@ -479,6 +625,24 @@
         L:20, W:10, D:6, T:1, gap:2,
         block:'minecraft:oak_planks',
         customBlock:'minecraft:dark_oak_planks',
+      },
+      prop: {
+        enabled:false,
+        type:'airfoil',
+        hubBlock:'minecraft:white_wool',
+        bladeBlock:'create:white_sail',
+        // Rear-mount shapes (axis = X, blades in Y-Z plane)
+        airfoil:  { blades: 3, length: 12, rootChord: 4, tipChord: 2, sweepDeg: 30, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        helix:    { blades: 2, length: 14, radius: 4, twistDeg: 540, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        scimitar: { blades: 3, length: 14, rootChord: 3, tipChord: 1, sweepDeg: 80, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        paddle:   { blades: 4, length: 8, width: 3, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        dihedral: { blades: 4, length: 10, chord: 3, dihedralDeg: 25, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        ducted:   { blades: 6, radius: 6, chord: 2, shroudThick: 1, shroudDepth: 2, rearOffset: 2, heightFrac: 50 },
+        // Simple mount patterns (existing)
+        rear:  { bladeLen: 4, bladeCount: 4, rearOffset: 2, heightFrac: 50 },
+        twin:  { bladeLen: 3, bladeCount: 4, sidesOffset: 2, heightFrac: 50, fwdFrac: 50 },
+        quad:  { bladeLen: 2, bladeCount: 4, spreadX: 8, spreadZ: 8, depthBelow: 4 },
+        lift:  { bladeLen: 6, bladeCount: 6, hubSize: 2, depthBelow: 5 },
       },
     };
     const ab = () => state.balloons[state.activeBalloonIdx];
@@ -620,6 +784,119 @@
     hullCustomBlock.addEventListener('input', () => {
       if (hullMatSelect.value === 'custom') { state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks'; regenerate(); }
     });
+
+    // ── Propellor controls ───────────────────────────────────────
+    document.getElementById('propEnabled').addEventListener('change', function() {
+      state.prop.enabled = this.checked;
+      document.getElementById('propControls').classList.toggle('show', this.checked);
+      regenerate();
+    });
+    function showPropCfg(type) {
+      document.querySelectorAll('.prop-cfg').forEach(el => {
+        el.classList.toggle('show', el.dataset.prop === type);
+      });
+    }
+    document.getElementById('propTypeSelect').addEventListener('change', function() {
+      state.prop.type = this.value;
+      showPropCfg(this.value);
+      regenerate();
+    });
+    showPropCfg(state.prop.type);
+    function bindPropRange(rangeId, numId, propType, key) {
+      const range = document.getElementById(rangeId);
+      const num   = document.getElementById(numId);
+      const min   = +range.min;
+      function commit(v) {
+        if (Number.isNaN(v)) return;
+        const max = +range.max;
+        const c = Math.max(min, Math.min(max, Math.round(v)));
+        state.prop[propType][key] = c; range.value = c; num.value = c; regenerate();
+      }
+      range.addEventListener('input', () => commit(+range.value));
+      num.addEventListener('input', () => {
+        const v = parseFloat(num.value); if (Number.isNaN(v)) return;
+        if (v >= min && v <= +range.max) {
+          state.prop[propType][key] = Math.round(v); range.value = Math.round(v); regenerate();
+        }
+      });
+      num.addEventListener('blur', () => {
+        const v = parseFloat(num.value);
+        if (num.value === '' || Number.isNaN(v)) { num.value = state.prop[propType][key]; return; }
+        commit(v);
+      });
+      num.addEventListener('keydown', e => { if (e.key === 'Enter') num.blur(); });
+    }
+    // airfoil
+    bindPropRange('afBladesInput','afBladesNum','airfoil','blades');
+    bindPropRange('afLenInput','afLenNum','airfoil','length');
+    bindPropRange('afRootInput','afRootNum','airfoil','rootChord');
+    bindPropRange('afTipInput','afTipNum','airfoil','tipChord');
+    bindPropRange('afSweepInput','afSweepNum','airfoil','sweepDeg');
+    bindPropRange('afThickInput','afThickNum','airfoil','thickness');
+    bindPropRange('afOffInput','afOffNum','airfoil','rearOffset');
+    bindPropRange('afHFInput','afHFNum','airfoil','heightFrac');
+    // helix
+    bindPropRange('hxBladesInput','hxBladesNum','helix','blades');
+    bindPropRange('hxLenInput','hxLenNum','helix','length');
+    bindPropRange('hxRadInput','hxRadNum','helix','radius');
+    bindPropRange('hxTwistInput','hxTwistNum','helix','twistDeg');
+    bindPropRange('hxThickInput','hxThickNum','helix','thickness');
+    bindPropRange('hxOffInput','hxOffNum','helix','rearOffset');
+    bindPropRange('hxHFInput','hxHFNum','helix','heightFrac');
+    // scimitar
+    bindPropRange('scBladesInput','scBladesNum','scimitar','blades');
+    bindPropRange('scLenInput','scLenNum','scimitar','length');
+    bindPropRange('scRootInput','scRootNum','scimitar','rootChord');
+    bindPropRange('scTipInput','scTipNum','scimitar','tipChord');
+    bindPropRange('scSweepInput','scSweepNum','scimitar','sweepDeg');
+    bindPropRange('scThickInput','scThickNum','scimitar','thickness');
+    bindPropRange('scOffInput','scOffNum','scimitar','rearOffset');
+    bindPropRange('scHFInput','scHFNum','scimitar','heightFrac');
+    // paddle
+    bindPropRange('pdBladesInput','pdBladesNum','paddle','blades');
+    bindPropRange('pdLenInput','pdLenNum','paddle','length');
+    bindPropRange('pdWidInput','pdWidNum','paddle','width');
+    bindPropRange('pdThickInput','pdThickNum','paddle','thickness');
+    bindPropRange('pdOffInput','pdOffNum','paddle','rearOffset');
+    bindPropRange('pdHFInput','pdHFNum','paddle','heightFrac');
+    // dihedral
+    bindPropRange('dhBladesInput','dhBladesNum','dihedral','blades');
+    bindPropRange('dhLenInput','dhLenNum','dihedral','length');
+    bindPropRange('dhChordInput','dhChordNum','dihedral','chord');
+    bindPropRange('dhAngInput','dhAngNum','dihedral','dihedralDeg');
+    bindPropRange('dhThickInput','dhThickNum','dihedral','thickness');
+    bindPropRange('dhOffInput','dhOffNum','dihedral','rearOffset');
+    bindPropRange('dhHFInput','dhHFNum','dihedral','heightFrac');
+    // ducted
+    bindPropRange('duBladesInput','duBladesNum','ducted','blades');
+    bindPropRange('duRadInput','duRadNum','ducted','radius');
+    bindPropRange('duChordInput','duChordNum','ducted','chord');
+    bindPropRange('duShroudInput','duShroudNum','ducted','shroudThick');
+    bindPropRange('duDepthInput','duDepthNum','ducted','shroudDepth');
+    bindPropRange('duOffInput','duOffNum','ducted','rearOffset');
+    bindPropRange('duHFInput','duHFNum','ducted','heightFrac');
+    // rear single (legacy)
+    bindPropRange('rearLenInput','rearLenNum','rear','bladeLen');
+    bindPropRange('rearCntInput','rearCntNum','rear','bladeCount');
+    bindPropRange('rearOffInput','rearOffNum','rear','rearOffset');
+    bindPropRange('rearHFInput','rearHFNum','rear','heightFrac');
+    // twin sides
+    bindPropRange('twinLenInput','twinLenNum','twin','bladeLen');
+    bindPropRange('twinCntInput','twinCntNum','twin','bladeCount');
+    bindPropRange('twinOffInput','twinOffNum','twin','sidesOffset');
+    bindPropRange('twinHFInput','twinHFNum','twin','heightFrac');
+    bindPropRange('twinFFInput','twinFFNum','twin','fwdFrac');
+    // quad rotor
+    bindPropRange('quadLenInput','quadLenNum','quad','bladeLen');
+    bindPropRange('quadCntInput','quadCntNum','quad','bladeCount');
+    bindPropRange('quadSXInput','quadSXNum','quad','spreadX');
+    bindPropRange('quadSZInput','quadSZNum','quad','spreadZ');
+    bindPropRange('quadDBInput','quadDBNum','quad','depthBelow');
+    // belly lifter
+    bindPropRange('liftLenInput','liftLenNum','lift','bladeLen');
+    bindPropRange('liftCntInput','liftCntNum','lift','bladeCount');
+    bindPropRange('liftHubInput','liftHubNum','lift','hubSize');
+    bindPropRange('liftDBInput','liftDBNum','lift','depthBelow');
 
     // ── Custom profile canvas ────────────────────────────────────
     const pCanvas = document.getElementById('profileCanvas');
@@ -952,6 +1229,24 @@
     }
 
     // ── Hull voxelization ────────────────────────────────────────
+    // Each hull style declares its open-top mode so the deck/cap is
+    // carved out cleanly rather than left as a solid lid:
+    //   'flat'  → opens just the top horizontal slice (legacy behavior)
+    //   'col'   → per-column: removes each column's top block whenever
+    //             there's interior directly below — fixes the "holes" /
+    //             closed deck issue on hulls where the top isn't flat
+    //             (galleons, canoes, longships, etc.)
+    //   'hatch' → leaves the top fully closed except for a small hole
+    //             at the highest point (for fully-enclosed hulls like
+    //             submarine)
+    const HULL_OPEN_MODE = {
+      box:'flat', boat:'col', barge:'flat', galleon:'col',
+      canoe:'col', catamaran:'col', twincanoe:'col',
+      disc:'flat', pod:'flat',
+      drakkar:'col', junk:'col', trimaran:'col', trireme:'col',
+      dinghy:'col', submarine:'hatch', pyramid:'col', hex:'col',
+    };
+
     function buildHull(){
       const{L,W,D,T,style}=state.hull;
       const idx=(x,y,z)=>x+L*(y+D*z);
@@ -968,6 +1263,92 @@
           case'twincanoe':{const lf=Math.sin(Math.PI*tx),each=(W*.18)*lf*(.20+.80*ty),offs=W*.30;s=Math.abs(dz-(-offs))<=each||Math.abs(dz-offs)<=each;break;}
           case'disc':{const dxN=(x+.5-L/2)/(L/2),dzN=dz/(W/2);let lf;if(ty<.10)lf=.85+(ty/.10)*.15;else if(ty<.55)lf=1;else if(ty<.80)lf=1-((ty-.55)/.25)*.30;else lf=.70-((ty-.80)/.20)*.40;s=(dxN*dxN+dzN*dzN)<=lf*lf;break;}
           case'pod':{const dxN=(x+.5-L/2)/(L/2),dzN=dz/(W/2),dyN=2*ty-1,lf=Math.max(.25,Math.sqrt(Math.max(0,1-dyN*dyN)));s=(dxN*dxN+dzN*dzN)<=lf*lf;break;}
+
+          // ── New hull types (use 'col' open-top so the deck opens cleanly) ──
+          case'drakkar':{
+            // Viking longship: symmetric pointed ends, low broad midsection,
+            // beam tapers smoothly to both bow & stern; flares slightly top.
+            const txc=Math.abs(tx-.5)*2;
+            const beam=Math.max(0,1-Math.pow(txc,1.6));
+            s=Math.abs(dz)<=(W/2)*beam*(.55+.45*ty);
+            break;
+          }
+          case'junk':{
+            // Chinese junk: full-beam flat bottom, mild bow taper, a raised
+            // stern castle that fills the upper-rear quadrant.
+            const lf=tx<.18?.65+(tx/.18)*.35:1;
+            // Main hull: keep all blocks below the deck line full beam
+            const deckLine=tx>.72?1:.78;
+            if(ty>deckLine){s=false;}
+            else s=Math.abs(dz)<=(W/2)*lf;
+            break;
+          }
+          case'trimaran':{
+            // Three parallel canoe hulls: big center + two smaller outriggers.
+            const lf=Math.sin(Math.PI*tx);
+            const big=(W*.13)*lf*(.40+.60*ty);
+            const small=(W*.085)*lf*(.45+.55*ty);
+            const offs=W*.32;
+            s=Math.abs(dz)<=big||Math.abs(dz-offs)<=small||Math.abs(dz+offs)<=small;
+            break;
+          }
+          case'trireme':{
+            // Long galley with sharp ramming bow (pointed at low Y) and
+            // square stern. Heavy V-keel.
+            let lf;
+            if(tx<.18)lf=.30+Math.sin((tx/.18)*Math.PI/2)*.70;
+            else if(tx>.88)lf=.92;
+            else lf=1;
+            // ram bow gets sharper at the bottom of the bow
+            const ramTaper=tx<.10?(.40+ty*.60):1;
+            s=Math.abs(dz)<=(W/2)*lf*ramTaper*(.55+.45*Math.sqrt(Math.max(0,ty)));
+            break;
+          }
+          case'dinghy':{
+            // Small wide rowboat. Flares outward toward the rim so the gunwale
+            // is wider than the waterline.
+            const lf=tx<.20?Math.sin(tx*2.5*Math.PI):tx>.80?Math.sin((1-tx)*2.5*Math.PI):1;
+            const flare=ty<.55?.55+ty*.85:1;
+            s=Math.abs(dz)<=(W/2)*lf*flare;
+            break;
+          }
+          case'submarine':{
+            // Fully enclosed pill / capsule shape. Rotational symmetry around
+            // the X axis; constant cross-section through the middle, ellipsoid
+            // caps at both ends. Opens via a small top hatch.
+            const dxN=(x+.5-L/2)/(L/2),dzN=dz/(W/2),dyN=2*ty-1;
+            const xCore=.55;
+            if(Math.abs(dxN)<=xCore){
+              s=(dyN*dyN+dzN*dzN)<=1;
+            }else{
+              const xOver=(Math.abs(dxN)-xCore)/(1-xCore);
+              s=(dyN*dyN+dzN*dzN)<=Math.max(0,1-xOver*xOver);
+            }
+            break;
+          }
+          case'pyramid':{
+            // Stepped tapered pyramid: square footprint at bottom, narrowing
+            // linearly toward the top. Always closed sides → no holes.
+            const widthFrac=1-ty*.65;       // narrows going up
+            const lengthFrac=1-ty*.45;      // narrows going up (less)
+            const dxN=(x+.5-L/2)/(L/2);
+            s=Math.abs(dz)<=(W/2)*widthFrac && Math.abs(dxN)<=lengthFrac;
+            break;
+          }
+          case'hex':{
+            // Hexagonal cross-section running lengthwise — like a pencil hull.
+            // Smooth taper at both ends, hexagonal walls (no gaps possible).
+            const lf=tx<.15?.5+(tx/.15)*.5:tx>.85?.5+((1-tx)/.15)*.5:1;
+            const yN=(y+.5-D/2)/(D/2);
+            const zN=dz/(W/2);
+            // hexagonal distance: max of axial & two diagonal axes
+            const ax=Math.abs(yN);
+            const ay=Math.abs(.5*yN+.866*zN);
+            const az=Math.abs(.5*yN-.866*zN);
+            const hexD=Math.max(ax,ay,az);
+            s=hexD<=lf;
+            break;
+          }
           default:s=Math.abs(dz)<=W/2;
         }
         if(s)solid[idx(x,y,z)]=1;
@@ -976,22 +1357,395 @@
       for(let i=0;i<T;i++)inner=erode3D(inner,L,D,W);
       const shell=new Uint8Array(solid.length);
       for(let i=0;i<solid.length;i++)if(solid[i]&&!inner[i])shell[i]=1;
-      // Open top
-      let maxTop=-1;
-      for(let z=0;z<W&&maxTop<D-1;z++)for(let x=0;x<L&&maxTop<D-1;x++)
-        for(let y=D-1;y>maxTop;y--)if(solid[idx(x,y,z)]){maxTop=y;break;}
-      if(maxTop>=0){
-        const y=maxTop;
+      // Open top — strategy depends on the hull style
+      const openMode=HULL_OPEN_MODE[style]||'flat';
+      if(openMode==='flat'){
+        let maxTop=-1;
+        for(let z=0;z<W&&maxTop<D-1;z++)for(let x=0;x<L&&maxTop<D-1;x++)
+          for(let y=D-1;y>maxTop;y--)if(solid[idx(x,y,z)]){maxTop=y;break;}
+        if(maxTop>=0){
+          const y=maxTop;
+          for(let z=0;z<W;z++)for(let x=0;x<L;x++){
+            if(!shell[idx(x,y,z)])continue;
+            const xm=x>0&&solid[idx(x-1,y,z)],xp=x<L-1&&solid[idx(x+1,y,z)];
+            const zm=z>0&&solid[idx(x,y,z-1)],zp=z<W-1&&solid[idx(x,y,z+1)];
+            if(xm&&xp&&zm&&zp)shell[idx(x,y,z)]=0;
+          }
+        }
+      }else if(openMode==='col'){
+        // Per-column: at each (x,z), remove the topmost shell block when
+        // it's actually a deck cap (i.e. interior right beneath it).
+        // This avoids leaving sealed lids on hulls with a non-flat top.
         for(let z=0;z<W;z++)for(let x=0;x<L;x++){
-          if(!shell[idx(x,y,z)])continue;
-          const xm=x>0&&solid[idx(x-1,y,z)],xp=x<L-1&&solid[idx(x+1,y,z)];
-          const zm=z>0&&solid[idx(x,y,z-1)],zp=z<W-1&&solid[idx(x,y,z+1)];
-          if(xm&&xp&&zm&&zp)shell[idx(x,y,z)]=0;
+          let topY=-1;
+          for(let y=D-1;y>=0;y--)if(shell[idx(x,y,z)]){topY=y;break;}
+          if(topY<=0)continue;
+          if(inner[idx(x,topY-1,z)])shell[idx(x,topY,z)]=0;
+        }
+      }else if(openMode==='hatch'){
+        // Cut a small circular hatch at the top of the highest interior column.
+        const cx=L>>1,cz=W>>1;
+        let maxTop=-1;
+        for(let y=D-1;y>=0;y--)if(solid[idx(cx,y,cz)]){maxTop=y;break;}
+        if(maxTop>=0){
+          const y=maxTop;
+          const r=Math.max(1,Math.floor(Math.min(L,W)*.08));
+          for(let dz2=-r;dz2<=r;dz2++)for(let dx2=-r;dx2<=r;dx2++){
+            if(dx2*dx2+dz2*dz2>r*r)continue;
+            const x=cx+dx2,z=cz+dz2;
+            if(x<0||x>=L||z<0||z>=W)continue;
+            if(shell[idx(x,y,z)])shell[idx(x,y,z)]=0;
+          }
         }
       }
       const blocks=[];
       for(let z=0;z<W;z++)for(let y=0;y<D;y++)for(let x=0;x<L;x++)if(shell[idx(x,y,z)])blocks.push({x,y,z});
       return{blocks,sizeX:L,sizeY:D,sizeZ:W};
+    }
+
+    // ── Propellor voxelization ──────────────────────────────────
+    // Builds raw {x,y,z,kind} block records in WORLD coordinates so the
+    // caller can fold them into the overall bounds & palette.
+    // kind is 'hub' (white_wool) or 'blade' (create:white_sail).
+    //
+    // For all rear-mount shapes the axis of rotation runs along world X,
+    // so blades sweep through the (Y,Z) plane and "thickness" extends
+    // along +X behind the hub.
+
+    // Push a block, dedup'd via the shared `seen` set.
+    function pushBlade(out, seen, x, y, z){
+      const k = x+','+y+','+z;
+      if(seen.has(k))return;
+      seen.add(k);
+      out.push({x,y,z,kind:'blade'});
+    }
+
+    // Map a planar (u,v) offset onto world coords given the axis the
+    // propellor spins around. The axial offset `t` runs along that axis.
+    function placeOnAxis(axis, hX, hY, hZ, u, v, t){
+      if(axis==='X')return [hX+t, hY+u, hZ+v];
+      if(axis==='Y')return [hX+u, hY+t, hZ+v];
+      return       [hX+u, hY+v, hZ+t];   // Z
+    }
+
+    // Cross-blade pattern (legacy): blades extend radially from the hub.
+    function addBlades(out, hX, hY, hZ, axis, len, count){
+      const seen=new Set();
+      for(let i=0;i<count;i++){
+        const angle=(i/count)*2*Math.PI;
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        for(let r=1;r<=len;r++){
+          const u=Math.round(r*cu), v=Math.round(r*cv);
+          if(u===0&&v===0)continue;
+          const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,0);
+          pushBlade(out,seen,x,y,z);
+        }
+      }
+    }
+
+    // ── Gap-free voxel rasterizers ───────────────────────────────
+    //
+    // Naive sampling at integer (r, chord) positions leaves holes the
+    // moment the blade curves: consecutive r-steps land on non-adjacent
+    // voxels and there's nothing in between. Every shape below uses a
+    // dense parametric sweep instead — we sub-sample (r, chord) finely
+    // enough that successive samples are guaranteed to share a face,
+    // then dedup via the `seen` set. Sub-step density is ~6 samples per
+    // voxel in each direction, more than the diagonal can outrun.
+
+    // Tapered swept airfoil blade. The blade is a 2D ribbon in the
+    // rotation plane parameterized by (r ∈ [0,len], c ∈ [-chord/2,chord/2]).
+    // Sweep curves the blade backward (against rotation) as r grows,
+    // squared so the curl shows up at the tip. `thickness` extrudes
+    // along the axis.
+    function addAirfoilBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, len=cfg.length, root=cfg.rootChord, tip=cfg.tipChord;
+      const sweepRad=(cfg.sweepDeg||0)*Math.PI/180;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const rSteps=Math.max(20, len*6);
+      for(let i=0;i<blades;i++){
+        const baseAngle=(i/blades)*2*Math.PI;
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*len;
+          if(r<.5)continue;            // hub block covers the very centre
+          const tR=r/len;
+          const chord=root*(1-tR)+tip*tR;
+          const angle=baseAngle - sweepRad*tR*tR;
+          const cu=Math.cos(angle), cv=Math.sin(angle);
+          const pu=-Math.sin(angle), pv=Math.cos(angle);
+          const halfC=(chord-1)/2;
+          const cSteps=Math.max(2, Math.ceil(chord*4));
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Helix / auger: parametric helical wall in (r ∈ [0,radius], s ∈
+    // [0,length-1]) coordinates. Twist angle increases linearly with s.
+    // Sub-sample s densely so the wall stays continuous through the
+    // twist; sub-sample r densely so the radial fill has no rings.
+    function addHelixBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, length=cfg.length, radius=cfg.radius;
+      const twistRad=(cfg.twistDeg||360)*Math.PI/180;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const sSteps=Math.max(length*6, 24);
+      const rSteps=Math.max(radius*4, 12);
+      for(let i=0;i<blades;i++){
+        const baseAngle=(i/blades)*2*Math.PI;
+        for(let ss=0;ss<=sSteps;ss++){
+          const sFloat=(ss/sSteps)*(length-1);
+          const tS=length>1 ? sFloat/(length-1) : 0;
+          const angle=baseAngle + tS*twistRad;
+          const cu=Math.cos(angle), cv=Math.sin(angle);
+          const pu=-Math.sin(angle), pv=Math.cos(angle);
+          for(let rs=1;rs<=rSteps;rs++){
+            const r=(rs/rSteps)*radius;
+            for(let t=0;t<thickness;t++){
+              const tOff=t-Math.floor((thickness-1)/2);
+              const u=Math.round(r*cu + tOff*pu);
+              const v=Math.round(r*cv + tOff*pv);
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,Math.round(sFloat));
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Wide flat rectangular paddle blades (windmill / riverboat style).
+    // No sweep — but the radial sweep at non-cardinal blade angles still
+    // needs sub-sampling.
+    function addPaddleBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, len=cfg.length, width=cfg.width;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const halfW=(width-1)/2;
+      const rSteps=Math.max(len*4, 12);
+      const wSteps=Math.max(width*3, 4);
+      for(let i=0;i<blades;i++){
+        const angle=(i/blades)*2*Math.PI;
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        const pu=-Math.sin(angle), pv=Math.cos(angle);
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*len;
+          if(r<.5)continue;
+          for(let cs=0;cs<=wSteps;cs++){
+            const c=-halfW + (cs/wSteps)*(width-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Dihedral: flat blades that splay forward/backward along the axis
+    // as they extend out (V/anhedral when viewed from the side). Same
+    // dense-sampling strategy as paddle but with an axial offset that
+    // varies with r.
+    function addDihedralBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, len=cfg.length, chord=cfg.chord;
+      const dihTan=Math.tan((cfg.dihedralDeg||0)*Math.PI/180);
+      const thickness=Math.max(1, cfg.thickness||1);
+      const halfC=(chord-1)/2;
+      const rSteps=Math.max(len*5, 16);
+      const cSteps=Math.max(chord*3, 4);
+      for(let i=0;i<blades;i++){
+        const angle=(i/blades)*2*Math.PI;
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        const pu=-Math.sin(angle), pv=Math.cos(angle);
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*len;
+          if(r<.5)continue;
+          const axialOff=Math.round(r*dihTan);
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,axialOff+th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Ducted fan: short straight blades inside a circular shroud (ring).
+    // Blades use the same sub-sampled rasterizer as paddle.
+    function addDuctedFan(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, radius=cfg.radius, chord=cfg.chord;
+      const shroudThick=Math.max(1,cfg.shroudThick||1);
+      const shroudDepth=Math.max(1,cfg.shroudDepth||1);
+      const halfC=(chord-1)/2;
+      const bladeLen=Math.max(1, radius-1);
+      const rSteps=Math.max(bladeLen*4, 10);
+      const cSteps=Math.max(chord*3, 3);
+      for(let i=0;i<blades;i++){
+        const angle=(i/blades)*2*Math.PI;
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        const pu=-Math.sin(angle), pv=Math.cos(angle);
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*bladeLen;
+          if(r<.5)continue;
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,0);
+            pushBlade(out,seen,x,y,z);
+          }
+        }
+      }
+      // Shroud: solid annulus (always continuous since we iterate every
+      // integer u,v in the bounding box).
+      const rOuter=radius+shroudThick-1;
+      for(let u=-rOuter;u<=rOuter;u++)for(let v=-rOuter;v<=rOuter;v++){
+        const d=Math.sqrt(u*u+v*v);
+        if(d<radius-0.01||d>rOuter+0.5)continue;
+        const halfD=Math.floor((shroudDepth-1)/2);
+        for(let t=-halfD;t<=shroudDepth-1-halfD;t++){
+          const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,t);
+          pushBlade(out,seen,x,y,z);
+        }
+      }
+    }
+
+    function buildProps(bMinX,bMaxX,bMinY,bMaxY,bMinZ,bMaxZ){
+      if(!state.prop.enabled)return null;
+      const p=state.prop;
+      const cfg=p[p.type];
+      const cx=Math.floor((bMinX+bMaxX)/2);
+      const cz=Math.floor((bMinZ+bMaxZ)/2);
+      const bH=bMaxY-bMinY, bL=bMaxX-bMinX;
+      const out=[];
+
+      // Helper: rear-mount hub coord (axis = X, blades in Y-Z plane).
+      // heightFrac is allowed outside [0,100] so the prop can sit below
+      // or above the balloon.
+      const rearHub = () => ({
+        x: bMaxX + cfg.rearOffset,
+        y: bMinY + Math.round((cfg.heightFrac/100)*bH),
+        z: cz,
+      });
+
+      switch(p.type){
+        // ── Rear-mount shape variants ─────────────────────────
+        case'airfoil':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addAirfoilBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'helix':{
+          const h=rearHub();
+          // Hub: a short axial plug so the screw has something solid
+          // at its core for every slice it spans.
+          for(let s=0;s<cfg.length;s++)out.push({x:h.x+s,y:h.y,z:h.z,kind:'hub'});
+          addHelixBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'scimitar':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          // Scimitar = airfoil with heavy sweep
+          addAirfoilBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'paddle':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addPaddleBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'dihedral':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addDihedralBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'ducted':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addDuctedFan(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+
+        // ── Simple mount patterns (legacy) ────────────────────
+        case'rear':{
+          // One large pusher prop behind the balloon, axis along X.
+          // Blades sit in the Y-Z plane at the tail.
+          const hubX=bMaxX+cfg.rearOffset;
+          const hubY=bMinY+Math.round((cfg.heightFrac/100)*bH);
+          const hubZ=cz;
+          out.push({x:hubX,y:hubY,z:hubZ,kind:'hub'});
+          addBlades(out,hubX,hubY,hubZ,'X',cfg.bladeLen,cfg.bladeCount);
+          break;
+        }
+        case'twin':{
+          // Twin props mounted port & starboard, axis along Z.
+          // Blades sit in the X-Y plane.
+          const hubX=bMinX+Math.round((cfg.fwdFrac/100)*bL);
+          const hubY=bMinY+Math.round((cfg.heightFrac/100)*bH);
+          const hubZL=bMinZ-cfg.sidesOffset;
+          const hubZR=bMaxZ+cfg.sidesOffset;
+          out.push({x:hubX,y:hubY,z:hubZL,kind:'hub'});
+          addBlades(out,hubX,hubY,hubZL,'Z',cfg.bladeLen,cfg.bladeCount);
+          out.push({x:hubX,y:hubY,z:hubZR,kind:'hub'});
+          addBlades(out,hubX,hubY,hubZR,'Z',cfg.bladeLen,cfg.bladeCount);
+          break;
+        }
+        case'quad':{
+          // Four small lifting rotors arranged in a square pattern beneath the
+          // balloon, axis along Y. Blades sit in the X-Z plane.
+          const hubY=bMinY-cfg.depthBelow;
+          const offX=Math.floor(cfg.spreadX/2);
+          const offZ=Math.floor(cfg.spreadZ/2);
+          for(const sx of [-1,1])for(const sz of [-1,1]){
+            const hX=cx+sx*offX, hZ=cz+sz*offZ;
+            out.push({x:hX,y:hubY,z:hZ,kind:'hub'});
+            addBlades(out,hX,hubY,hZ,'Y',cfg.bladeLen,cfg.bladeCount);
+          }
+          break;
+        }
+        case'lift':{
+          // Single big rotor with a fat hub centred under the balloon, axis Y.
+          const hubY=bMinY-cfg.depthBelow;
+          const hsz=cfg.hubSize;
+          const half=Math.floor((hsz-1)/2);
+          for(let dx=-half;dx<=hsz-1-half;dx++)
+            for(let dz=-half;dz<=hsz-1-half;dz++)
+              out.push({x:cx+dx,y:hubY,z:cz+dz,kind:'hub'});
+          // Blades start from the edge of the hub
+          const hubReach=Math.ceil((hsz-1)/2);
+          for(let i=0;i<cfg.bladeCount;i++){
+            const angle=(i/cfg.bladeCount)*2*Math.PI;
+            const cu=Math.cos(angle), cv=Math.sin(angle);
+            for(let r=hubReach+1;r<=hubReach+cfg.bladeLen;r++){
+              const u=Math.round(r*cu), v=Math.round(r*cv);
+              if(u===0&&v===0)continue;
+              out.push({x:cx+u,y:hubY,z:cz+v,kind:'blade'});
+            }
+          }
+          break;
+        }
+      }
+      return out;
     }
 
     // ── Multi-balloon shell + hollow-intersection export ─────────
@@ -1028,11 +1782,28 @@
         hOY=bMinY-state.hull.gap-hullData.sizeY;
       }
 
+      // Propellors (positioned in absolute world coords relative to balloon bounds)
+      const propData=buildProps(bMinX,bMaxX,bMinY,bMaxY,bMinZ,bMaxZ);
+      let propHubIdx=-1,propBladeIdx=-1;
+      if(propData&&propData.length){
+        if(!palMap.has(state.prop.hubBlock))palMap.set(state.prop.hubBlock,nPI++);
+        if(!palMap.has(state.prop.bladeBlock))palMap.set(state.prop.bladeBlock,nPI++);
+        propHubIdx=palMap.get(state.prop.hubBlock);
+        propBladeIdx=palMap.get(state.prop.bladeBlock);
+      }
+
       let wMinX=bMinX,wMinY=bMinY,wMinZ=bMinZ,wMaxX=bMaxX,wMaxY=bMaxY,wMaxZ=bMaxZ;
       if(hullData){
         wMinX=Math.min(wMinX,hOX);wMaxX=Math.max(wMaxX,hOX+hullData.sizeX);
         wMinZ=Math.min(wMinZ,hOZ);wMaxZ=Math.max(wMaxZ,hOZ+hullData.sizeZ);
         wMinY=Math.min(wMinY,hOY);
+      }
+      if(propData&&propData.length){
+        for(const pb of propData){
+          wMinX=Math.min(wMinX,pb.x);wMaxX=Math.max(wMaxX,pb.x+1);
+          wMinY=Math.min(wMinY,pb.y);wMaxY=Math.max(wMaxY,pb.y+1);
+          wMinZ=Math.min(wMinZ,pb.z);wMaxZ=Math.max(wMaxZ,pb.z+1);
+        }
       }
       const wSX=wMaxX-wMinX,wSY=wMaxY-wMinY,wSZ=wMaxZ-wMinZ;
 
@@ -1065,10 +1836,21 @@
         for(const hb of hullData.blocks){blocks.push({x:hb.x+hOX-wMinX,y:hb.y+hOY-wMinY,z:hb.z+hOZ-wMinZ,mat:hmi});hullCount++;}
       }
 
+      let propCount=0;
+      if(propData&&propData.length){
+        for(const pb of propData){
+          blocks.push({
+            x:pb.x-wMinX, y:pb.y-wMinY, z:pb.z-wMinZ,
+            mat: pb.kind==='hub' ? propHubIdx : propBladeIdx,
+          });
+          propCount++;
+        }
+      }
+
       const palette=Array.from(palMap.entries()).sort((a,b)=>a[1]-b[1]).map(([id])=>id);
       const balloonBounds=balloonData.map(d=>({x:d.b.offsetX-wMinX,y:d.b.offsetY-wMinY,z:d.b.offsetZ-wMinZ,sizeX:d.sizeX,sizeY:d.sizeY,sizeZ:d.sizeZ}));
 
-      return{blocks,palette,blockCount:balloonCount+hullCount,balloonCount,hullCount,interiorCount,envelope:wSX*wSY*wSZ,sizeX:wSX,sizeY:wSY,sizeZ:wSZ,balloonBounds};
+      return{blocks,palette,blockCount:balloonCount+hullCount+propCount,balloonCount,hullCount,propCount,interiorCount,envelope:wSX*wSY*wSZ,sizeX:wSX,sizeY:wSY,sizeZ:wSZ,balloonBounds};
     }
 
     // ── Three.js preview ─────────────────────────────────────────
@@ -1206,7 +1988,8 @@
       const ms=(performance.now()-t0).toFixed(0);
       const multi=state.balloons.length>1?` ×${state.balloons.length}`:'';
       const hBit=state.hull.enabled?` + ${state.hull.style} hull`:'';
-      overlayText.textContent=`${ab().shape}${multi}${hBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
+      const pBit=state.prop.enabled?` + ${state.prop.type} prop`:'';
+      overlayText.textContent=`${ab().shape}${multi}${hBit}${pBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
     }
 
     // ── Download ─────────────────────────────────────────────────
