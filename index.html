@@ -387,6 +387,13 @@
                   <option value="dihedral">Dihedral (V-shaped blades, splayed up)</option>
                   <option value="ducted">Ducted fan (blades in a ring shroud)</option>
                 </optgroup>
+                <optgroup label="Quirky shapes">
+                  <option value="pinwheel">Pinwheel (3D-tilted triangle blades)</option>
+                  <option value="spiral">Spiral (log-spiral galaxy arms)</option>
+                  <option value="forked">Forked (blades split into tip prongs)</option>
+                  <option value="star">Star (alternating long &amp; short blades)</option>
+                  <option value="whisk">Whisk (3D arc cage, like an eggbeater)</option>
+                </optgroup>
                 <optgroup label="Simple mount patterns">
                   <option value="rear">Rear single cross (cardinal blades)</option>
                   <option value="twin">Twin sides (port &amp; starboard pair)</option>
@@ -461,6 +468,64 @@
               <div class="control"><div class="control-row"><span>shroud depth (along axis)</span><span><input type="number" class="num-input" id="duDepthNum" min="1" max="8" value="2" /> blocks</span></div><input type="range" id="duDepthInput" min="1" max="8" value="2" /></div>
               <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="duOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="duOffInput" min="-30" max="40" value="2" /></div>
               <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="duHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="duHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Pinwheel: triangular blades that tilt forward/back along the axis -->
+            <div class="prop-cfg" data-prop="pinwheel">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="pwBladesNum" min="2" max="8" value="4" /></span></div><input type="range" id="pwBladesInput" min="2" max="8" value="4" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="pwLenNum" min="3" max="30" value="12" /> blocks</span></div><input type="range" id="pwLenInput" min="3" max="30" value="12" /></div>
+              <div class="control"><div class="control-row"><span>root width</span><span><input type="number" class="num-input" id="pwRootNum" min="1" max="6" value="1" /> blocks</span></div><input type="range" id="pwRootInput" min="1" max="6" value="1" /></div>
+              <div class="control"><div class="control-row"><span>tip width</span><span><input type="number" class="num-input" id="pwTipNum" min="2" max="14" value="5" /> blocks</span></div><input type="range" id="pwTipInput" min="2" max="14" value="5" /></div>
+              <div class="control"><div class="control-row"><span>tilt ° (axial pitch)</span><span><input type="number" class="num-input" id="pwTiltNum" min="-80" max="80" value="30" /> °</span></div><input type="range" id="pwTiltInput" min="-80" max="80" value="30" /></div>
+              <div class="control"><div class="control-row"><span>thickness</span><span><input type="number" class="num-input" id="pwThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="pwThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="pwOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="pwOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="pwHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="pwHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Spiral: logarithmic spiral arms (galaxy / nautilus look) -->
+            <div class="prop-cfg" data-prop="spiral">
+              <div class="control"><div class="control-row"><span>arms</span><span><input type="number" class="num-input" id="spArmsNum" min="2" max="6" value="3" /></span></div><input type="range" id="spArmsInput" min="2" max="6" value="3" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="spLenNum" min="4" max="40" value="16" /> blocks</span></div><input type="range" id="spLenInput" min="4" max="40" value="16" /></div>
+              <div class="control"><div class="control-row"><span>tightness (×0.1)</span><span><input type="number" class="num-input" id="spTightNum" min="2" max="40" value="12" /></span></div><input type="range" id="spTightInput" min="2" max="40" value="12" /></div>
+              <div class="control"><div class="control-row"><span>root chord</span><span><input type="number" class="num-input" id="spRootNum" min="1" max="8" value="3" /> blocks</span></div><input type="range" id="spRootInput" min="1" max="8" value="3" /></div>
+              <div class="control"><div class="control-row"><span>tip chord</span><span><input type="number" class="num-input" id="spTipNum" min="1" max="6" value="1" /> blocks</span></div><input type="range" id="spTipInput" min="1" max="6" value="1" /></div>
+              <div class="control"><div class="control-row"><span>thickness (along axis)</span><span><input type="number" class="num-input" id="spThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="spThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="spOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="spOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="spHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="spHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Forked: each blade splits into N prongs at tip -->
+            <div class="prop-cfg" data-prop="forked">
+              <div class="control"><div class="control-row"><span>blades</span><span><input type="number" class="num-input" id="fkBladesNum" min="2" max="6" value="3" /></span></div><input type="range" id="fkBladesInput" min="2" max="6" value="3" /></div>
+              <div class="control"><div class="control-row"><span>length (radial)</span><span><input type="number" class="num-input" id="fkLenNum" min="4" max="30" value="14" /> blocks</span></div><input type="range" id="fkLenInput" min="4" max="30" value="14" /></div>
+              <div class="control"><div class="control-row"><span>split point (% of len)</span><span><input type="number" class="num-input" id="fkSplitNum" min="20" max="90" value="55" /> %</span></div><input type="range" id="fkSplitInput" min="20" max="90" value="55" /></div>
+              <div class="control"><div class="control-row"><span>prongs</span><span><input type="number" class="num-input" id="fkProngNum" min="2" max="4" value="3" /></span></div><input type="range" id="fkProngInput" min="2" max="4" value="3" /></div>
+              <div class="control"><div class="control-row"><span>prong spread °</span><span><input type="number" class="num-input" id="fkSpreadNum" min="10" max="90" value="35" /> °</span></div><input type="range" id="fkSpreadInput" min="10" max="90" value="35" /></div>
+              <div class="control"><div class="control-row"><span>chord</span><span><input type="number" class="num-input" id="fkChordNum" min="1" max="6" value="2" /> blocks</span></div><input type="range" id="fkChordInput" min="1" max="6" value="2" /></div>
+              <div class="control"><div class="control-row"><span>thickness</span><span><input type="number" class="num-input" id="fkThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="fkThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="fkOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="fkOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="fkHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="fkHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Star: alternating long primary + short secondary blades -->
+            <div class="prop-cfg" data-prop="star">
+              <div class="control"><div class="control-row"><span>primary blades</span><span><input type="number" class="num-input" id="stPrimaryNum" min="2" max="6" value="4" /></span></div><input type="range" id="stPrimaryInput" min="2" max="6" value="4" /></div>
+              <div class="control"><div class="control-row"><span>primary length</span><span><input type="number" class="num-input" id="stPLenNum" min="3" max="30" value="14" /> blocks</span></div><input type="range" id="stPLenInput" min="3" max="30" value="14" /></div>
+              <div class="control"><div class="control-row"><span>secondary length</span><span><input type="number" class="num-input" id="stSLenNum" min="1" max="20" value="6" /> blocks</span></div><input type="range" id="stSLenInput" min="1" max="20" value="6" /></div>
+              <div class="control"><div class="control-row"><span>chord</span><span><input type="number" class="num-input" id="stChordNum" min="1" max="6" value="2" /> blocks</span></div><input type="range" id="stChordInput" min="1" max="6" value="2" /></div>
+              <div class="control"><div class="control-row"><span>thickness</span><span><input type="number" class="num-input" id="stThickNum" min="1" max="4" value="1" /> blocks</span></div><input type="range" id="stThickInput" min="1" max="4" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="stOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="stOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="stHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="stHFInput" min="-100" max="200" value="50" /></div>
+            </div>
+
+            <!-- Whisk: 3D arcs from hub looping forward & out (eggbeater cage) -->
+            <div class="prop-cfg" data-prop="whisk">
+              <div class="control"><div class="control-row"><span>arcs</span><span><input type="number" class="num-input" id="wkArcsNum" min="3" max="10" value="5" /></span></div><input type="range" id="wkArcsInput" min="3" max="10" value="5" /></div>
+              <div class="control"><div class="control-row"><span>length (along axis)</span><span><input type="number" class="num-input" id="wkLenNum" min="4" max="30" value="12" /> blocks</span></div><input type="range" id="wkLenInput" min="4" max="30" value="12" /></div>
+              <div class="control"><div class="control-row"><span>cage radius (max)</span><span><input type="number" class="num-input" id="wkRadNum" min="2" max="20" value="6" /> blocks</span></div><input type="range" id="wkRadInput" min="2" max="20" value="6" /></div>
+              <div class="control"><div class="control-row"><span>arc thickness</span><span><input type="number" class="num-input" id="wkThickNum" min="1" max="3" value="1" /> blocks</span></div><input type="range" id="wkThickInput" min="1" max="3" value="1" /></div>
+              <div class="control"><div class="control-row"><span>distance behind</span><span><input type="number" class="num-input" id="wkOffNum" min="-30" max="40" value="2" /> blocks</span></div><input type="range" id="wkOffInput" min="-30" max="40" value="2" /></div>
+              <div class="control"><div class="control-row"><span>height (% of balloon)</span><span><input type="number" class="num-input" id="wkHFNum" min="-100" max="200" value="50" /> %</span></div><input type="range" id="wkHFInput" min="-100" max="200" value="50" /></div>
             </div>
 
             <!-- Rear single -->
@@ -638,6 +703,12 @@
         paddle:   { blades: 4, length: 8, width: 3, thickness: 1, rearOffset: 2, heightFrac: 50 },
         dihedral: { blades: 4, length: 10, chord: 3, dihedralDeg: 25, thickness: 1, rearOffset: 2, heightFrac: 50 },
         ducted:   { blades: 6, radius: 6, chord: 2, shroudThick: 1, shroudDepth: 2, rearOffset: 2, heightFrac: 50 },
+        // Quirky shapes
+        pinwheel: { blades: 4, length: 12, rootWidth: 1, tipWidth: 5, tiltDeg: 30, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        spiral:   { arms: 3, length: 16, tightness: 12, rootChord: 3, tipChord: 1, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        forked:   { blades: 3, length: 14, splitFrac: 55, prongs: 3, spreadDeg: 35, chord: 2, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        star:     { primary: 4, primaryLen: 14, secondaryLen: 6, chord: 2, thickness: 1, rearOffset: 2, heightFrac: 50 },
+        whisk:    { arcs: 5, length: 12, maxRadius: 6, thickness: 1, rearOffset: 2, heightFrac: 50 },
         // Simple mount patterns (existing)
         rear:  { bladeLen: 4, bladeCount: 4, rearOffset: 2, heightFrac: 50 },
         twin:  { bladeLen: 3, bladeCount: 4, sidesOffset: 2, heightFrac: 50, fwdFrac: 50 },
@@ -875,6 +946,49 @@
     bindPropRange('duDepthInput','duDepthNum','ducted','shroudDepth');
     bindPropRange('duOffInput','duOffNum','ducted','rearOffset');
     bindPropRange('duHFInput','duHFNum','ducted','heightFrac');
+    // pinwheel
+    bindPropRange('pwBladesInput','pwBladesNum','pinwheel','blades');
+    bindPropRange('pwLenInput','pwLenNum','pinwheel','length');
+    bindPropRange('pwRootInput','pwRootNum','pinwheel','rootWidth');
+    bindPropRange('pwTipInput','pwTipNum','pinwheel','tipWidth');
+    bindPropRange('pwTiltInput','pwTiltNum','pinwheel','tiltDeg');
+    bindPropRange('pwThickInput','pwThickNum','pinwheel','thickness');
+    bindPropRange('pwOffInput','pwOffNum','pinwheel','rearOffset');
+    bindPropRange('pwHFInput','pwHFNum','pinwheel','heightFrac');
+    // spiral
+    bindPropRange('spArmsInput','spArmsNum','spiral','arms');
+    bindPropRange('spLenInput','spLenNum','spiral','length');
+    bindPropRange('spTightInput','spTightNum','spiral','tightness');
+    bindPropRange('spRootInput','spRootNum','spiral','rootChord');
+    bindPropRange('spTipInput','spTipNum','spiral','tipChord');
+    bindPropRange('spThickInput','spThickNum','spiral','thickness');
+    bindPropRange('spOffInput','spOffNum','spiral','rearOffset');
+    bindPropRange('spHFInput','spHFNum','spiral','heightFrac');
+    // forked
+    bindPropRange('fkBladesInput','fkBladesNum','forked','blades');
+    bindPropRange('fkLenInput','fkLenNum','forked','length');
+    bindPropRange('fkSplitInput','fkSplitNum','forked','splitFrac');
+    bindPropRange('fkProngInput','fkProngNum','forked','prongs');
+    bindPropRange('fkSpreadInput','fkSpreadNum','forked','spreadDeg');
+    bindPropRange('fkChordInput','fkChordNum','forked','chord');
+    bindPropRange('fkThickInput','fkThickNum','forked','thickness');
+    bindPropRange('fkOffInput','fkOffNum','forked','rearOffset');
+    bindPropRange('fkHFInput','fkHFNum','forked','heightFrac');
+    // star
+    bindPropRange('stPrimaryInput','stPrimaryNum','star','primary');
+    bindPropRange('stPLenInput','stPLenNum','star','primaryLen');
+    bindPropRange('stSLenInput','stSLenNum','star','secondaryLen');
+    bindPropRange('stChordInput','stChordNum','star','chord');
+    bindPropRange('stThickInput','stThickNum','star','thickness');
+    bindPropRange('stOffInput','stOffNum','star','rearOffset');
+    bindPropRange('stHFInput','stHFNum','star','heightFrac');
+    // whisk
+    bindPropRange('wkArcsInput','wkArcsNum','whisk','arcs');
+    bindPropRange('wkLenInput','wkLenNum','whisk','length');
+    bindPropRange('wkRadInput','wkRadNum','whisk','maxRadius');
+    bindPropRange('wkThickInput','wkThickNum','whisk','thickness');
+    bindPropRange('wkOffInput','wkOffNum','whisk','rearOffset');
+    bindPropRange('wkHFInput','wkHFNum','whisk','heightFrac');
     // rear single (legacy)
     bindPropRange('rearLenInput','rearLenNum','rear','bladeLen');
     bindPropRange('rearCntInput','rearCntNum','rear','bladeCount');
@@ -1626,6 +1740,197 @@
       }
     }
 
+    // ── Quirky shapes ────────────────────────────────────────────
+
+    // Pinwheel: triangular blades that grow from a narrow root to a wide
+    // tip (kid's pinwheel), with an axial tilt so each blade has 3D
+    // depth — tilt=0 lays it flat against the rotation plane, tilt=60°
+    // pitches the chord forward/back.
+    function addPinwheelBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, len=cfg.length, rootW=cfg.rootWidth, tipW=cfg.tipWidth;
+      const tiltRad=(cfg.tiltDeg||0)*Math.PI/180;
+      const cosT=Math.cos(tiltRad), sinT=Math.sin(tiltRad);
+      const thickness=Math.max(1, cfg.thickness||1);
+      const rSteps=Math.max(20, len*5);
+      for(let i=0;i<blades;i++){
+        const angle=(i/blades)*2*Math.PI;
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        const pu=-Math.sin(angle), pv=Math.cos(angle);
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*len;
+          if(r<.5)continue;
+          const tR=r/len;
+          const width=rootW*(1-tR)+tipW*tR;
+          const halfW=(width-1)/2;
+          const cSteps=Math.max(2, Math.ceil(width*4));
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfW + (cs/cSteps)*(width-1);
+            // The chord rotates about the radial axis: cosT in the
+            // rotation plane, sinT into the prop axis direction.
+            const u=Math.round(r*cu + c*cosT*pu);
+            const v=Math.round(r*cv + c*cosT*pv);
+            const axialOff=Math.round(c*sinT);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,axialOff+th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Spiral: logarithmic spiral arms — angle grows with log(1+r), so the
+    // curve is tight at the hub and gradually flattens out near the tip
+    // (galaxy-arm / nautilus look). Same chord taper as airfoil.
+    function addSpiralBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const arms=cfg.arms, len=cfg.length, root=cfg.rootChord, tip=cfg.tipChord;
+      const tightness=(cfg.tightness||10)*0.1;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const rSteps=Math.max(30, len*7);
+      for(let i=0;i<arms;i++){
+        const baseAngle=(i/arms)*2*Math.PI;
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*len;
+          if(r<.5)continue;
+          const tR=r/len;
+          const chord=root*(1-tR)+tip*tR;
+          const angle=baseAngle - tightness*Math.log(1+r);
+          const cu=Math.cos(angle), cv=Math.sin(angle);
+          const pu=-Math.sin(angle), pv=Math.cos(angle);
+          const halfC=(chord-1)/2;
+          const cSteps=Math.max(2, Math.ceil(chord*4));
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      }
+    }
+
+    // Forked: each blade is one shaft from the hub up to splitR, then
+    // splits into N prongs that fan out in the rotation plane until they
+    // reach the full radial length. Like a trident.
+    function addForkedBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const blades=cfg.blades, len=cfg.length, prongs=cfg.prongs, chord=cfg.chord;
+      const splitR=(cfg.splitFrac/100)*len;
+      const spreadRad=(cfg.spreadDeg||20)*Math.PI/180;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const halfC=(chord-1)/2;
+      const cSteps=Math.max(2, chord*3);
+
+      // Sub-routine to lay down a straight ribbon from (u0,v0) along
+      // direction (cu,cv) for `length` units, with a chord perpendicular
+      // to that direction.
+      const ribbon=(u0,v0,cu,cv,length)=>{
+        const pu=-cv, pv=cu;
+        const rSteps=Math.max(8, Math.ceil(length*5));
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*length;
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(u0 + r*cu + c*pu);
+            const v=Math.round(v0 + r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      };
+
+      for(let i=0;i<blades;i++){
+        const baseAngle=(i/blades)*2*Math.PI;
+        const baseCu=Math.cos(baseAngle), baseCv=Math.sin(baseAngle);
+        // Pre-split shaft from hub outward
+        ribbon(0, 0, baseCu, baseCv, splitR);
+        // Prong endpoints fan symmetrically about the base angle
+        const prongLen=Math.max(1, len-splitR);
+        const startU=splitR*baseCu, startV=splitR*baseCv;
+        for(let p=0;p<prongs;p++){
+          const off=prongs===1 ? 0 : ((p-(prongs-1)/2) * spreadRad);
+          const a=baseAngle + off;
+          ribbon(startU, startV, Math.cos(a), Math.sin(a), prongLen);
+        }
+      }
+    }
+
+    // Star: long primary blades plus shorter secondary blades wedged
+    // between them. Both share the same chord so it reads as a single
+    // jagged star outline.
+    function addStarBlades(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const primary=cfg.primary, primaryLen=cfg.primaryLen, secondaryLen=cfg.secondaryLen;
+      const chord=cfg.chord, thickness=Math.max(1, cfg.thickness||1);
+      const halfC=(chord-1)/2;
+      const cSteps=Math.max(2, chord*3);
+
+      const sweepBlade=(angle, length)=>{
+        const cu=Math.cos(angle), cv=Math.sin(angle);
+        const pu=-Math.sin(angle), pv=Math.cos(angle);
+        const rSteps=Math.max(10, length*5);
+        for(let rs=0;rs<=rSteps;rs++){
+          const r=(rs/rSteps)*length;
+          if(r<.5)continue;
+          for(let cs=0;cs<=cSteps;cs++){
+            const c=-halfC + (cs/cSteps)*(chord-1);
+            const u=Math.round(r*cu + c*pu);
+            const v=Math.round(r*cv + c*pv);
+            for(let th=0;th<thickness;th++){
+              const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
+              pushBlade(out,seen,x,y,z);
+            }
+          }
+        }
+      };
+
+      for(let i=0;i<primary;i++){
+        const angle=(i/primary)*2*Math.PI;
+        sweepBlade(angle, primaryLen);
+        // Secondary blade wedged exactly between this primary and the next
+        sweepBlade(angle + Math.PI/primary, secondaryLen);
+      }
+    }
+
+    // Whisk: a set of arcs that bow out from the hub, peak at maxRadius
+    // halfway along the axis, then come back together at the far end —
+    // a 3D ovoid cage like an egg-beater. Arcs are spaced evenly around
+    // the rotation axis.
+    function addWhiskArcs(out, hX, hY, hZ, axis, cfg){
+      const seen=new Set();
+      const arcs=cfg.arcs, length=cfg.length, maxRadius=cfg.maxRadius;
+      const thickness=Math.max(1, cfg.thickness||1);
+      const sSteps=Math.max(60, length*8);
+      for(let i=0;i<arcs;i++){
+        const baseAngle=(i/arcs)*2*Math.PI;
+        const cu=Math.cos(baseAngle), cv=Math.sin(baseAngle);
+        for(let ss=0;ss<=sSteps;ss++){
+          const t=ss/sSteps;             // 0 hub end → 1 far end
+          const r=maxRadius*Math.sin(Math.PI*t);
+          const sFloat=t*length;
+          const sIdx=Math.round(sFloat);
+          for(let th=0;th<thickness;th++){
+            const tOff=th-Math.floor((thickness-1)/2);
+            const u=Math.round(r*cu);
+            const v=Math.round(r*cv);
+            // Thickness extrudes radially so a thicker arc reads as a
+            // wider strip rather than a longer one.
+            const u2=Math.round((r+tOff)*cu);
+            const v2=Math.round((r+tOff)*cv);
+            const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u2,v2,sIdx);
+            pushBlade(out,seen,x,y,z);
+          }
+        }
+      }
+    }
+
     function buildProps(bMinX,bMaxX,bMinY,bMaxY,bMinZ,bMaxZ){
       if(!state.prop.enabled)return null;
       const p=state.prop;
@@ -1683,6 +1988,39 @@
           const h=rearHub();
           out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
           addDuctedFan(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+
+        // ── Quirky shapes ─────────────────────────────────────
+        case'pinwheel':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addPinwheelBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'spiral':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addSpiralBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'forked':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addForkedBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'star':{
+          const h=rearHub();
+          out.push({x:h.x,y:h.y,z:h.z,kind:'hub'});
+          addStarBlades(out,h.x,h.y,h.z,'X',cfg);
+          break;
+        }
+        case'whisk':{
+          const h=rearHub();
+          // Plug along the central axis so the cage has a proper hub spine
+          for(let s=0;s<cfg.length;s++)out.push({x:h.x+s,y:h.y,z:h.z,kind:'hub'});
+          addWhiskArcs(out,h.x,h.y,h.z,'X',cfg);
           break;
         }
 
