@@ -145,6 +145,14 @@
     .hull-controls.show { display: block; }
     .prop-cfg { display: none; }
     .prop-cfg.show { display: block; }
+
+    /* Output orientation buttons */
+    .ori-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    .ori-btn { appearance: none; background: rgba(255,255,255,.02); border: 1px solid var(--line-aero); border-radius: 6px; color: var(--muted); font-family: var(--mono); font-size: 10.5px; padding: 8px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: border-color .12s, color .12s, background .12s; line-height: 1.15; }
+    .ori-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .ori-btn:hover { border-color: rgba(200,149,42,.35); color: var(--text); }
+    .ori-btn.active { border-color: var(--brass); color: var(--brass); background: var(--brass-faint); }
+    .ori-hint { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin: 4px 0 8px; line-height: 1.45; }
     .control-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .04em; margin-bottom: 6px; }
 
     .preview-credit { position: absolute; bottom: 10px; left: 0; right: 0; font-family: var(--mono); font-size: 11px; color: rgba(168,176,187,.6); text-align: center; letter-spacing: .04em; pointer-events: none; }
@@ -343,6 +351,7 @@
                   <option value="submarine">Submarine (fully enclosed pill, top hatch)</option>
                   <option value="pyramid">Pyramid (stepped tapered pyramid hull)</option>
                   <option value="hex">Hex Hull (hexagonal cross-section)</option>
+                  <option value="icebreaker">Icebreaker (wedge bow that rides over ice)</option>
                 </optgroup>
               </select>
             </div>
@@ -564,6 +573,50 @@
           </div>
         </div>
 
+        <!-- Output Orientation -->
+        <div class="panel-aero section">
+          <h3 class="panel-title">Output Orientation</h3>
+          <div class="ori-hint">Bakes rotation into the .nbt — what you see in preview is exactly what gets pasted in-game. Separate from camera controls.</div>
+          <div class="control-label">lay direction</div>
+          <div class="ori-row" id="oriLayRow">
+            <button class="ori-btn active" data-lay="up" title="Y up — default standing balloon">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="9" rx="6" ry="7"/><path d="M9 16 v4 M15 16 v4"/></svg>
+              <span>Upright</span>
+            </button>
+            <button class="ori-btn" data-lay="fwd" title="Lay along +Z (long axis forward)">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="5"/><path d="M3 9 v-4 M3 15 v4"/></svg>
+              <span>Lay fwd</span>
+            </button>
+            <button class="ori-btn" data-lay="side" title="Lay along +X (long axis sideways)">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="5" ry="9"/><path d="M9 3 h-4 M15 3 h4"/></svg>
+              <span>Lay side</span>
+            </button>
+            <button class="ori-btn" data-lay="down" title="Upside down">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="15" rx="6" ry="7"/><path d="M9 4 v4 M15 4 v4"/></svg>
+              <span>Flip Y</span>
+            </button>
+          </div>
+          <div class="control-label" style="margin-top:14px">yaw (rotate around vertical)</div>
+          <div class="ori-row" id="oriYawRow">
+            <button class="ori-btn active" data-yaw="0">
+              <svg viewBox="0 0 24 24"><path d="M4 12 h16 M16 8 l4 4 -4 4"/></svg>
+              <span>0°</span>
+            </button>
+            <button class="ori-btn" data-yaw="90">
+              <svg viewBox="0 0 24 24"><path d="M12 20 v-16 M8 8 l4 -4 4 4"/></svg>
+              <span>90°</span>
+            </button>
+            <button class="ori-btn" data-yaw="180">
+              <svg viewBox="0 0 24 24"><path d="M20 12 h-16 M8 8 l-4 4 4 4"/></svg>
+              <span>180°</span>
+            </button>
+            <button class="ori-btn" data-yaw="270">
+              <svg viewBox="0 0 24 24"><path d="M12 4 v16 M8 16 l4 4 4 -4"/></svg>
+              <span>270°</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Stats -->
         <div class="panel-aero section">
           <h3 class="panel-title">Stats</h3>
@@ -685,6 +738,7 @@
     const state = {
       balloons: [newBalloon()],
       activeBalloonIdx: 0,
+      orientation: { lay: 'up', yaw: 0 },
       hull: {
         enabled:false, style:'box',
         L:20, W:10, D:6, T:1, gap:2,
@@ -1011,6 +1065,22 @@
     bindPropRange('liftCntInput','liftCntNum','lift','bladeCount');
     bindPropRange('liftHubInput','liftHubNum','lift','hubSize');
     bindPropRange('liftDBInput','liftDBNum','lift','depthBelow');
+
+    // ── Output orientation buttons ───────────────────────────────
+    function bindOriRow(rowId, key, parser){
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      row.querySelectorAll('.ori-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          row.querySelectorAll('.ori-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.orientation[key] = parser(btn.dataset[key]);
+          regenerate();
+        });
+      });
+    }
+    bindOriRow('oriLayRow', 'lay', v => v);
+    bindOriRow('oriYawRow', 'yaw', v => parseInt(v, 10));
 
     // ── Custom profile canvas ────────────────────────────────────
     const pCanvas = document.getElementById('profileCanvas');
@@ -1359,6 +1429,7 @@
       disc:'flat', pod:'flat',
       drakkar:'col', junk:'col', trimaran:'col', trireme:'col',
       dinghy:'col', submarine:'hatch', pyramid:'col', hex:'col',
+      icebreaker:'col',
     };
 
     function buildHull(){
@@ -1461,6 +1532,52 @@
             const az=Math.abs(.5*yN-.866*zN);
             const hexD=Math.max(ax,ay,az);
             s=hexD<=lf;
+            break;
+          }
+          case'icebreaker':{
+            // Reinforced wedge bow + heavily curved sides tapering into a
+            // rounded stern. From above the hull is teardrop-ish; from
+            // the side the keel ramps up forward (riding up over ice) and
+            // lifts slightly at the stern (cruiser-style counter); the
+            // cross-section has chamfered keel corners so the bottom is
+            // rounded rather than boxy.
+            //
+            //   bow zone   tx ∈ [0, 0.32) — sinusoidal beam taper to ~26%
+            //   midship    tx ∈ [0.32, 0.58] — full beam
+            //   stern zone tx ∈ (0.58, 1.0] — cosine round-in to ~38%
+            let beam;
+            if (tx < 0.32) {
+              const bp = tx / 0.32;
+              beam = 0.26 + 0.74 * Math.sin(bp * Math.PI/2);
+            } else if (tx > 0.58) {
+              const sp = (tx - 0.58) / 0.42;
+              beam = 0.38 + 0.62 * Math.cos(sp * Math.PI/2);
+            } else {
+              beam = 1;
+            }
+
+            // Side profile keel: forward ramp (bow) + small stern lift.
+            let bottomY = 0;
+            if (tx < 0.30) {
+              const bp = tx / 0.30;
+              bottomY = (1 - bp) * (D - 1) * 0.65;
+            } else if (tx > 0.85) {
+              const sp = (tx - 0.85) / 0.15;
+              bottomY = sp * (D - 1) * 0.22;
+            }
+            if (y < bottomY) { s = false; break; }
+
+            // Rounded keel cross-section: bottom 30% of available height
+            // pulls the beam in along a sin curve so the bottom corners
+            // are chamfered instead of square.
+            const yFromBot = y - bottomY;
+            const localD = D - bottomY;
+            let yMod = 1;
+            if (localD > 1) {
+              const tyL = yFromBot / (localD - 1);
+              if (tyL < 0.30) yMod = 0.70 + 0.30 * Math.sin((tyL / 0.30) * Math.PI/2);
+            }
+            s = Math.abs(dz) <= (W/2) * beam * yMod;
             break;
           }
           default:s=Math.abs(dz)<=W/2;
@@ -2312,10 +2429,83 @@
     function updateLiftStat(){if(!lastStats)return;const p=getAirPressure();statLift.textContent=fmt(Math.round(lastStats.interiorCount*1.5*p));statPressure.textContent=`(${Math.round(p*100)}% pressure)`;}
     function fmt(n){if(n>=10000)return(n/1000).toFixed(1)+'k';return String(n);}
 
+    // ── Output orientation ───────────────────────────────────────
+    // Bakes a rotation into the block coordinates so the .nbt exports
+    // pre-rotated. Camera/view rotation lives separately in root.rotation.
+    //
+    // Composition: yaw (around original Y) is applied first, then `lay`
+    // tips the structure onto a side (or flips it). After the rotation
+    // the resulting blocks can have negative coordinates, so we shift
+    // them back into the [0, sizeN) range and recompute sizeX/Y/Z.
+    function rotPoint(x, y, z, ori){
+      // yaw around Y
+      let nx, ny, nz;
+      switch (ori.yaw) {
+        case 90:  nx = z;  ny = y; nz = -x; break;
+        case 180: nx = -x; ny = y; nz = -z; break;
+        case 270: nx = -z; ny = y; nz = x;  break;
+        default:  nx = x;  ny = y; nz = z;  break;
+      }
+      // lay
+      switch (ori.lay) {
+        case 'fwd':  return { x: nx,  y: nz,  z: -ny };  // Rx(-90)
+        case 'side': return { x: ny,  y: -nx, z: nz  };  // Rz(-90)
+        case 'down': return { x: nx,  y: -ny, z: -nz };  // Rx(180)
+        default:     return { x: nx,  y: ny,  z: nz  };  // 'up'
+      }
+    }
+
+    function applyOrientation(stats){
+      const ori = state.orientation;
+      if (ori.lay === 'up' && ori.yaw === 0) return stats;
+
+      const rotated = stats.blocks.map(b => {
+        const p = rotPoint(b.x, b.y, b.z, ori);
+        return { x: p.x, y: p.y, z: p.z, mat: b.mat };
+      });
+
+      let minX = Infinity, minY = Infinity, minZ = Infinity;
+      let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+      for (const b of rotated) {
+        if (b.x < minX) minX = b.x; if (b.x > maxX) maxX = b.x;
+        if (b.y < minY) minY = b.y; if (b.y > maxY) maxY = b.y;
+        if (b.z < minZ) minZ = b.z; if (b.z > maxZ) maxZ = b.z;
+      }
+      for (const b of rotated) { b.x -= minX; b.y -= minY; b.z -= minZ; }
+      const sX = maxX - minX + 1, sY = maxY - minY + 1, sZ = maxZ - minZ + 1;
+
+      // Rotate per-balloon bounding boxes too so the multi-balloon
+      // wireframes stay aligned with the rotated mesh.
+      let newBB = null;
+      if (stats.balloonBounds) {
+        newBB = stats.balloonBounds.map(bb => {
+          let bMinX = Infinity, bMaxX = -Infinity;
+          let bMinY = Infinity, bMaxY = -Infinity;
+          let bMinZ = Infinity, bMaxZ = -Infinity;
+          for (const dx of [0, bb.sizeX]) for (const dy of [0, bb.sizeY]) for (const dz of [0, bb.sizeZ]) {
+            const p = rotPoint(bb.x + dx, bb.y + dy, bb.z + dz, ori);
+            if (p.x < bMinX) bMinX = p.x; if (p.x > bMaxX) bMaxX = p.x;
+            if (p.y < bMinY) bMinY = p.y; if (p.y > bMaxY) bMaxY = p.y;
+            if (p.z < bMinZ) bMinZ = p.z; if (p.z > bMaxZ) bMaxZ = p.z;
+          }
+          return {
+            x: bMinX - minX, y: bMinY - minY, z: bMinZ - minZ,
+            sizeX: bMaxX - bMinX, sizeY: bMaxY - bMinY, sizeZ: bMaxZ - bMinZ,
+          };
+        });
+      }
+
+      return Object.assign({}, stats, {
+        blocks: rotated, sizeX: sX, sizeY: sY, sizeZ: sZ,
+        balloonBounds: newBB, envelope: sX*sY*sZ,
+      });
+    }
+
     let lastStats=null;
     function regenerate(){
       const t0=performance.now();
-      const stats=buildShellAndStats();
+      const rawStats=buildShellAndStats();
+      const stats=applyOrientation(rawStats);
       lastStats=stats;rebuildMesh(stats);
       statBlocks.textContent=fmt(stats.blockCount);
       statInterior.textContent=fmt(stats.interiorCount);
@@ -2327,7 +2517,10 @@
       const multi=state.balloons.length>1?` ×${state.balloons.length}`:'';
       const hBit=state.hull.enabled?` + ${state.hull.style} hull`:'';
       const pBit=state.prop.enabled?` + ${state.prop.type} prop`:'';
-      overlayText.textContent=`${ab().shape}${multi}${hBit}${pBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks · ${ms}ms`;
+      const oBit=(state.orientation.lay!=='up'||state.orientation.yaw!==0)
+        ?` · ${state.orientation.lay==='up'?'':state.orientation.lay+' '}yaw ${state.orientation.yaw}°`
+        :'';
+      overlayText.textContent=`${ab().shape}${multi}${hBit}${pBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks${oBit} · ${ms}ms`;
     }
 
     // ── Download ─────────────────────────────────────────────────
