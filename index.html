@@ -172,17 +172,125 @@
     .aero-header { flex-shrink: 0; }
     @media (min-width: 921px) {
       .layout { flex: 1; min-height: 0; align-items: stretch; }
-      .layout > div:first-child {
-        height: 100%; overflow-y: auto; overscroll-behavior: contain;
+      .config-col { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+      .tab-scroll {
+        flex: 1; overflow-y: auto; overscroll-behavior: contain; min-height: 0;
+        padding-right: 4px;
         scrollbar-width: auto;
         scrollbar-color: rgba(200,149,42,.45) rgba(255,255,255,.05);
       }
-      .layout > div:first-child::-webkit-scrollbar { width: 6px; }
-      .layout > div:first-child::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 3px; }
-      .layout > div:first-child::-webkit-scrollbar-thumb { background: rgba(200,149,42,.45); border-radius: 3px; }
-      .layout > div:first-child::-webkit-scrollbar-thumb:hover { background: rgba(200,149,42,.8); }
+      .tab-scroll::-webkit-scrollbar { width: 6px; }
+      .tab-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,.05); border-radius: 3px; }
+      .tab-scroll::-webkit-scrollbar-thumb { background: rgba(200,149,42,.45); border-radius: 3px; }
+      .tab-scroll::-webkit-scrollbar-thumb:hover { background: rgba(200,149,42,.8); }
       .layout > div:last-child { height: 100%; display: flex; flex-direction: column; }
       .preview-wrap { flex: 1; height: auto; }
+    }
+
+    /* ── Tab strip ── */
+    .tab-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--line-aero);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      appearance: none; background: transparent; border: 1px solid transparent;
+      color: var(--muted);
+      font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 9px 6px;
+      border-radius: 7px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      line-height: 1.1;
+      transition: color .12s, background .12s, border-color .12s;
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,.03); }
+    .tab-btn.active {
+      color: var(--brass);
+      background: var(--brass-faint);
+      border-color: var(--brass-dim);
+    }
+    .tab-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+    .tab-btn .tab-meta {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 8.5px; letter-spacing: .04em;
+      color: rgba(168,176,187,.7);
+    }
+    .tab-btn.active .tab-meta { color: rgba(200,149,42,.85); }
+    .tab-btn .tab-count {
+      display: inline-block; font-size: 8.5px; padding: 1px 5px;
+      background: var(--brass); color: #1a1306; border-radius: 999px;
+      font-weight: 800; line-height: 1.3;
+    }
+    .tab-btn .tab-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(168,176,187,.35);
+    }
+    .tab-btn .tab-dot.on { background: var(--brass); box-shadow: 0 0 6px var(--brass); }
+
+    /* ── Tab panels ── */
+    .tab-panel { display: none; flex-direction: column; gap: 14px; padding-bottom: 30px; }
+    .tab-panel.active { display: flex; }
+    /* Force the .section spacing inside tab-panel since we now control gap */
+    .tab-panel .panel-aero.section { margin-top: 0; }
+    .tab-panel .section + .section { margin-top: 0; }
+
+    /* "Editing balloon X" header — sticky inside Balloons tab */
+    .editing-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      background: linear-gradient(90deg, rgba(200,149,42,.10) 0%, rgba(200,149,42,.02) 100%);
+      border: 1px solid var(--brass-faint);
+      border-radius: 10px;
+      font-family: var(--mono);
+      position: sticky; top: 0; z-index: 4;
+      backdrop-filter: blur(6px);
+    }
+    .editing-header .eh-label {
+      font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .editing-header .eh-name {
+      font-size: 13px; color: var(--brass); font-weight: 700;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .editing-header .eh-swatch {
+      width: 11px; height: 11px; border-radius: 3px;
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    /* Section heading divider for scope clarity */
+    .scope-heading {
+      font-family: var(--mono);
+      font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+      color: rgba(168,176,187,.55);
+      padding: 6px 2px 4px;
+      border-top: 1px dashed var(--line-aero);
+      margin: 0;
+    }
+    .scope-heading.first { border-top: none; padding-top: 0; }
+    .scope-heading.balloon::before { content: "● "; color: var(--brass); opacity: .8; }
+    .scope-heading.global::before { content: "◆ "; color: #6effa8; opacity: .7; }
+
+    /* Tab badge in header showing active balloon count */
+    .balloon-count-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px;
+      color: var(--muted); padding: 3px 9px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--line-aero);
+      border-radius: 999px;
+    }
+    .balloon-count-badge strong { color: var(--brass); font-weight: 700; }
+
+    /* Mobile: tab strip stays at the top, panels just flow */
+    @media (max-width: 920px) {
+      .tab-strip { position: sticky; top: 0; z-index: 5; background: var(--bg-aero); }
     }
   </style>
 </head>
@@ -196,15 +304,52 @@
 
     <div class="layout">
       <!-- LEFT: Controls -->
-      <div>
+      <div class="config-col">
+
+        <!-- Tab strip -->
+        <div class="tab-strip" role="tablist">
+          <button class="tab-btn active" data-tab="balloons" role="tab" aria-selected="true">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="10" rx="6" ry="7"/><path d="M10 17 v3 M14 17 v3"/></svg>
+            <span>Balloons</span>
+            <span class="tab-meta"><span class="tab-count" id="tabBalloonCount">1</span></span>
+          </button>
+          <button class="tab-btn" data-tab="hull" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24"><path d="M3 10 h18 l-2 8 a3 3 0 0 1 -3 2 H8 a3 3 0 0 1 -3 -2 z"/><path d="M12 4 v6 M9 7 h6"/></svg>
+            <span>Hull</span>
+            <span class="tab-meta"><span class="tab-dot" id="tabHullDot"></span></span>
+          </button>
+          <button class="tab-btn" data-tab="props" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M12 10 V4 M12 14 V20 M10 12 H4 M14 12 H20"/></svg>
+            <span>Props</span>
+            <span class="tab-meta"><span class="tab-dot" id="tabPropDot"></span></span>
+          </button>
+          <button class="tab-btn" data-tab="export" role="tab" aria-selected="false">
+            <svg viewBox="0 0 24 24"><path d="M5 19 h14 M12 4 v11 M7 10 l5 5 5 -5"/></svg>
+            <span>Export</span>
+          </button>
+        </div>
+
+        <div class="tab-scroll">
+
+        <!-- ═══════════ TAB: BALLOONS ═══════════ -->
+        <div class="tab-panel active" data-panel="balloons">
 
         <!-- Balloon list -->
         <div class="panel-aero section">
           <div class="balloon-list-header">
-            <h3 class="panel-title" style="margin:0">Balloons</h3>
-            <button class="btn-add-balloon" id="addBalloonBtn">+ Add</button>
+            <h3 class="panel-title" style="margin:0">Fleet</h3>
+            <button class="btn-add-balloon" id="addBalloonBtn">+ Add Balloon</button>
           </div>
           <div class="balloon-list" id="balloonList"></div>
+        </div>
+
+        <!-- Editing-this-balloon header -->
+        <div class="editing-header">
+          <span class="eh-label">Editing</span>
+          <span class="eh-name">
+            <span class="eh-swatch" id="ehSwatch"></span>
+            <span id="ehName">Balloon 1</span>
+          </span>
         </div>
 
         <!-- Shape -->
@@ -320,6 +465,11 @@
           </div>
         </div>
 
+        </div><!-- /tab: balloons -->
+
+        <!-- ═══════════ TAB: HULL ═══════════ -->
+        <div class="tab-panel" data-panel="hull">
+
         <!-- Ship Hull -->
         <div class="panel-aero section">
           <h3 class="panel-title">Ship Hull</h3>
@@ -377,9 +527,14 @@
           </div>
         </div>
 
+        </div><!-- /tab: hull -->
+
+        <!-- ═══════════ TAB: PROPELLERS ═══════════ -->
+        <div class="tab-panel" data-panel="props">
+
         <!-- Propellors -->
         <div class="panel-aero section">
-          <h3 class="panel-title">Propellors</h3>
+          <h3 class="panel-title">Propellers</h3>
           <label class="hull-toggle">
             <input type="checkbox" id="propEnabled" />
             <span>Add propellors (white wool hub + create:white_sail blades)</span>
@@ -573,6 +728,11 @@
           </div>
         </div>
 
+        </div><!-- /tab: props -->
+
+        <!-- ═══════════ TAB: EXPORT ═══════════ -->
+        <div class="tab-panel" data-panel="export">
+
         <!-- Output Orientation -->
         <div class="panel-aero section">
           <h3 class="panel-title">Output Orientation</h3>
@@ -641,7 +801,11 @@
             3. pick the file in the Table → take the empty schematic → fire it with a <span style="color:var(--text)">Schematicannon</span>
           </div>
         </div>
-        <div class="scroll-hint">pssst.. you can scroll the config panel!</div>
+
+        </div><!-- /tab: export -->
+
+        </div><!-- /tab-scroll -->
+        <div class="scroll-hint">pssst.. tab content can scroll</div>
       </div>
 
       <!-- RIGHT: 3D preview -->
@@ -2545,10 +2709,76 @@
     syncControlsToActiveBalloon();
     regenerate();
 
-    // Hide scroll hint once the user scrolls the config panel
-    const leftCol = document.querySelector('.layout > div:first-child');
+    // Hide scroll hint once the user scrolls the tab content
+    const tabScroll = document.querySelector('.tab-scroll');
     const scrollHint = document.querySelector('.scroll-hint');
-    leftCol.addEventListener('scroll', () => { if(leftCol.scrollTop > 10) scrollHint.classList.add('hidden'); }, { passive: true });
+    if (tabScroll && scrollHint) {
+      tabScroll.addEventListener('scroll', () => { if(tabScroll.scrollTop > 10) scrollHint.classList.add('hidden'); }, { passive: true });
+    }
+  </script>
+
+  <!-- Redesigned-UI tab navigation + dynamic header chrome -->
+  <script>
+  (function(){
+    // ── Tab switching ─────────────────────────────────────────────
+    const tabs   = document.querySelectorAll('.tab-btn');
+    const panels = document.querySelectorAll('.tab-panel');
+    const scroll = document.querySelector('.tab-scroll');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const which = btn.dataset.tab;
+        tabs.forEach(t => {
+          const on = t === btn;
+          t.classList.toggle('active', on);
+          t.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+        panels.forEach(p => {
+          p.classList.toggle('active', p.dataset.panel === which);
+        });
+        if (scroll) scroll.scrollTop = 0;
+      });
+    });
+
+    // ── Editing-header + balloon-count badge ──────────────────────
+    const list      = document.getElementById('balloonList');
+    const ehName    = document.getElementById('ehName');
+    const ehSwatch  = document.getElementById('ehSwatch');
+    const tabCount  = document.getElementById('tabBalloonCount');
+
+    function refreshEditingHeader() {
+      if (!list) return;
+      const rows = list.querySelectorAll('.balloon-row');
+      if (tabCount) tabCount.textContent = String(rows.length);
+      const active = list.querySelector('.balloon-row.active');
+      if (active) {
+        const nameEl  = active.querySelector('.balloon-row-name');
+        const colorEl = active.querySelector('.balloon-row-color');
+        if (ehName && nameEl)     ehName.textContent = nameEl.textContent.trim();
+        if (ehSwatch && colorEl)  ehSwatch.style.background = colorEl.style.background || '#888';
+      } else {
+        if (ehName)   ehName.textContent = '—';
+        if (ehSwatch) ehSwatch.style.background = '#444';
+      }
+    }
+    if (list) {
+      const mo = new MutationObserver(refreshEditingHeader);
+      mo.observe(list, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+      refreshEditingHeader();
+    }
+
+    // ── Hull / Prop tab status dots ───────────────────────────────
+    const hullEn  = document.getElementById('hullEnabled');
+    const propEn  = document.getElementById('propEnabled');
+    const hullDot = document.getElementById('tabHullDot');
+    const propDot = document.getElementById('tabPropDot');
+    function syncDots() {
+      if (hullDot) hullDot.classList.toggle('on', !!(hullEn && hullEn.checked));
+      if (propDot) propDot.classList.toggle('on', !!(propEn && propEn.checked));
+    }
+    if (hullEn) hullEn.addEventListener('change', syncDots);
+    if (propEn) propEn.addEventListener('change', syncDots);
+    syncDots();
+  })();
   </script>
 </body>
 </html>
