@@ -1808,11 +1808,15 @@
     // along +X behind the hub.
 
     // Push a block, dedup'd via the shared `seen` set.
-    function pushBlade(out, seen, x, y, z){
+    // `axis` is the rotation axis ('X'|'Y'|'Z') the blade belongs to — it's
+    // carried on the record so the palette can emit the proper blockstate
+    // (e.g. create:white_sail's `axis` property). Without this every sail
+    // defaults to axis=y and ends up lying flat.
+    function pushBlade(out, seen, x, y, z, axis){
       const k = x+','+y+','+z;
       if(seen.has(k))return;
       seen.add(k);
-      out.push({x,y,z,kind:'blade'});
+      out.push({x,y,z,kind:'blade',axis});
     }
 
     // Map a planar (u,v) offset onto world coords given the axis the
@@ -1833,7 +1837,7 @@
           const u=Math.round(r*cu), v=Math.round(r*cv);
           if(u===0&&v===0)continue;
           const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,0);
-          pushBlade(out,seen,x,y,z);
+          pushBlade(out,seen,x,y,z,axis);
         }
       }
     }
@@ -1877,7 +1881,7 @@
             const v=Math.round(r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -1910,7 +1914,7 @@
               const u=Math.round(r*cu + tOff*pu);
               const v=Math.round(r*cv + tOff*pv);
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,Math.round(sFloat));
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -1940,7 +1944,7 @@
             const v=Math.round(r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -1973,7 +1977,7 @@
             const v=Math.round(r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,axialOff+th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -2003,7 +2007,7 @@
             const u=Math.round(r*cu + c*pu);
             const v=Math.round(r*cv + c*pv);
             const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,0);
-            pushBlade(out,seen,x,y,z);
+            pushBlade(out,seen,x,y,z,axis);
           }
         }
       }
@@ -2016,7 +2020,7 @@
         const halfD=Math.floor((shroudDepth-1)/2);
         for(let t=-halfD;t<=shroudDepth-1-halfD;t++){
           const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,t);
-          pushBlade(out,seen,x,y,z);
+          pushBlade(out,seen,x,y,z,axis);
         }
       }
     }
@@ -2054,7 +2058,7 @@
             const axialOff=Math.round(c*sinT);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,axialOff+th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -2088,7 +2092,7 @@
             const v=Math.round(r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -2121,7 +2125,7 @@
             const v=Math.round(v0 + r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -2166,7 +2170,7 @@
             const v=Math.round(r*cv + c*pv);
             for(let th=0;th<thickness;th++){
               const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u,v,th);
-              pushBlade(out,seen,x,y,z);
+              pushBlade(out,seen,x,y,z,axis);
             }
           }
         }
@@ -2206,7 +2210,7 @@
             const u2=Math.round((r+tOff)*cu);
             const v2=Math.round((r+tOff)*cv);
             const [x,y,z]=placeOnAxis(axis,hX,hY,hZ,u2,v2,sIdx);
-            pushBlade(out,seen,x,y,z);
+            pushBlade(out,seen,x,y,z,axis);
           }
         }
       }
@@ -2358,7 +2362,7 @@
             for(let r=hubReach+1;r<=hubReach+cfg.bladeLen;r++){
               const u=Math.round(r*cu), v=Math.round(r*cv);
               if(u===0&&v===0)continue;
-              out.push({x:cx+u,y:hubY,z:cz+v,kind:'blade'});
+              out.push({x:cx+u,y:hubY,z:cz+v,kind:'blade',axis:'Y'});
             }
           }
           break;
@@ -2403,12 +2407,58 @@
 
       // Propellors (positioned in absolute world coords relative to balloon bounds)
       const propData=buildProps(bMinX,bMaxX,bMinY,bMaxY,bMinZ,bMaxZ);
-      let propHubIdx=-1,propBladeIdx=-1;
+      let propHubIdx=-1;
+      // Blade palette is per-axis: a sail blade rotating around X needs
+      // `axis=x` so it stands up as a panel, not the default `axis=y`
+      // which lays it flat. We allocate one palette entry per axis the
+      // current shape actually uses.
+      const propBladeIdxByAxis = {};
+      // palMap keys use a composite "name[k=v,...]" syntax so the same
+      // base block can live in the palette multiple times with different
+      // Properties. Plain names (no brackets) stay backwards compatible.
+      const paletteKey = (name, props) => {
+        if(!props) return name;
+        const ks = Object.keys(props).sort();
+        if(!ks.length) return name;
+        return name + '[' + ks.map(k => k+'='+props[k]).join(',') + ']';
+      };
+      // Which Minecraft/Create blocks expose an `axis` property. Adding
+      // axis=… to a block that doesn't have it would still load (the
+      // game ignores unknown properties) but it bloats the palette and
+      // makes the NBT noisier, so we gate it.
+      const hasAxisProperty = (id) => /(_sail|_log|_wood|_pillar|_stem|_hyphae)$/.test(id) ||
+        /:stripped_/.test(id) ||
+        id === 'minecraft:chain' ||
+        id === 'minecraft:bamboo_block' ||
+        id === 'minecraft:stripped_bamboo_block' ||
+        id === 'minecraft:basalt' ||
+        id === 'minecraft:polished_basalt' ||
+        id === 'minecraft:hay_block' ||
+        id === 'minecraft:bone_block' ||
+        id === 'minecraft:muddy_mangrove_roots' ||
+        id === 'create:shaft' ||
+        id === 'create:cogwheel' ||
+        id === 'create:large_cogwheel';
       if(propData&&propData.length){
         if(!palMap.has(state.prop.hubBlock))palMap.set(state.prop.hubBlock,nPI++);
-        if(!palMap.has(state.prop.bladeBlock))palMap.set(state.prop.bladeBlock,nPI++);
         propHubIdx=palMap.get(state.prop.hubBlock);
-        propBladeIdx=palMap.get(state.prop.bladeBlock);
+        // Allocate one palette entry per axis that actually appears among
+        // the blades. Fall back to no-properties entry for non-axis
+        // blade blocks.
+        const bladeId = state.prop.bladeBlock;
+        const bladeIsAxial = hasAxisProperty(bladeId);
+        const axesUsed = new Set();
+        for(const pb of propData) if(pb.kind==='blade' && pb.axis) axesUsed.add(pb.axis);
+        if(!bladeIsAxial || !axesUsed.size){
+          if(!palMap.has(bladeId)) palMap.set(bladeId, nPI++);
+          for(const ax of axesUsed) propBladeIdxByAxis[ax] = palMap.get(bladeId);
+        } else {
+          for(const ax of axesUsed){
+            const key = paletteKey(bladeId, {axis: ax.toLowerCase()});
+            if(!palMap.has(key)) palMap.set(key, nPI++);
+            propBladeIdxByAxis[ax] = palMap.get(key);
+          }
+        }
       }
 
       let wMinX=bMinX,wMinY=bMinY,wMinZ=bMinZ,wMaxX=bMaxX,wMaxY=bMaxY,wMaxZ=bMaxZ;
@@ -2457,16 +2507,39 @@
 
       let propCount=0;
       if(propData&&propData.length){
+        // Blades index by axis so each one resolves to the palette entry
+        // with the matching axis= property. Hubs are non-directional in
+        // the default config.
+        const fallbackBladeIdx = palMap.get(state.prop.bladeBlock);
         for(const pb of propData){
+          let mi;
+          if(pb.kind==='hub') mi = propHubIdx;
+          else if(pb.axis && propBladeIdxByAxis[pb.axis] !== undefined) mi = propBladeIdxByAxis[pb.axis];
+          else mi = fallbackBladeIdx;
           blocks.push({
             x:pb.x-wMinX, y:pb.y-wMinY, z:pb.z-wMinZ,
-            mat: pb.kind==='hub' ? propHubIdx : propBladeIdx,
+            mat: mi,
           });
           propCount++;
         }
       }
 
-      const palette=Array.from(palMap.entries()).sort((a,b)=>a[1]-b[1]).map(([id])=>id);
+      // Decode the composite "name[k=v,...]" keys back into {Name, Properties}
+      // for the NBT writer. Entries without brackets stay as plain strings so
+      // the rest of the code (preview, colour lookup) is unaffected.
+      const palette = Array.from(palMap.entries())
+        .sort((a,b)=>a[1]-b[1])
+        .map(([key])=>{
+          const m = key.match(/^([^\[]+)(?:\[([^\]]+)\])?$/);
+          if(!m || !m[2]) return key;
+          const props = {};
+          for(const part of m[2].split(',')){
+            const eq = part.indexOf('=');
+            if(eq<0) continue;
+            props[part.slice(0,eq)] = part.slice(eq+1);
+          }
+          return {Name: m[1], Properties: props};
+        });
       const balloonBounds=balloonData.map(d=>({x:d.b.offsetX-wMinX,y:d.b.offsetY-wMinY,z:d.b.offsetZ-wMinZ,sizeX:d.sizeX,sizeY:d.sizeY,sizeZ:d.sizeZ}));
 
       return{blocks,palette,blockCount:balloonCount+hullCount+propCount,balloonCount,hullCount,propCount,interiorCount,envelope:wSX*wSY*wSZ,sizeX:wSX,sizeY:wSY,sizeZ:wSZ,balloonBounds};
@@ -2513,7 +2586,11 @@
       const byMat=new Map();
       for(const b of blocks){if(!byMat.has(b.mat))byMat.set(b.mat,[]);byMat.get(b.mat).push(b);}
       byMat.forEach((subset,mi)=>{
-        const bid=palette[mi];if(!bid||bid==='minecraft:air')return;
+        const pe=palette[mi];
+        // Palette entries can now be either a plain string (legacy) or
+        // {Name, Properties}; normalize for the preview's colour lookup.
+        const bid = typeof pe === 'string' ? pe : (pe && pe.Name);
+        if(!bid||bid==='minecraft:air')return;
         const isG=bid.includes('glass');
         const geom=new THREE.BoxGeometry(1,1,1);
         const matr=new THREE.MeshStandardMaterial({color:colourFor(bid),roughness:isG?.05:.85,metalness:bid.includes('iron')?.6:0,transparent:isG,opacity:isG?.45:1});
@@ -2568,7 +2645,20 @@
       w.byte(9);w.str('blocks');w.byte(10);w.int(blocks.length);
       for(const b of blocks){w.byte(9);w.str('pos');w.byte(3);w.int(3);w.int(b.x);w.int(b.y);w.int(b.z);w.byte(3);w.str('state');w.int(b.mat??1);w.byte(0);}
       w.byte(9);w.str('palette');w.byte(10);w.int(palette.length);
-      for(const id of palette){w.byte(8);w.str('Name');w.str(id);w.byte(0);}
+      for(const entry of palette){
+        const name = typeof entry === 'string' ? entry : entry.Name;
+        const props = typeof entry === 'object' && entry ? entry.Properties : null;
+        if(props && Object.keys(props).length){
+          // Properties compound. Each value is TAG_String.
+          w.byte(10);w.str('Properties');
+          for(const k of Object.keys(props)){
+            w.byte(8);w.str(k);w.str(String(props[k]));
+          }
+          w.byte(0); // end Properties compound
+        }
+        w.byte(8);w.str('Name');w.str(name);
+        w.byte(0); // end palette entry compound
+      }
       w.byte(0);return w.bytes();
     }
 
