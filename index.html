@@ -133,6 +133,60 @@
     .param-help button { appearance: none; background: transparent; border: 1px solid var(--line-aero); color: var(--muted); font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
     .param-help button:hover { border-color: var(--brass-dim); color: var(--brass); }
 
+    /* ── Two-axis spline editor ── */
+    .spline2-wrap { display: none; margin-top: 10px; }
+    .spline2-wrap.show { display: block; }
+    /* Stacked vertically — front on top, side below — both as large as possible */
+    .spline2-grid { display: flex; flex-direction: column; gap: 10px; }
+    .spline2-editor { background: rgba(0,0,0,.4); border: 1px solid var(--line-aero); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+    .spline2-editor canvas { display: block; width: 100%; height: 340px; cursor: crosshair; background: repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 22px),repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px,transparent 1px 22px),#0a0a0c; border-radius: 3px; touch-action: none; }
+    .spline2-label { font-family: var(--mono); font-size: 10.5px; color: var(--muted); text-align: center; letter-spacing: .04em; padding-top: 2px; }
+    .spline2-label .ax { color: var(--brass); }
+    .spline2-help { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 8px; flex-wrap: wrap; }
+    .spline2-help button { appearance: none; background: transparent; border: 1px solid var(--line-aero); color: var(--muted); font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 4px; cursor: pointer; }
+    .spline2-help button:hover { border-color: var(--brass-dim); color: var(--brass); }
+    .spline2-actions { display: inline-flex; gap: 4px; }
+
+    /* ── Stacked cross-section editor ── */
+    .splinexs-wrap { display: none; margin-top: 10px; }
+    .splinexs-wrap.show { display: block; }
+    .splinexs-layout { display: grid; grid-template-columns: 92px 1fr; gap: 8px; align-items: stretch; }
+    .splinexs-rings {
+      background: rgba(0,0,0,.4); border: 1px solid var(--line-aero); border-radius: 6px;
+      padding: 6px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .splinexs-rings-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+    .splinexs-rings-list { display: flex; flex-direction: column-reverse; gap: 3px; flex: 1; min-height: 0; }
+    .splinexs-ring-row {
+      appearance: none; background: rgba(255,255,255,.03); border: 1px solid var(--line-aero);
+      color: var(--muted); font-family: var(--mono); font-size: 10px;
+      padding: 5px 7px; border-radius: 4px; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: border-color .12s, color .12s, background .12s;
+    }
+    .splinexs-ring-row:hover { color: var(--text); border-color: rgba(200,149,42,.35); }
+    .splinexs-ring-row.active { color: var(--brass); border-color: var(--brass); background: var(--brass-faint); }
+    .splinexs-ring-row .rr-y { opacity: .7; font-size: 9px; }
+    .splinexs-rings-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .splinexs-rings-actions button {
+      appearance: none; background: rgba(200,149,42,.08); border: 1px solid var(--brass-faint);
+      color: var(--brass); font-family: var(--mono); font-size: 10px; font-weight: 700;
+      padding: 4px 4px; border-radius: 4px; cursor: pointer;
+    }
+    .splinexs-rings-actions button:hover { background: rgba(200,149,42,.16); border-color: var(--brass-dim); }
+    .splinexs-rings-actions button:disabled { opacity: .35; cursor: default; }
+    .splinexs-editor {
+      background: rgba(0,0,0,.4); border: 1px solid var(--line-aero); border-radius: 6px;
+      padding: 6px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .splinexs-editor canvas { display: block; width: 100%; height: 360px; cursor: crosshair; background:
+      radial-gradient(circle, rgba(200,149,42,.06) 1px, transparent 1.5px) 0 0 / 22px 22px,
+      #0a0a0c;
+      border-radius: 3px; touch-action: none;
+    }
+    .splinexs-label { font-family: var(--mono); font-size: 9.5px; color: var(--muted); text-align: center; letter-spacing: .04em; }
+    .splinexs-label #splinexsRingIdx, .splinexs-label #splinexsRingY { color: var(--brass); }
+
     .section + .section { margin-top: 16px; }
 
     .hull-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); user-select: none; }
@@ -361,6 +415,55 @@
             <div class="help">
               <span>drag along left half to draw silhouette</span>
               <button id="profileClear">clear</button>
+            </div>
+          </div>
+          <!-- Two-axis spline editor (bezier with editable tangent handles) -->
+          <div class="spline2-wrap" id="spline2Wrap">
+            <div class="spline2-grid">
+              <div class="spline2-editor">
+                <canvas id="spline2Canvas-front" width="380" height="340"></canvas>
+                <span class="spline2-label">front · <span class="ax">X</span>(<span class="ax">Y</span>)</span>
+              </div>
+              <div class="spline2-editor">
+                <canvas id="spline2Canvas-side"  width="380" height="340"></canvas>
+                <span class="spline2-label">side · <span class="ax">Z</span>(<span class="ax">Y</span>)</span>
+              </div>
+            </div>
+            <div class="spline2-help">
+              <span>click=add · drag anchor=move · drag handle=curve · shift-drag handle=break · right-click=remove</span>
+              <span class="spline2-actions">
+                <button id="spline2Mirror" title="copy front spline onto side">mirror →</button>
+                <button id="spline2Reset">reset</button>
+              </span>
+            </div>
+          </div>
+
+          <!-- Stacked cross-section editor -->
+          <div class="splinexs-wrap" id="splinexsWrap">
+            <div class="splinexs-layout">
+              <div class="splinexs-rings">
+                <div class="splinexs-rings-label">rings (Y↑)</div>
+                <div class="splinexs-rings-list" id="splinexsRingsList"></div>
+                <div class="splinexs-rings-actions">
+                  <button id="splinexsAddRing" title="add ring at midpoint">+ ring</button>
+                  <button id="splinexsDelRing" title="remove selected ring">– ring</button>
+                </div>
+              </div>
+              <div class="splinexs-editor">
+                <canvas id="splinexsCanvas" width="420" height="420"></canvas>
+                <span class="splinexs-label">top view · ring <span id="splinexsRingIdx">3</span> @ y=<span id="splinexsRingY">0.55</span></span>
+                <div class="control" style="margin-top:6px">
+                  <div class="control-row">
+                    <span>ring height (y)</span>
+                    <span><input type="number" class="num-input" id="splinexsYNum" min="0" max="100" step="1" value="55" /> %</span>
+                  </div>
+                  <input type="range" id="splinexsYInput" min="0" max="100" step="1" value="55" />
+                </div>
+              </div>
+            </div>
+            <div class="spline2-help">
+              <span>click=add anchor · drag handle=curve · shift-drag handle=break · right-click=remove</span>
+              <button id="splinexsResetRing">reset ring</button>
             </div>
           </div>
           <div class="param-wrap" id="paramWrap">
@@ -859,6 +962,8 @@
       { id:'atyya',     label:'atyya',     hasRibs:false, icon:`<path d="M15 4 Q 24 6, 24 13 L 22 16 L 17 26 L 13 26 L 8 16 L 6 13 Q 6 6, 15 4 Z"/>` },
       { id:'npl',       label:'npl',       hasRibs:false, icon:`<path d="M15 4 Q 25 5, 25 13 Q 25 22, 15 26 Q 5 22, 5 13 Q 5 5, 15 4 Z"/><path d="M5 13 L 25 13" opacity="0.4"/>` },
       { id:'wang',      label:'wang',      hasRibs:false, icon:`<path d="M15 4 Q 27 11, 26 15 Q 27 19, 15 26 Q 3 19, 4 15 Q 3 11, 15 4 Z"/>` },
+      { id:'spline2',   label:'2-axis spline', hasRibs:false, icon:`<path d="M15 4 C 8 8, 8 22, 15 26 M15 4 C 22 8, 22 22, 15 26"/><circle cx="8.5" cy="9" r="1.6" fill="currentColor" stroke="none"/><circle cx="7" cy="16" r="1.6" fill="currentColor" stroke="none"/><circle cx="9" cy="23" r="1.6" fill="currentColor" stroke="none"/><circle cx="21.5" cy="9" r="1.6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="23" cy="16" r="1.6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="21" cy="23" r="1.6" fill="currentColor" stroke="none" opacity=".55"/>` },
+      { id:'splinexs',  label:'cross-sections', hasRibs:false, icon:`<ellipse cx="15" cy="7"  rx="6" ry="2.4"/><ellipse cx="15" cy="15" rx="9" ry="2.8"/><ellipse cx="15" cy="23" rx="5" ry="2.2"/><path d="M15 4 L 15 26" opacity=".35"/>` },
       { id:'custom',    label:'custom',    hasRibs:false, icon:`<path d="M15 4 L 15 26 M 15 6 Q 6 14, 15 22"/><circle cx="11" cy="10" r="1.4" fill="currentColor"/><circle cx="7" cy="16" r="1.4" fill="currentColor"/><circle cx="11" cy="22" r="1.4" fill="currentColor"/>` },
       { id:'param',     label:'param',     hasRibs:false, icon:`<path d="M15 4 L 15 26 M 6 11 L 24 21 M 6 21 L 24 11"/><circle cx="22" cy="6" r="2.2" fill="currentColor" stroke="none"/>` },
     ];
@@ -892,6 +997,27 @@
         customProfile: [
           {y:0.05,r:0.15},{y:0.20,r:0.55},{y:0.50,r:0.85},{y:0.78,r:0.65},{y:0.95,r:0.20},
         ],
+        // Two-axis spline: front silhouette (X radius vs Y) and side silhouette (Z radius vs Y).
+        // Each point is {y in [0,1], r in [0,1]}. Catmull-Rom interpolated.
+        spline2Front: [
+          {y:0.02,r:0.10},{y:0.20,r:0.55},{y:0.50,r:0.90},{y:0.78,r:0.62},{y:0.98,r:0.15},
+        ],
+        spline2Side: [
+          {y:0.02,r:0.10},{y:0.20,r:0.55},{y:0.50,r:0.90},{y:0.78,r:0.62},{y:0.98,r:0.15},
+        ],
+        spline2ActivePt: { side: -1, idx: -1 }, // transient — tracks the most recently touched point so it can be highlighted
+        // Stacked cross-sections: array of rings. Each ring has a y (0..1) and a list of
+        // radial control points {theta in [0,2π), r in [0,1]}. Closed Catmull-Rom around θ.
+        splinexs: {
+          activeRing: 2,
+          rings: [
+            {y:0.05, pts:[{theta:0,r:.18},{theta:Math.PI/2,r:.18},{theta:Math.PI,r:.18},{theta:3*Math.PI/2,r:.18}]},
+            {y:0.30, pts:[{theta:0,r:.65},{theta:Math.PI/2,r:.65},{theta:Math.PI,r:.65},{theta:3*Math.PI/2,r:.65}]},
+            {y:0.55, pts:[{theta:0,r:.90},{theta:Math.PI/2,r:.90},{theta:Math.PI,r:.90},{theta:3*Math.PI/2,r:.90}]},
+            {y:0.80, pts:[{theta:0,r:.55},{theta:Math.PI/2,r:.55},{theta:Math.PI,r:.55},{theta:3*Math.PI/2,r:.55}]},
+            {y:0.95, pts:[{theta:0,r:.15},{theta:Math.PI/2,r:.15},{theta:Math.PI,r:.15},{theta:3*Math.PI/2,r:.15}]},
+          ],
+        },
         paramFront: [{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}],
         paramSide:  [{y:.10,r:.20},{y:.50,r:.85},{y:.90,r:.20}],
         paramTop:   [{y:.10,r:.30},{y:.50,r:.95},{y:.90,r:.30}],
@@ -950,7 +1076,11 @@
         syncShapeButtons();
         document.getElementById('ribControl').style.display = s.hasRibs ? '' : 'none';
         document.getElementById('profileWrap').classList.toggle('show', s.id === 'custom');
+        document.getElementById('spline2Wrap').classList.toggle('show', s.id === 'spline2');
+        document.getElementById('splinexsWrap').classList.toggle('show', s.id === 'splinexs');
         document.getElementById('paramWrap').classList.toggle('show', s.id === 'param');
+        if (s.id === 'spline2') drawSpline2All();
+        if (s.id === 'splinexs') { renderSplinexsRings(); syncSplinexsControls(); drawSplinexs(); }
         updateBalloonRow(state.activeBalloonIdx);
         regenerate();
       };
@@ -1284,6 +1414,792 @@
     pCanvas.addEventListener('touchend',   ()=>{profileDrawing=false;});
     document.getElementById('profileClear').onclick = () => { ab().customProfile=[]; drawProfile(); if(ab().shape==='custom') regenerate(); };
 
+    // ── Spline math (Cubic Bezier with editable tangent handles) ──
+    // Each anchor: { y, r, h1:{dy,dr}, h2:{dy,dr}, smooth:bool }
+    //   h1 = incoming handle delta from anchor (toward previous)
+    //   h2 = outgoing handle delta from anchor (toward next)
+    //   smooth=true  → handles are kept colinear & equal length (default)
+    //   smooth=false → handles are independent (right-click toggles)
+    // Missing handles get auto-derived from neighbors (Catmull-Rom-equivalent).
+
+    function ensureProfileHandles(pts) {
+      if (!pts || pts.length === 0) return;
+      if (pts[0].smooth === undefined) for (const p of pts) p.smooth = (p.smooth === undefined) ? true : p.smooth;
+      const M = pts.length;
+      for (let i = 0; i < M; i++) {
+        if (pts[i].h1 && pts[i].h2) continue;
+        const prev = pts[i-1] ?? {y: pts[i].y - 0.1, r: pts[i].r};
+        const next = pts[i+1] ?? {y: pts[i].y + 0.1, r: pts[i].r};
+        const tan = { dy: (next.y - prev.y) * 0.28, dr: (next.r - prev.r) * 0.28 };
+        if (!pts[i].h2) pts[i].h2 = { dy:  tan.dy, dr:  tan.dr };
+        if (!pts[i].h1) pts[i].h1 = { dy: -tan.dy, dr: -tan.dr };
+      }
+    }
+
+    // ── Polyline sampler (handles overhangs faithfully) ──
+    // Walks the bezier as a polyline in the same order as the (y-sorted) anchors,
+    // returning [{y, r}, ...]. The curve can fold back in Y (overhang) without
+    // breaking anything — the polyline just dips and rises through the same y.
+    function profilePolyline(pts) {
+      if (!pts || pts.length === 0) return [];
+      const sorted = [...pts].sort((a,b)=>a.y-b.y);
+      ensureProfileHandles(sorted);
+      if (sorted.length === 1) return [{y: sorted[0].y, r: sorted[0].r}];
+      const out = [{y: sorted[0].y, r: sorted[0].r}];
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const A = sorted[i], B = sorted[i+1];
+        const ax = A.y,            ay = A.r;
+        const bx = A.y + A.h2.dy,  by = A.r + A.h2.dr;
+        const cx = B.y + B.h1.dy,  cy = B.r + B.h1.dr;
+        const dx = B.y,            dy = B.r;
+        const SUB = 36;
+        for (let s = 1; s <= SUB; s++) {
+          const t = s / SUB, u = 1 - t;
+          const y = u*u*u*ax + 3*u*u*t*bx + 3*u*t*t*cx + t*t*t*dx;
+          const r = u*u*u*ay + 3*u*u*t*by + 3*u*t*t*cy + t*t*t*dy;
+          out.push({y, r});
+        }
+      }
+      return out;
+    }
+
+    // Open profile spline LUT: max r at each y bin (envelope semantics).
+    // With overhangs, multiple r-values can hit a single y bin — we take the OUTERMOST so
+    // the voxelizer sees a clean monotone envelope instead of zigzagging through samples.
+    function catmullRomProfileLUT(pts, N=128) {
+      const lut = new Float32Array(N); // initialised to 0
+      if (!pts || pts.length === 0) return lut;
+      if (pts.length === 1) { lut.fill(Math.max(0,Math.min(1,pts[0].r))); return lut; }
+      const poly = profilePolyline(pts);
+      if (poly.length < 2) return lut;
+      // Walk every edge; for each LUT-y in the edge's y-range, take max(lut[k], linearly-interpolated r).
+      const Nm1 = N - 1;
+      for (let i = 0; i < poly.length - 1; i++) {
+        const p0 = poly[i], p1 = poly[i+1];
+        const dy = p1.y - p0.y;
+        if (Math.abs(dy) < 1e-9) {
+          const r = Math.max(p0.r, p1.r);
+          const k = Math.max(0, Math.min(Nm1, Math.round(p0.y * Nm1)));
+          if (r > lut[k]) lut[k] = r;
+          continue;
+        }
+        const y0 = Math.min(p0.y, p1.y), y1 = Math.max(p0.y, p1.y);
+        const k0 = Math.max(0,   Math.ceil (y0 * Nm1));
+        const k1 = Math.min(Nm1, Math.floor(y1 * Nm1));
+        for (let k = k0; k <= k1; k++) {
+          const y = k / Nm1;
+          const t = (y - p0.y) / dy;
+          const r = p0.r * (1 - t) + p1.r * t;
+          if (r > lut[k]) lut[k] = r;
+        }
+      }
+      return lut;
+    }
+    function sampleLUT(lut, t) {
+      if (t <= 0) return lut[0];
+      if (t >= 1) return lut[lut.length-1];
+      const u = t * (lut.length - 1);
+      const i = Math.floor(u), f = u - i;
+      return lut[i] * (1 - f) + lut[i+1] * f;
+    }
+
+    // ── Closed cross-section spline ──
+    // Ring point: { theta, r, h1:{dx,dy}, h2:{dx,dy}, smooth }
+    //   handles are CARTESIAN deltas from the anchor's cartesian position
+    //   (in unit-radius space where the anchor is at (r·cosθ, r·sinθ)).
+    function ensureRingHandles(pts) {
+      if (!pts || pts.length === 0) return;
+      const TAU = Math.PI*2;
+      for (const p of pts) if (p.smooth === undefined) p.smooth = true;
+      const indexed = pts.map((p,i)=>({p,i,t:((p.theta%TAU)+TAU)%TAU})).sort((a,b)=>a.t-b.t);
+      const M = indexed.length;
+      for (let k = 0; k < M; k++) {
+        const cur = indexed[k].p;
+        if (cur.h1 && cur.h2) continue;
+        const prev = indexed[(k-1+M)%M].p;
+        const next = indexed[(k+1)%M].p;
+        const cx = cur.r * Math.cos(cur.theta), cy = cur.r * Math.sin(cur.theta);
+        const px = prev.r * Math.cos(prev.theta), py = prev.r * Math.sin(prev.theta);
+        const nx = next.r * Math.cos(next.theta), ny = next.r * Math.sin(next.theta);
+        // Tangent direction from prev to next, scaled. ~0.276 gives near-circle for 4 evenly-spaced pts.
+        const tx = (nx - px) * 0.276, ty = (ny - py) * 0.276;
+        if (!cur.h2) cur.h2 = { dx:  tx, dy:  ty };
+        if (!cur.h1) cur.h1 = { dx: -tx, dy: -ty };
+      }
+    }
+    // Cartesian polyline around the closed bezier loop. Coordinates are in unit-radius
+    // space (so they fit roughly in a [-1, 1] box). Used for editor drawing.
+    function closedPolyline(pts) {
+      if (!pts || pts.length === 0) return [];
+      const TAU = Math.PI * 2;
+      ensureRingHandles(pts);
+      const sorted = [...pts].sort((a,b)=>(((a.theta%TAU)+TAU)%TAU)-(((b.theta%TAU)+TAU)%TAU));
+      const M = sorted.length;
+      if (M === 1) {
+        return [{ x: sorted[0].r * Math.cos(sorted[0].theta), y: sorted[0].r * Math.sin(sorted[0].theta) }];
+      }
+      const out = [];
+      for (let i = 0; i < M; i++) {
+        const A = sorted[i], B = sorted[(i+1) % M];
+        const Ax = A.r * Math.cos(A.theta), Ay = A.r * Math.sin(A.theta);
+        const Bx = B.r * Math.cos(B.theta), By = B.r * Math.sin(B.theta);
+        const ax = Ax,           ay = Ay;
+        const bx = Ax + A.h2.dx, by = Ay + A.h2.dy;
+        const cx = Bx + B.h1.dx, cy = By + B.h1.dy;
+        const dx2= Bx,           dy2= By;
+        const SUB = 30;
+        const startS = i === 0 ? 0 : 1; // avoid duplicating shared endpoints
+        for (let s = startS; s <= SUB; s++) {
+          const t = s / SUB, u = 1 - t;
+          const x = u*u*u*ax + 3*u*u*t*bx + 3*u*t*t*cx + t*t*t*dx2;
+          const y = u*u*u*ay + 3*u*u*t*by + 3*u*t*t*cy + t*t*t*dy2;
+          out.push({ x, y });
+        }
+      }
+      return out;
+    }
+
+    // Closed cross-section LUT: max r per θ bin (envelope semantics).
+    // With overhangs in the cross-section (curve loops outside-then-inside-then-outside
+    // at the same θ) we take the outermost r so voxelization sees a clean envelope.
+    function catmullRomClosedLUT(pts, N=256) {
+      const lut = new Float32Array(N);
+      if (!pts || pts.length === 0) return lut;
+      if (pts.length === 1) { lut.fill(Math.max(0,Math.min(1,pts[0].r))); return lut; }
+      const TAU = Math.PI * 2;
+      const poly = closedPolyline(pts);
+      if (poly.length < 2) return lut;
+      // Walk every edge; sample finely along it, take max r per θ bin.
+      for (let i = 0; i < poly.length; i++) {
+        const j = (i + 1) % poly.length;
+        const p0 = poly[i], p1 = poly[j];
+        // Convert endpoints to polar
+        const r0 = Math.hypot(p0.x, p0.y);
+        const r1 = Math.hypot(p1.x, p1.y);
+        let t0 = ((Math.atan2(p0.y, p0.x) % TAU) + TAU) % TAU;
+        let t1 = ((Math.atan2(p1.y, p1.x) % TAU) + TAU) % TAU;
+        let dt = t1 - t0;
+        if (dt >  Math.PI) dt -= TAU;
+        if (dt < -Math.PI) dt += TAU;
+        // Pick step count so we hit every θ bin we cross
+        const steps = Math.max(2, Math.ceil(Math.abs(dt) / (TAU / N)) * 2);
+        for (let s = 0; s <= steps; s++) {
+          const u = s / steps;
+          const x = p0.x * (1 - u) + p1.x * u;
+          const y = p0.y * (1 - u) + p1.y * u;
+          const r = Math.hypot(x, y);
+          const theta = ((Math.atan2(y, x) % TAU) + TAU) % TAU;
+          const k = Math.floor((theta / TAU) * N) % N;
+          if (r > lut[k]) lut[k] = r;
+        }
+      }
+      return lut;
+    }
+    function sampleClosedLUT(lut, theta) {
+      const TAU = Math.PI * 2;
+      let t = ((theta % TAU) + TAU) % TAU;
+      const u = (t / TAU) * lut.length;
+      const i = Math.floor(u) % lut.length;
+      const j = (i + 1) % lut.length;
+      const f = u - Math.floor(u);
+      return lut[i] * (1 - f) + lut[j] * f;
+    }
+
+    // ── Two-axis spline editor (with bezier tangent handles) ─────
+    // Photoshop-style: each anchor has two tangent handles (in/out) drawn as
+    // small squares on lines from the anchor. Smooth-mode keeps them mirrored;
+    // shift-drag breaks the symmetry. The anchor is shown as a brass circle.
+    const SPLINE2_ANCHOR_HIT = 11;
+    const SPLINE2_HANDLE_HIT = 9;
+    function spline2Setup(canvasId, key, accentColor) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      // Coordinate transforms — y goes bottom→top, r maps to left half (mirrored on right)
+      function spaceY(y, h) { return h - y*(h-16) - 8; }
+      function unspaceY(sy, h) { return Math.max(0, Math.min(1, (h - sy - 8) / (h - 16))); }
+      function spaceR(r, w) { return w/2 - r*(w/2-10); }
+      function spaceRRight(r, w) { return w/2 + r*(w/2-10); }
+      function unspaceR(sx, w) { return Math.max(-0.2, Math.min(1, (w/2 - sx) / (w/2 - 10))); }
+      // Handle screen position for anchor p, given handle delta {dy, dr}
+      function handleScreen(p, hd, w, h) {
+        return { x: spaceR(p.r + hd.dr, w), y: spaceY(p.y + hd.dy, h) };
+      }
+      function pickHandleFromScreen(p, hd, sx, sy, w, h) {
+        // Returns the dy/dr delta corresponding to a screen pos relative to anchor.
+        // (We invert the spaceR/spaceY mappings as scale factors.)
+        const cx = spaceR(p.r, w), cy = spaceY(p.y, h);
+        const drPerPx = -1 / (w/2 - 10);   // r decreases as x increases (left half)
+        const dyPerPx = -1 / (h - 16);     // y decreases as y-pixel increases
+        return { dr: (sx - cx) * drPerPx, dy: (sy - cy) * dyPerPx };
+      }
+      function hitTestAnchor(sx, sy) {
+        const pts = ab()[key];
+        const w = canvas.width, h = canvas.height;
+        for (let i = pts.length - 1; i >= 0; i--) {
+          const cx = spaceR(pts[i].r, w), cy = spaceY(pts[i].y, h);
+          if ((sx-cx)*(sx-cx) + (sy-cy)*(sy-cy) <= SPLINE2_ANCHOR_HIT*SPLINE2_ANCHOR_HIT) return i;
+        }
+        return -1;
+      }
+      function hitTestHandle(sx, sy) {
+        ensureProfileHandles(ab()[key]);
+        const pts = ab()[key];
+        const w = canvas.width, h = canvas.height;
+        for (let i = pts.length - 1; i >= 0; i--) {
+          for (const which of ['h1', 'h2']) {
+            const hp = handleScreen(pts[i], pts[i][which], w, h);
+            if ((sx-hp.x)*(sx-hp.x) + (sy-hp.y)*(sy-hp.y) <= SPLINE2_HANDLE_HIT*SPLINE2_HANDLE_HIT) {
+              return { idx: i, which };
+            }
+          }
+        }
+        return null;
+      }
+      function draw() {
+        const w = canvas.width, h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        // Center axis (rotation axis)
+        ctx.strokeStyle = 'rgba(200,149,42,.30)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h); ctx.stroke();
+        // Top/bottom rails
+        ctx.strokeStyle = 'rgba(255,255,255,.08)';
+        ctx.beginPath(); ctx.moveTo(0, 8); ctx.lineTo(w, 8); ctx.moveTo(0, h-8); ctx.lineTo(w, h-8); ctx.stroke();
+
+        const pts = ab()[key];
+        if (pts.length >= 1) {
+          ensureProfileHandles(pts);
+          const poly = profilePolyline(pts); // [{y, r}, ...] following the actual bezier order
+          if (poly.length >= 2) {
+            const first = poly[0], last = poly[poly.length - 1];
+            // Filled silhouette — left half down, axis closure at top, right (mirrored) half back up.
+            // evenodd fill rule so self-intersecting overhangs still look right.
+            ctx.fillStyle = accentColor + '33';
+            ctx.beginPath();
+            ctx.moveTo(w/2, spaceY(first.y, h));
+            for (const p of poly) ctx.lineTo(spaceR(p.r, w), spaceY(p.y, h));
+            ctx.lineTo(w/2, spaceY(last.y, h));
+            for (let i = poly.length - 1; i >= 0; i--) {
+              ctx.lineTo(spaceRRight(poly[i].r, w), spaceY(poly[i].y, h));
+            }
+            ctx.closePath();
+            ctx.fill('evenodd');
+            // Outline both halves — drawn directly from polyline, so overhangs render faithfully
+            ctx.strokeStyle = accentColor; ctx.lineWidth = 1.8;
+            for (const mirror of [false, true]) {
+              ctx.beginPath();
+              for (let i = 0; i < poly.length; i++) {
+                const sx = mirror ? spaceRRight(poly[i].r, w) : spaceR(poly[i].r, w);
+                const sy = spaceY(poly[i].y, h);
+                if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
+              }
+              ctx.stroke();
+            }
+          }
+        }
+        // Handle lines + handle squares + anchor circles (drawn on top)
+        const sorted = [...pts].sort((a,b)=>a.y-b.y);
+        sorted.forEach((p) => {
+          const ax = spaceR(p.r, w), ay = spaceY(p.y, h);
+          const h1s = handleScreen(p, p.h1, w, h);
+          const h2s = handleScreen(p, p.h2, w, h);
+          // Handle lines
+          ctx.strokeStyle = 'rgba(168,176,187,.55)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(h1s.x, h1s.y); ctx.lineTo(ax, ay); ctx.lineTo(h2s.x, h2s.y); ctx.stroke();
+          // Handle squares (filled with accent, outlined)
+          ctx.fillStyle = '#0a0a0c'; ctx.strokeStyle = accentColor; ctx.lineWidth = 1.3;
+          for (const hp of [h1s, h2s]) {
+            ctx.beginPath();
+            ctx.rect(hp.x - 3.5, hp.y - 3.5, 7, 7);
+            ctx.fill(); ctx.stroke();
+          }
+          // Anchor circle
+          ctx.fillStyle = accentColor; ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(ax, ay, 5.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+          if (p.smooth === false) {
+            // Small inner dot indicates corner-mode (asymmetric handles)
+            ctx.fillStyle = '#000';
+            ctx.beginPath(); ctx.arc(ax, ay, 1.6, 0, Math.PI*2); ctx.fill();
+          }
+        });
+      }
+
+      // ── Interaction state ──
+      let drag = null; // null | { kind: 'anchor', idx } | { kind: 'handle', idx, which, shift }
+      function getXY(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          cx: (e.clientX - rect.left) * (canvas.width / rect.width),
+          cy: (e.clientY - rect.top)  * (canvas.height / rect.height),
+        };
+      }
+      function startInteraction(cx, cy, shift, ctrl) {
+        ensureProfileHandles(ab()[key]);
+        // Mirror right-half clicks to the left half so handles work on either side
+        const w = canvas.width;
+        const mirroredCx = cx <= w/2 ? cx : (w - cx);
+        const hHit = hitTestHandle(mirroredCx, cy);
+        if (hHit) {
+          // Shift toggles smooth/corner *and* sets break-this-drag flag so the dragged handle won't mirror
+          if (shift) {
+            ab()[key][hHit.idx].smooth = false;
+          }
+          drag = { kind: 'handle', idx: hHit.idx, which: hHit.which, shift };
+          return;
+        }
+        const aHit = hitTestAnchor(mirroredCx, cy);
+        if (aHit >= 0) {
+          // ctrl/alt-click an anchor to toggle smooth/corner without dragging
+          if (ctrl) {
+            const p = ab()[key][aHit];
+            p.smooth = !p.smooth;
+            if (p.smooth) {
+              // re-symmetrize: average the two handle magnitudes onto the average direction
+              const mag1 = Math.hypot(p.h1.dy, p.h1.dr), mag2 = Math.hypot(p.h2.dy, p.h2.dr);
+              const avgMag = (mag1 + mag2) / 2;
+              // direction: take h2 direction (favour the "outgoing" tangent)
+              const ang = Math.atan2(p.h2.dy, p.h2.dr);
+              p.h2 = { dy: avgMag * Math.sin(ang),  dr: avgMag * Math.cos(ang) };
+              p.h1 = { dy: -p.h2.dy, dr: -p.h2.dr };
+            }
+            draw(); return;
+          }
+          drag = { kind: 'anchor', idx: aHit };
+          return;
+        }
+        // Empty space → add a new anchor here (and immediately start dragging it)
+        const r = unspaceR(mirroredCx, w);
+        const y = unspaceY(cy, canvas.height);
+        const newPt = { y, r, smooth: true };
+        ab()[key].push(newPt);
+        ab()[key].sort((a,b)=>a.y-b.y);
+        // Now derive handles for this new point based on its new neighbors
+        ensureProfileHandles(ab()[key]);
+        drag = { kind: 'anchor', idx: ab()[key].indexOf(newPt) };
+      }
+      function continueInteraction(cx, cy) {
+        if (!drag) return;
+        const w = canvas.width, h = canvas.height;
+        const pts = ab()[key];
+        const p = pts[drag.idx];
+        if (!p) { drag = null; return; }
+        const mirroredCx = cx <= w/2 ? cx : (w - cx);
+        if (drag.kind === 'anchor') {
+          const oldY = p.y, oldR = p.r;
+          p.r = unspaceR(mirroredCx, w);
+          p.y = unspaceY(cy, h);
+          // Re-sort keeping reference
+          const ref = p; pts.sort((a,b)=>a.y-b.y); drag.idx = pts.indexOf(ref);
+        } else {
+          // Handle drag
+          const hd = pickHandleFromScreen(p, p[drag.which], mirroredCx, cy, w, h);
+          // The new handle delta IS the new direction*length from anchor.
+          // pickHandleFromScreen returns delta from anchor for the cursor position.
+          p[drag.which] = hd;
+          if (p.smooth && !drag.shift) {
+            // Mirror: opposite handle = -hd
+            const other = drag.which === 'h1' ? 'h2' : 'h1';
+            p[other] = { dy: -hd.dy, dr: -hd.dr };
+          }
+        }
+        draw();
+        if (ab().shape === 'spline2') regenerate();
+      }
+      function endInteraction() { drag = null; }
+
+      canvas.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const {cx, cy} = getXY(e);
+        const w = canvas.width;
+        const mirroredCx = cx <= w/2 ? cx : (w - cx);
+        // If you right-click a handle: collapse it back to zero
+        const hHit = hitTestHandle(mirroredCx, cy);
+        if (hHit) {
+          ab()[key][hHit.idx][hHit.which] = { dy: 0, dr: 0 };
+          if (ab()[key][hHit.idx].smooth) {
+            const other = hHit.which === 'h1' ? 'h2' : 'h1';
+            ab()[key][hHit.idx][other] = { dy: 0, dr: 0 };
+          }
+          draw(); if (ab().shape === 'spline2') regenerate(); return;
+        }
+        // Right-click an anchor: delete (min 2)
+        const aHit = hitTestAnchor(mirroredCx, cy);
+        if (aHit >= 0 && ab()[key].length > 2) {
+          ab()[key].splice(aHit, 1);
+          draw(); if (ab().shape === 'spline2') regenerate();
+        }
+      });
+      canvas.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        const {cx, cy} = getXY(e);
+        startInteraction(cx, cy, e.shiftKey, e.altKey || e.ctrlKey || e.metaKey);
+        draw(); if (ab().shape === 'spline2') regenerate();
+      });
+      window.addEventListener('mousemove', e => {
+        if (!drag) return;
+        const {cx, cy} = getXY(e);
+        continueInteraction(cx, cy);
+      });
+      window.addEventListener('mouseup', endInteraction);
+      // Touch
+      canvas.addEventListener('touchstart', e => {
+        const t = e.touches[0]; if (!t) return; e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const cx = (t.clientX - rect.left) * (canvas.width / rect.width);
+        const cy = (t.clientY - rect.top)  * (canvas.height / rect.height);
+        startInteraction(cx, cy, e.shiftKey, false);
+        draw(); if (ab().shape === 'spline2') regenerate();
+      }, { passive: false });
+      canvas.addEventListener('touchmove', e => {
+        if (!drag) return;
+        const t = e.touches[0]; if (!t) return; e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const cx = (t.clientX - rect.left) * (canvas.width / rect.width);
+        const cy = (t.clientY - rect.top)  * (canvas.height / rect.height);
+        continueInteraction(cx, cy);
+      }, { passive: false });
+      canvas.addEventListener('touchend', endInteraction);
+
+      return { redraw: draw };
+    }
+    const spline2Front = spline2Setup('spline2Canvas-front', 'spline2Front', '#c8952a');
+    const spline2Side  = spline2Setup('spline2Canvas-side',  'spline2Side',  '#6effa8');
+    function drawSpline2All() { spline2Front.redraw(); spline2Side.redraw(); }
+    document.getElementById('spline2Reset').onclick = () => {
+      ab().spline2Front = [{y:0.02,r:0.10},{y:0.20,r:0.55},{y:0.50,r:0.90},{y:0.78,r:0.62},{y:0.98,r:0.15}];
+      ab().spline2Side  = [{y:0.02,r:0.10},{y:0.20,r:0.55},{y:0.50,r:0.90},{y:0.78,r:0.62},{y:0.98,r:0.15}];
+      drawSpline2All(); if (ab().shape === 'spline2') regenerate();
+    };
+    document.getElementById('spline2Mirror').onclick = () => {
+      ab().spline2Side = JSON.parse(JSON.stringify(ab().spline2Front));
+      drawSpline2All(); if (ab().shape === 'spline2') regenerate();
+    };
+
+    // ── Stacked cross-section editor (with bezier tangent handles) ─
+    const splinexsCanvas = document.getElementById('splinexsCanvas');
+    const splinexsCtx = splinexsCanvas.getContext('2d');
+    const SXS_ANCHOR_HIT = 11;
+    const SXS_HANDLE_HIT = 9;
+    function sxs() { return ab().splinexs; }
+    function activeRing() { return sxs().rings[sxs().activeRing]; }
+    function renderSplinexsRings() {
+      const list = document.getElementById('splinexsRingsList');
+      list.innerHTML = '';
+      const rings = sxs().rings;
+      const order = rings.map((r,i)=>({i, y:r.y})).sort((a,b)=>a.y-b.y);
+      order.forEach(({i, y}) => {
+        const row = document.createElement('button');
+        row.className = 'splinexs-ring-row' + (i === sxs().activeRing ? ' active' : '');
+        row.innerHTML = `<span>ring ${i+1}</span><span class="rr-y">y=${y.toFixed(2)}</span>`;
+        row.onclick = () => {
+          sxs().activeRing = i;
+          renderSplinexsRings(); syncSplinexsControls(); drawSplinexs();
+        };
+        list.appendChild(row);
+      });
+      document.getElementById('splinexsDelRing').disabled = rings.length <= 2;
+    }
+    function syncSplinexsControls() {
+      const r = activeRing();
+      if (!r) return;
+      const idx = sxs().activeRing;
+      document.getElementById('splinexsRingIdx').textContent = String(idx + 1);
+      document.getElementById('splinexsRingY').textContent = r.y.toFixed(2);
+      const yPct = Math.round(r.y * 100);
+      document.getElementById('splinexsYNum').value = yPct;
+      document.getElementById('splinexsYInput').value = yPct;
+    }
+
+    function sxsDims() {
+      const w = splinexsCanvas.width, h = splinexsCanvas.height;
+      return { w, h, cx: w/2, cy: h/2, R: Math.min(w,h)/2 - 12 };
+    }
+    function anchorScreen(p, d) {
+      // d = sxsDims()
+      return { x: d.cx + Math.cos(p.theta) * p.r * d.R, y: d.cy + Math.sin(p.theta) * p.r * d.R };
+    }
+    function handleScreenSxs(p, hd, d) {
+      // Anchor cartesian position scaled by R
+      const ax = d.cx + Math.cos(p.theta) * p.r * d.R;
+      const ay = d.cy + Math.sin(p.theta) * p.r * d.R;
+      // Handle delta is in unit-radius cartesian; scale by R
+      return { x: ax + hd.dx * d.R, y: ay + hd.dy * d.R };
+    }
+
+    function drawSplinexs() {
+      const d = sxsDims();
+      const ctx = splinexsCtx;
+      ctx.clearRect(0, 0, d.w, d.h);
+      // Background rings
+      ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
+      [0.25, 0.5, 0.75, 1].forEach(f => {
+        ctx.beginPath(); ctx.arc(d.cx, d.cy, d.R*f, 0, Math.PI*2); ctx.stroke();
+      });
+      // Cross hairs
+      ctx.strokeStyle = 'rgba(200,149,42,.20)';
+      ctx.beginPath(); ctx.moveTo(d.cx, 0); ctx.lineTo(d.cx, d.h); ctx.moveTo(0, d.cy); ctx.lineTo(d.w, d.cy); ctx.stroke();
+
+      // Ghost rings — draw polyline directly so overhangs/self-intersecting loops render properly
+      sxs().rings.forEach((ring, idx) => {
+        if (idx === sxs().activeRing) return;
+        const ghost = closedPolyline(ring.pts);
+        if (ghost.length < 2) return;
+        ctx.strokeStyle = 'rgba(168,176,187,.18)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let i = 0; i < ghost.length; i++) {
+          const x = d.cx + ghost[i].x * d.R;
+          const y = d.cy + ghost[i].y * d.R;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      });
+
+      const ring = activeRing();
+      if (!ring) return;
+      ensureRingHandles(ring.pts);
+      const poly = closedPolyline(ring.pts);
+      if (poly.length >= 2) {
+        // Filled active ring — evenodd handles self-overlapping curves cleanly
+        ctx.fillStyle = 'rgba(200,149,42,.18)';
+        ctx.strokeStyle = '#c8952a';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        for (let i = 0; i < poly.length; i++) {
+          const x = d.cx + poly[i].x * d.R;
+          const y = d.cy + poly[i].y * d.R;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fill('evenodd');
+        ctx.stroke();
+      }
+
+      // Handles + anchors
+      ring.pts.forEach(p => {
+        const as = anchorScreen(p, d);
+        const h1s = handleScreenSxs(p, p.h1, d);
+        const h2s = handleScreenSxs(p, p.h2, d);
+        // Handle lines
+        ctx.strokeStyle = 'rgba(168,176,187,.55)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(h1s.x, h1s.y); ctx.lineTo(as.x, as.y); ctx.lineTo(h2s.x, h2s.y); ctx.stroke();
+        // Handle squares
+        ctx.fillStyle = '#0a0a0c'; ctx.strokeStyle = '#c8952a'; ctx.lineWidth = 1.3;
+        for (const hp of [h1s, h2s]) {
+          ctx.beginPath(); ctx.rect(hp.x - 3.5, hp.y - 3.5, 7, 7); ctx.fill(); ctx.stroke();
+        }
+        // Anchor circle
+        ctx.fillStyle = '#c8952a'; ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(as.x, as.y, 5.5, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        if (p.smooth === false) {
+          ctx.fillStyle = '#000';
+          ctx.beginPath(); ctx.arc(as.x, as.y, 1.6, 0, Math.PI*2); ctx.fill();
+        }
+      });
+    }
+
+    function sxsCanvasToPolar(sx, sy) {
+      const d = sxsDims();
+      const dx = sx - d.cx, dy = sy - d.cy;
+      const r = Math.max(0, Math.min(1, Math.sqrt(dx*dx + dy*dy) / d.R));
+      const theta = ((Math.atan2(dy, dx) % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+      return { theta, r };
+    }
+    function sxsHitTestAnchor(sx, sy) {
+      const d = sxsDims();
+      const ring = activeRing(); if (!ring) return -1;
+      for (let i = ring.pts.length - 1; i >= 0; i--) {
+        const as = anchorScreen(ring.pts[i], d);
+        if ((sx-as.x)*(sx-as.x) + (sy-as.y)*(sy-as.y) <= SXS_ANCHOR_HIT*SXS_ANCHOR_HIT) return i;
+      }
+      return -1;
+    }
+    function sxsHitTestHandle(sx, sy) {
+      const d = sxsDims();
+      const ring = activeRing(); if (!ring) return null;
+      ensureRingHandles(ring.pts);
+      for (let i = ring.pts.length - 1; i >= 0; i--) {
+        for (const which of ['h1', 'h2']) {
+          const hs = handleScreenSxs(ring.pts[i], ring.pts[i][which], d);
+          if ((sx-hs.x)*(sx-hs.x) + (sy-hs.y)*(sy-hs.y) <= SXS_HANDLE_HIT*SXS_HANDLE_HIT) {
+            return { idx: i, which };
+          }
+        }
+      }
+      return null;
+    }
+
+    let sxsDrag = null; // null | { kind, idx, which?, shift? }
+    function sxsXY(e) {
+      const rect = splinexsCanvas.getBoundingClientRect();
+      return {
+        cx: (e.clientX - rect.left) * (splinexsCanvas.width / rect.width),
+        cy: (e.clientY - rect.top)  * (splinexsCanvas.height / rect.height),
+      };
+    }
+    function sxsStart(cx, cy, shift, ctrl) {
+      const ring = activeRing(); if (!ring) return;
+      ensureRingHandles(ring.pts);
+      const hHit = sxsHitTestHandle(cx, cy);
+      if (hHit) {
+        if (shift) ring.pts[hHit.idx].smooth = false;
+        sxsDrag = { kind: 'handle', idx: hHit.idx, which: hHit.which, shift };
+        return;
+      }
+      const aHit = sxsHitTestAnchor(cx, cy);
+      if (aHit >= 0) {
+        if (ctrl) {
+          const p = ring.pts[aHit];
+          p.smooth = !p.smooth;
+          if (p.smooth) {
+            const m1 = Math.hypot(p.h1.dx, p.h1.dy), m2 = Math.hypot(p.h2.dx, p.h2.dy);
+            const avg = (m1 + m2) / 2;
+            const ang = Math.atan2(p.h2.dy, p.h2.dx);
+            p.h2 = { dx: avg * Math.cos(ang), dy: avg * Math.sin(ang) };
+            p.h1 = { dx: -p.h2.dx, dy: -p.h2.dy };
+          }
+          drawSplinexs(); return;
+        }
+        sxsDrag = { kind: 'anchor', idx: aHit };
+        return;
+      }
+      // Empty space → add anchor at the click position
+      const { theta, r } = sxsCanvasToPolar(cx, cy);
+      const newPt = { theta, r, smooth: true };
+      ring.pts.push(newPt);
+      // Reset handles on the new point AND its neighbors so the curve recomputes nicely
+      ring.pts.forEach(p => { if (p === newPt) return; });
+      // Force re-derive on next ensure call
+      delete newPt.h1; delete newPt.h2;
+      ensureRingHandles(ring.pts);
+      sxsDrag = { kind: 'anchor', idx: ring.pts.indexOf(newPt) };
+    }
+    function sxsContinue(cx, cy) {
+      if (!sxsDrag) return;
+      const ring = activeRing(); if (!ring) return;
+      const p = ring.pts[sxsDrag.idx]; if (!p) { sxsDrag = null; return; }
+      const d = sxsDims();
+      if (sxsDrag.kind === 'anchor') {
+        const { theta, r } = sxsCanvasToPolar(cx, cy);
+        p.theta = theta; p.r = r;
+      } else {
+        // Compute handle delta in unit-radius cartesian
+        const ax = d.cx + Math.cos(p.theta) * p.r * d.R;
+        const ay = d.cy + Math.sin(p.theta) * p.r * d.R;
+        const dx = (cx - ax) / d.R;
+        const dy = (cy - ay) / d.R;
+        p[sxsDrag.which] = { dx, dy };
+        if (p.smooth && !sxsDrag.shift) {
+          const other = sxsDrag.which === 'h1' ? 'h2' : 'h1';
+          p[other] = { dx: -dx, dy: -dy };
+        }
+      }
+      drawSplinexs();
+      if (ab().shape === 'splinexs') regenerate();
+    }
+    function sxsEnd() { sxsDrag = null; }
+
+    splinexsCanvas.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      const {cx, cy} = sxsXY(e);
+      const ring = activeRing(); if (!ring) return;
+      const hHit = sxsHitTestHandle(cx, cy);
+      if (hHit) {
+        ring.pts[hHit.idx][hHit.which] = { dx: 0, dy: 0 };
+        if (ring.pts[hHit.idx].smooth) {
+          const other = hHit.which === 'h1' ? 'h2' : 'h1';
+          ring.pts[hHit.idx][other] = { dx: 0, dy: 0 };
+        }
+        drawSplinexs(); if (ab().shape === 'splinexs') regenerate(); return;
+      }
+      const aHit = sxsHitTestAnchor(cx, cy);
+      if (aHit >= 0 && ring.pts.length > 3) {
+        ring.pts.splice(aHit, 1);
+        drawSplinexs(); if (ab().shape === 'splinexs') regenerate();
+      }
+    });
+    splinexsCanvas.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      const {cx, cy} = sxsXY(e);
+      sxsStart(cx, cy, e.shiftKey, e.altKey || e.ctrlKey || e.metaKey);
+      drawSplinexs(); if (ab().shape === 'splinexs') regenerate();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!sxsDrag) return;
+      const {cx, cy} = sxsXY(e);
+      sxsContinue(cx, cy);
+    });
+    window.addEventListener('mouseup', sxsEnd);
+    splinexsCanvas.addEventListener('touchstart', e => {
+      const t = e.touches[0]; if (!t) return; e.preventDefault();
+      const rect = splinexsCanvas.getBoundingClientRect();
+      const cx = (t.clientX - rect.left) * (splinexsCanvas.width / rect.width);
+      const cy = (t.clientY - rect.top)  * (splinexsCanvas.height / rect.height);
+      sxsStart(cx, cy, e.shiftKey, false);
+      drawSplinexs(); if (ab().shape === 'splinexs') regenerate();
+    }, { passive: false });
+    splinexsCanvas.addEventListener('touchmove', e => {
+      if (!sxsDrag) return;
+      const t = e.touches[0]; if (!t) return; e.preventDefault();
+      const rect = splinexsCanvas.getBoundingClientRect();
+      const cx = (t.clientX - rect.left) * (splinexsCanvas.width / rect.width);
+      const cy = (t.clientY - rect.top)  * (splinexsCanvas.height / rect.height);
+      sxsContinue(cx, cy);
+    }, { passive: false });
+    splinexsCanvas.addEventListener('touchend', sxsEnd);
+
+    // Ring height slider
+    function applySxsY(pct) {
+      const r = activeRing(); if (!r) return;
+      r.y = Math.max(0, Math.min(1, pct / 100));
+      syncSplinexsControls(); renderSplinexsRings(); drawSplinexs();
+      if (ab().shape === 'splinexs') regenerate();
+    }
+    document.getElementById('splinexsYInput').addEventListener('input', e => applySxsY(+e.target.value));
+    document.getElementById('splinexsYNum').addEventListener('input', e => applySxsY(+e.target.value));
+
+    // Add/remove rings
+    document.getElementById('splinexsAddRing').onclick = () => {
+      const rings = sxs().rings;
+      const sorted = rings.map((r,i)=>({i, y:r.y})).sort((a,b)=>a.y-b.y);
+      let gap = -1, midY = 0.5, ref = sxs().activeRing;
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const g = sorted[i+1].y - sorted[i].y;
+        if (g > gap) { gap = g; midY = (sorted[i].y + sorted[i+1].y) / 2; ref = sorted[i].i; }
+      }
+      const src = rings[ref];
+      // Clone full points including handles so the new ring blends visually
+      const newRing = {
+        y: midY,
+        pts: src.pts.map(p => ({
+          theta: p.theta, r: p.r,
+          smooth: p.smooth !== false,
+          h1: p.h1 ? { dx: p.h1.dx, dy: p.h1.dy } : undefined,
+          h2: p.h2 ? { dx: p.h2.dx, dy: p.h2.dy } : undefined,
+        })),
+      };
+      rings.push(newRing);
+      sxs().activeRing = rings.length - 1;
+      renderSplinexsRings(); syncSplinexsControls(); drawSplinexs();
+      if (ab().shape === 'splinexs') regenerate();
+    };
+    document.getElementById('splinexsDelRing').onclick = () => {
+      const rings = sxs().rings;
+      if (rings.length <= 2) return;
+      rings.splice(sxs().activeRing, 1);
+      sxs().activeRing = Math.min(sxs().activeRing, rings.length - 1);
+      renderSplinexsRings(); syncSplinexsControls(); drawSplinexs();
+      if (ab().shape === 'splinexs') regenerate();
+    };
+    document.getElementById('splinexsResetRing').onclick = () => {
+      const r = activeRing(); if (!r) return;
+      r.pts = [
+        {theta:0, r:.7, smooth:true},{theta:Math.PI/2, r:.7, smooth:true},
+        {theta:Math.PI, r:.7, smooth:true},{theta:3*Math.PI/2, r:.7, smooth:true},
+      ];
+      drawSplinexs(); if (ab().shape === 'splinexs') regenerate();
+    };
+
     // ── Param canvases ───────────────────────────────────────────
     let paramFrontCv, paramSideCv, paramTopCv;
     function setupParamCanvas(canvasId, profileKey) {
@@ -1386,6 +2302,8 @@
       const shp=SHAPES.find(s=>s.id===b.shape);
       document.getElementById('ribControl').style.display=shp?.hasRibs?'':'none';
       document.getElementById('profileWrap').classList.toggle('show',b.shape==='custom');
+      document.getElementById('spline2Wrap').classList.toggle('show',b.shape==='spline2');
+      document.getElementById('splinexsWrap').classList.toggle('show',b.shape==='splinexs');
       document.getElementById('paramWrap').classList.toggle('show',b.shape==='param');
       syncH(); syncW(); syncT(); syncRibs();
       syncOffX(); syncOffY(); syncOffZ();
@@ -1396,6 +2314,8 @@
         matSelect.value='custom'; customBlock.value=b.customBlock; customBlock.classList.add('show');
       }
       drawProfile();
+      drawSpline2All();
+      renderSplinexsRings(); syncSplinexsControls(); drawSplinexs();
       paramFrontCv.redraw(); paramSideCv.redraw(); paramTopCv.redraw();
     }
     function duplicateBalloon(idx) {
@@ -1551,6 +2471,65 @@
             const ty=(y+.5)/sY,rXY=fF(ty)*hX,rZY=fS(ty)*hZ,xB=Math.min(rXY,rXZ);
             if(xB<=0||rZY<=0||Math.abs(dz0)>rZY)continue;
             for(let x=0;x<sX;x++){if(Math.abs(x+.5-hX)<=xB)mask[idx(x,y,z)]=1;}
+          }
+        }
+      } else if(b.shape==='spline2'){
+        // Two-axis spline: at each y, front-LUT gives X-radius, side-LUT gives Z-radius.
+        // Cross-section is an ellipse: (dx/rX)^2 + (dz/rZ)^2 <= 1.
+        const hX = sX/2, hZ = sZ/2;
+        const lutF = catmullRomProfileLUT(b.spline2Front, 192);
+        const lutS = catmullRomProfileLUT(b.spline2Side,  192);
+        for (let y = 0; y < sY; y++) {
+          const ty = (y + .5) / sY;
+          const rX = sampleLUT(lutF, ty) * hX;
+          const rZ = sampleLUT(lutS, ty) * hZ;
+          if (rX <= 0 || rZ <= 0) continue;
+          const rX2 = rX*rX, rZ2 = rZ*rZ;
+          for (let z = 0; z < sZ; z++) {
+            const dz = z + .5 - hZ;
+            const zTerm = (dz*dz) / rZ2;
+            if (zTerm > 1) continue;
+            for (let x = 0; x < sX; x++) {
+              const dx = x + .5 - hX;
+              if ((dx*dx)/rX2 + zTerm <= 1) mask[idx(x,y,z)] = 1;
+            }
+          }
+        }
+      } else if(b.shape==='splinexs'){
+        // Stacked cross-sections: at each y, find the two adjacent rings (by ring.y)
+        // and lerp their radial LUTs. Then test (theta, r) against the interpolated profile.
+        const hX = sX/2, hZ = sZ/2;
+        const rings = (b.splinexs && b.splinexs.rings) ? [...b.splinexs.rings] : [];
+        if (rings.length < 2) return { mask, sizeX:sX, sizeY:sY, sizeZ:sZ };
+        rings.sort((a,b)=>a.y-b.y);
+        const luts = rings.map(r => catmullRomClosedLUT(r.pts, 256));
+        // For each y row, build the interpolated LUT once.
+        const tmp = new Float32Array(256);
+        for (let y = 0; y < sY; y++) {
+          const ty = (y + .5) / sY;
+          let lutA, lutB, t;
+          if (ty <= rings[0].y)            { lutA = luts[0];            lutB = luts[0];            t = 0; }
+          else if (ty >= rings[rings.length-1].y) { lutA = luts[luts.length-1]; lutB = luts[luts.length-1]; t = 0; }
+          else {
+            let seg = 0;
+            while (seg < rings.length - 2 && rings[seg+1].y < ty) seg++;
+            const yA = rings[seg].y, yB = rings[seg+1].y;
+            lutA = luts[seg]; lutB = luts[seg+1];
+            t = (yB - yA) > 1e-6 ? (ty - yA) / (yB - yA) : 0;
+            // Smoothstep for nicer vertical blending
+            t = t * t * (3 - 2 * t);
+          }
+          for (let k = 0; k < 256; k++) tmp[k] = lutA[k] * (1 - t) + lutB[k] * t;
+          for (let z = 0; z < sZ; z++) {
+            const dz = z + .5 - hZ;
+            for (let x = 0; x < sX; x++) {
+              const dx = x + .5 - hX;
+              const rN = Math.sqrt((dx*dx)/(hX*hX) + (dz*dz)/(hZ*hZ));
+              if (rN > 1) continue;
+              const theta = Math.atan2(dz, dx);
+              const rEdge = sampleClosedLUT(tmp, theta);
+              if (rN <= rEdge) mask[idx(x,y,z)] = 1;
+            }
           }
         }
       } else {
