@@ -26,6 +26,17 @@
     .aero-header h1 { font-family: var(--mono); font-weight: 700; letter-spacing: -0.5px; font-size: 32px; margin: 0; }
     .aero-header h1 .accent { color: var(--brass); }
     .aero-header .tagline { color: var(--muted); font-size: 13px; font-family: var(--mono); }
+    .aero-header .history-controls { margin-left: auto; display: inline-flex; gap: 4px; align-self: center; }
+    .history-btn {
+      appearance: none; background: transparent; border: 1px solid var(--line-aero);
+      color: var(--muted); font-family: var(--mono); font-size: 11px; letter-spacing: .04em;
+      padding: 5px 9px; border-radius: 4px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px; line-height: 1;
+      transition: color .12s, border-color .12s;
+    }
+    .history-btn:hover:not(:disabled) { border-color: var(--brass-dim); color: var(--brass); }
+    .history-btn:disabled { opacity: .32; cursor: default; }
+    .history-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .layout { display: grid; grid-template-columns: 380px 1fr; gap: 16px; align-items: start; }
     @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } .preview-wrap { order: -1; height: 420px; } }
     .panel-aero { background: var(--panel-aero); border: 1px solid var(--line-aero); border-radius: 12px; padding: 16px; }
@@ -354,6 +365,16 @@
       <a class="crumb" href="./">← balloonshaper.xyz</a>
       <h1>aero<span class="accent">naut</span></h1>
       <span class="tagline">// balloon &amp; airship generator for create: aeronautics</span>
+      <div class="history-controls" role="group" aria-label="History">
+        <button class="history-btn" id="undoBtn" title="Undo (Ctrl/Cmd+Z)" disabled aria-keyshortcuts="Control+Z Meta+Z">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8 l3.5 -3.5 M3.5 8 l3.5 3.5 M3.5 8 h6.5 a4 4 0 0 1 0 8 H8.5"/></svg>
+          <span>undo</span>
+        </button>
+        <button class="history-btn" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)" disabled aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8 l-3.5 -3.5 M12.5 8 l-3.5 3.5 M12.5 8 h-6.5 a4 4 0 0 0 0 8 H7.5"/></svg>
+          <span>redo</span>
+        </button>
+      </div>
     </div>
 
     <div class="layout">
@@ -3754,6 +3775,9 @@
         ?` · ${state.orientation.lay==='up'?'':state.orientation.lay+' '}yaw ${state.orientation.yaw}°`
         :'';
       overlayText.textContent=`${ab().shape}${multi}${hBit}${pBit} · ${stats.sizeX}×${stats.sizeY}×${stats.sizeZ} · ${stats.blockCount} blocks${oBit} · ${ms}ms`;
+      // Every successful rebuild is a potential undo checkpoint. The history
+      // module short-circuits this during drags and when applying a snapshot.
+      _history?.commit();
     }
 
     // ── Download ─────────────────────────────────────────────────
@@ -3772,6 +3796,112 @@
       document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
+
+    // ── Undo / Redo history ─────────────────────────────────────
+    // The whole `state` object is deep-cloned on every commit. Drags on the
+    // editor canvases are grouped — pointerdown bumps a counter that pauses
+    // commits, pointerup decrements it and (when it hits zero) commits the
+    // post-drag state. Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z wire to undo/redo.
+    const _history = (() => {
+      const MAX_ENTRIES = 100;
+      const past = [];
+      const future = [];
+      let dragDepth = 0;         // counter, so nested pointerdowns can't desync
+      let suppressCommit = false; // set while applying a snapshot to avoid recursive commits
+
+      const undoBtn = document.getElementById('undoBtn');
+      const redoBtn = document.getElementById('redoBtn');
+
+      const snap = () => structuredClone(state);
+      const eqSerial = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+      function updateButtons(){
+        if(undoBtn) undoBtn.disabled = past.length < 2;
+        if(redoBtn) redoBtn.disabled = future.length === 0;
+      }
+
+      function commit(){
+        if(suppressCommit || dragDepth > 0) return;
+        const cur = snap();
+        if(past.length && eqSerial(past[past.length-1], cur)) return;
+        past.push(cur);
+        if(past.length > MAX_ENTRIES) past.shift();
+        future.length = 0;
+        updateButtons();
+      }
+
+      function apply(target){
+        // Mutate `state` in place so all closures (ab(), etc.) see the
+        // restored values. structuredClone is used so future undo/redo
+        // operations don't share refs with the live tree.
+        const s = structuredClone(target);
+        state.balloons          = s.balloons;
+        state.activeBalloonIdx  = s.activeBalloonIdx;
+        state.orientation       = s.orientation;
+        state.hull              = s.hull;
+        state.prop              = s.prop;
+        suppressCommit = true;
+        try {
+          renderBalloonList();
+          syncControlsToActiveBalloon();
+          regenerate();
+        } finally {
+          suppressCommit = false;
+        }
+        updateButtons();
+      }
+
+      function undo(){
+        if(past.length < 2) return;
+        future.push(past.pop());
+        apply(past[past.length-1]);
+      }
+      function redo(){
+        if(!future.length) return;
+        const s = future.pop();
+        past.push(s);
+        apply(s);
+      }
+
+      function dragStart(){ dragDepth++; }
+      function dragEnd(){
+        if(dragDepth > 0) dragDepth--;
+        if(dragDepth === 0) commit();
+      }
+
+      // Buttons
+      undoBtn?.addEventListener('click', undo);
+      redoBtn?.addEventListener('click', redo);
+
+      // Keyboard: Cmd/Ctrl+Z = undo, Cmd/Ctrl+Shift+Z (or Cmd/Ctrl+Y) = redo.
+      window.addEventListener('keydown', e => {
+        const meta = e.ctrlKey || e.metaKey;
+        if(!meta) return;
+        const k = e.key.toLowerCase();
+        if(k === 'z'){
+          e.preventDefault();
+          if(e.shiftKey) redo(); else undo();
+        } else if(k === 'y'){
+          e.preventDefault();
+          redo();
+        }
+      });
+
+      // Drag grouping on the canvas editors. Each pointerdown bumps the
+      // counter; the matching pointerup on window decrements it. Using
+      // window for pointerup ensures we still fire even if the pointer
+      // leaves the canvas before release.
+      ['profileCanvas','spline2Canvas-front','spline2Canvas-side','splinexsCanvas'].forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.addEventListener('pointerdown', dragStart);
+      });
+      window.addEventListener('pointerup',     () => { if(dragDepth > 0) dragEnd(); });
+      window.addEventListener('pointercancel', () => { if(dragDepth > 0) dragEnd(); });
+
+      updateButtons();
+      return { commit, undo, redo, dragStart, dragEnd };
+    })();
 
     // ── Init ─────────────────────────────────────────────────────
     renderBalloonList();
