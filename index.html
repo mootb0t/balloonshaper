@@ -357,6 +357,18 @@
     @media (max-width: 920px) {
       .tab-strip { position: sticky; top: 0; z-index: 5; background: var(--bg-aero); }
     }
+
+    /* Share toast — confirms link copy after the Share button is clicked. */
+    .share-toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: rgba(20,20,24,.95); border: 1px solid var(--brass-faint);
+      color: var(--brass); font-family: var(--mono); font-size: 12px; letter-spacing: .04em;
+      padding: 8px 14px; border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s;
+      z-index: 9999;
+    }
+    .share-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
@@ -373,6 +385,10 @@
         <button class="history-btn" id="redoBtn" title="Redo (Ctrl/Cmd+Shift+Z)" disabled aria-keyshortcuts="Control+Shift+Z Meta+Shift+Z">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M12.5 8 l-3.5 -3.5 M12.5 8 l-3.5 3.5 M12.5 8 h-6.5 a4 4 0 0 0 0 8 H7.5"/></svg>
           <span>redo</span>
+        </button>
+        <button class="history-btn" id="shareBtn" title="Copy a shareable link to this build">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="3.5" r="2"/><circle cx="12" cy="12.5" r="2"/><path d="M5.7 7 l4.6 -2.7 M5.7 9 l4.6 2.7"/></svg>
+          <span>share</span>
         </button>
       </div>
     </div>
@@ -3797,6 +3813,153 @@
       setTimeout(()=>URL.revokeObjectURL(url),1000);
     };
 
+    // ── Share via URL ────────────────────────────────────────────
+    // Encode the live `state` into the URL hash so a build can be pasted in
+    // chat, pinned in a doc, or bookmarked. We deflate the JSON, base64url
+    // it, and tag it with a one-char version so the format can evolve.
+    // Hash-only (never query) — nothing reaches the server on static hosts.
+    const _share = (() => {
+      const PREFIX = '#s=';
+
+      const b64uEnc = (bytes) => {
+        let s = '';
+        // chunk to avoid argument-count limits on String.fromCharCode
+        for (let i = 0; i < bytes.length; i += 0x8000) {
+          s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+        }
+        return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      };
+      const b64uDec = (str) => {
+        const pad = str.length % 4 ? '='.repeat(4 - (str.length % 4)) : '';
+        const s = atob(str.replace(/-/g, '+').replace(/_/g, '/') + pad);
+        const out = new Uint8Array(s.length);
+        for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+        return out;
+      };
+
+      async function deflate(bytes) {
+        const cs = new CompressionStream('deflate-raw');
+        const w  = cs.writable.getWriter();
+        w.write(bytes); w.close();
+        const buf = await new Response(cs.readable).arrayBuffer();
+        return new Uint8Array(buf);
+      }
+      async function inflate(bytes) {
+        const ds = new DecompressionStream('deflate-raw');
+        const w  = ds.writable.getWriter();
+        w.write(bytes); w.close();
+        const buf = await new Response(ds.readable).arrayBuffer();
+        return new Uint8Array(buf);
+      }
+
+      // Drop purely-transient editor fields so URLs are stable across sessions.
+      function cleanForShare(s) {
+        const c = structuredClone(s);
+        for (const b of c.balloons) delete b.spline2ActivePt;
+        return c;
+      }
+
+      async function encode() {
+        const json  = JSON.stringify(cleanForShare(state));
+        const bytes = new TextEncoder().encode(json);
+        try {
+          const z = await deflate(bytes);
+          return location.origin + location.pathname + PREFIX + '1' + b64uEnc(z);
+        } catch {
+          // Compression API not available → fall back to raw base64url.
+          return location.origin + location.pathname + PREFIX + '0' + b64uEnc(bytes);
+        }
+      }
+
+      async function decode(hash) {
+        if (!hash.startsWith(PREFIX)) return null;
+        const body = hash.slice(PREFIX.length);
+        if (!body) return null;
+        const ver = body[0];
+        const bytes = b64uDec(body.slice(1));
+        let json;
+        if (ver === '1') {
+          const raw = await inflate(bytes);
+          json = new TextDecoder().decode(raw);
+        } else if (ver === '0') {
+          json = new TextDecoder().decode(bytes);
+        } else { return null; }
+        return JSON.parse(json);
+      }
+
+      // Replace live state in place, then re-render everything.
+      function applyState(target) {
+        const s = structuredClone(target);
+        if (Array.isArray(s.balloons) && s.balloons.length) state.balloons = s.balloons;
+        if (typeof s.activeBalloonIdx === 'number') {
+          state.activeBalloonIdx = Math.max(0, Math.min(s.activeBalloonIdx, state.balloons.length - 1));
+        }
+        if (s.orientation) state.orientation = s.orientation;
+        if (s.hull)        state.hull        = s.hull;
+        if (s.prop)        state.prop        = s.prop;
+
+        // Patch any missing keys on balloons against the current default
+        // shape, so older share links still work after new fields are added.
+        const proto = newBalloon();
+        for (const b of state.balloons) {
+          for (const k in proto) if (b[k] === undefined) b[k] = structuredClone(proto[k]);
+        }
+
+        renderBalloonList();
+        syncControlsToActiveBalloon();
+        regenerate();
+      }
+
+      function toast(msg) {
+        let el = document.getElementById('shareToast');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'shareToast';
+          el.className = 'share-toast';
+          document.body.appendChild(el);
+        }
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => el.classList.remove('show'), 2200);
+      }
+
+      // Wire the header Share button.
+      document.getElementById('shareBtn')?.addEventListener('click', async () => {
+        try {
+          const url = await encode();
+          // Reflect the link in the address bar so users see it update.
+          history.replaceState(null, '', url);
+          if (navigator.clipboard?.writeText) {
+            try { await navigator.clipboard.writeText(url); toast('link copied'); return; }
+            catch { /* fall through */ }
+          }
+          toast('link in address bar');
+        } catch (e) {
+          console.warn('share encode failed', e);
+          toast('share failed');
+        }
+      });
+
+      // Auto-load any share link on boot. Initial regenerate has already
+      // run, so the user briefly sees defaults before the shared build
+      // replaces them — acceptable for a static page with no SSR.
+      async function tryLoad() {
+        const h = location.hash;
+        if (!h.startsWith(PREFIX)) return false;
+        try {
+          const decoded = await decode(h);
+          if (decoded) { applyState(decoded); return true; }
+        } catch (e) {
+          console.warn('share decode failed', e);
+          toast('shared link invalid');
+        }
+        return false;
+      }
+
+      return { encode, decode, applyState, tryLoad };
+    })();
+
     // ── Undo / Redo history ─────────────────────────────────────
     // The whole `state` object is deep-cloned on every commit. Drags on the
     // editor canvases are grouped — pointerdown bumps a counter that pauses
@@ -3907,6 +4070,7 @@
     renderBalloonList();
     syncControlsToActiveBalloon();
     regenerate();
+    _share.tryLoad();
 
     // Hide scroll hint once the user scrolls the tab content
     const tabScroll = document.querySelector('.tab-scroll');
