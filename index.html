@@ -208,6 +208,28 @@
     .hull-toggle:hover { color: var(--text); }
     .hull-controls { display: none; }
     .hull-controls.show { display: block; }
+    /* shaped-hull engine UI */
+    .hull-mode { display: flex; gap: 6px; }
+    .hull-modebtn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 6px 8px; border: 1px solid var(--line-aero); border-radius: 6px; user-select: none; transition: border-color .12s, color .12s, background .12s; }
+    .hull-modebtn input { display: none; }
+    .hull-modebtn:hover { color: var(--text); }
+    .hull-modebtn:has(input:checked) { color: #1a1306; background: var(--brass); border-color: var(--brass); font-weight: 600; }
+    .hull-presets { display: flex; flex-wrap: wrap; gap: 4px; }
+    .hull-presets button { background: rgba(255,255,255,.04); color: var(--muted); border: 1px solid var(--line-aero); border-radius: 5px; padding: 4px 8px; font-family: var(--mono); font-size: 11px; cursor: pointer; transition: border-color .12s, color .12s, background .12s; }
+    .hull-presets button:hover { color: var(--text); border-color: rgba(200,149,42,.45); }
+    .hull-presets button.active { background: var(--brass); color: #1a1306; border-color: var(--brass); font-weight: 600; }
+    .hull-grp { border-top: 1px solid var(--line-aero); margin-top: 10px; }
+    .hull-grp > .hull-grp-h { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--text); padding: 9px 0 5px; user-select: none; }
+    .hull-grp > .hull-grp-h .chev { color: var(--muted); transition: transform .12s; }
+    .hull-grp.open > .hull-grp-h .chev { transform: rotate(90deg); }
+    .hull-grp-body { display: none; padding-bottom: 4px; }
+    .hull-grp.open > .hull-grp-body { display: block; }
+    .hull-check { display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--mono); font-size: 12px; color: var(--muted); padding: 4px 0; user-select: none; }
+    .hull-check input { width: 15px; height: 15px; accent-color: var(--brass); cursor: pointer; margin: 0; }
+    .hull-check:hover { color: var(--text); }
+    .hull-credit { margin-top: 12px; font-family: var(--mono); font-size: 10px; color: var(--muted); opacity: .65; }
+    .hull-credit a { color: var(--brass); text-decoration: none; }
+    .hull-credit a:hover { text-decoration: underline; }
     .prop-cfg { display: none; }
     .prop-cfg.show { display: block; }
 
@@ -618,52 +640,78 @@
             <span>Add ship hull below balloon</span>
           </label>
           <div class="hull-controls" id="hullControls">
-            <div class="control" style="margin-top:14px">
-              <div class="control-label">style</div>
-              <select class="select-aero" id="hullStyleSelect">
-                <optgroup label="Classic">
-                  <option value="box">Box (rectangular, open-top)</option>
-                  <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
-                  <option value="barge">Barge (flat-bottom, square ends)</option>
-                  <option value="galleon">Galleon (curved sides, raised stern)</option>
-                  <option value="canoe">Canoe (pointed both ends, sharp V-keel)</option>
-                  <option value="catamaran">Catamaran (twin parallel hulls)</option>
-                  <option value="twincanoe">Twin Canoe (twin pointed hulls, V-keel)</option>
-                  <option value="disc">Saucer (flat UFO body + cockpit dome)</option>
-                  <option value="pod">Pod (spherical bowl with apex hatch)</option>
-                </optgroup>
-                <optgroup label="New">
-                  <option value="drakkar">Drakkar (Viking longship, symmetric pointed)</option>
-                  <option value="junk">Junk (flat-bottom, raised stern castle)</option>
-                  <option value="trimaran">Trimaran (3 parallel hulls, big center)</option>
-                  <option value="trireme">Trireme (long galley, pointed ram bow)</option>
-                  <option value="dinghy">Dinghy (small flared rowboat)</option>
-                  <option value="submarine">Submarine (fully enclosed pill, top hatch)</option>
-                  <option value="pyramid">Pyramid (stepped tapered pyramid hull)</option>
-                  <option value="hex">Hex Hull (hexagonal cross-section)</option>
-                  <option value="icebreaker">Icebreaker (wedge bow that rides over ice)</option>
-                </optgroup>
-              </select>
+
+            <!-- engine mode -->
+            <div class="hull-mode" style="margin-top:14px">
+              <label class="hull-modebtn"><input type="radio" name="hullMode" value="shaped" id="hullModeShaped" checked /><span>Shaped</span></label>
+              <label class="hull-modebtn"><input type="radio" name="hullMode" value="legacy" id="hullModeLegacy" /><span>Legacy styles</span></label>
             </div>
-            <div class="control"><div class="control-row"><span>length</span><span><input type="number" class="num-input" id="hullLNum" min="3" max="200" value="20" /> blocks</span></div><input type="range" id="hullLInput" min="3" max="200" value="20" /></div>
-            <div class="control"><div class="control-row"><span>width</span><span><input type="number" class="num-input" id="hullWNum" min="3" max="60" value="10" /> blocks</span></div><input type="range" id="hullWInput" min="3" max="60" value="10" /></div>
-            <div class="control"><div class="control-row"><span>depth</span><span><input type="number" class="num-input" id="hullDNum" min="2" max="40" value="6" /> blocks</span></div><input type="range" id="hullDInput" min="2" max="40" value="6" /></div>
-            <div class="control"><div class="control-row"><span>wall thickness</span><span><input type="number" class="num-input" id="hullTNum" min="1" max="3" value="1" /> blocks</span></div><input type="range" id="hullTInput" min="1" max="3" value="1" /></div>
+
+            <!-- ═══ SHAPED ENGINE (createmod-style) ═══ -->
+            <div id="hullShapedPanel">
+              <div class="control" style="margin-top:12px">
+                <div class="control-label">ship preset</div>
+                <div class="hull-presets" id="hullPresetBtns"></div>
+              </div>
+              <div class="control">
+                <div class="control-label">wood</div>
+                <select class="select-aero" id="hullWoodSelect"></select>
+              </div>
+              <div id="hullParamGroups"></div>
+              <div class="hull-credit">shaped engine adapted from <a href="https://github.com/uberswe/createmod.com" target="_blank" rel="noopener">createmod.com</a> by Uberswe</div>
+            </div>
+
+            <!-- ═══ LEGACY ENGINE (our voxel styles) ═══ -->
+            <div id="hullLegacyPanel" style="display:none">
+              <div class="control" style="margin-top:12px">
+                <div class="control-label">style</div>
+                <select class="select-aero" id="hullStyleSelect">
+                  <optgroup label="Classic">
+                    <option value="box">Box (rectangular, open-top)</option>
+                    <option value="boat">Boat (tapered bow &amp; stern, V-hull)</option>
+                    <option value="barge">Barge (flat-bottom, square ends)</option>
+                    <option value="galleon">Galleon (curved sides, raised stern)</option>
+                    <option value="canoe">Canoe (pointed both ends, sharp V-keel)</option>
+                    <option value="catamaran">Catamaran (twin parallel hulls)</option>
+                    <option value="twincanoe">Twin Canoe (twin pointed hulls, V-keel)</option>
+                    <option value="disc">Saucer (flat UFO body + cockpit dome)</option>
+                    <option value="pod">Pod (spherical bowl with apex hatch)</option>
+                  </optgroup>
+                  <optgroup label="New">
+                    <option value="drakkar">Drakkar (Viking longship, symmetric pointed)</option>
+                    <option value="junk">Junk (flat-bottom, raised stern castle)</option>
+                    <option value="trimaran">Trimaran (3 parallel hulls, big center)</option>
+                    <option value="trireme">Trireme (long galley, pointed ram bow)</option>
+                    <option value="dinghy">Dinghy (small flared rowboat)</option>
+                    <option value="submarine">Submarine (fully enclosed pill, top hatch)</option>
+                    <option value="pyramid">Pyramid (stepped tapered pyramid hull)</option>
+                    <option value="hex">Hex Hull (hexagonal cross-section)</option>
+                    <option value="icebreaker">Icebreaker (wedge bow that rides over ice)</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="control"><div class="control-row"><span>length</span><span><input type="number" class="num-input" id="hullLNum" min="3" max="200" value="20" /> blocks</span></div><input type="range" id="hullLInput" min="3" max="200" value="20" /></div>
+              <div class="control"><div class="control-row"><span>width</span><span><input type="number" class="num-input" id="hullWNum" min="3" max="60" value="10" /> blocks</span></div><input type="range" id="hullWInput" min="3" max="60" value="10" /></div>
+              <div class="control"><div class="control-row"><span>depth</span><span><input type="number" class="num-input" id="hullDNum" min="2" max="40" value="6" /> blocks</span></div><input type="range" id="hullDInput" min="2" max="40" value="6" /></div>
+              <div class="control"><div class="control-row"><span>wall thickness</span><span><input type="number" class="num-input" id="hullTNum" min="1" max="3" value="1" /> blocks</span></div><input type="range" id="hullTInput" min="1" max="3" value="1" /></div>
+              <div class="control">
+                <div class="control-label">material</div>
+                <select class="select-aero" id="hullMaterialSelect">
+                  <option value="minecraft:oak_planks">Oak Planks</option>
+                  <option value="minecraft:dark_oak_planks">Dark Oak Planks</option>
+                  <option value="minecraft:spruce_planks">Spruce Planks</option>
+                  <option value="minecraft:birch_planks">Birch Planks</option>
+                  <option value="minecraft:stripped_oak_log">Stripped Oak Log</option>
+                  <option value="minecraft:stripped_dark_oak_log">Stripped Dark Oak Log</option>
+                  <option value="minecraft:iron_block">Iron Block</option>
+                  <option value="custom">Custom block ID…</option>
+                </select>
+                <input type="text" class="text-aero" id="hullCustomBlock" placeholder="minecraft:dark_oak_planks" value="minecraft:dark_oak_planks" />
+              </div>
+            </div>
+
+            <!-- shared -->
             <div class="control"><div class="control-row"><span>gap to balloon</span><span><input type="number" class="num-input" id="hullGapNum" min="0" max="20" value="2" /> blocks</span></div><input type="range" id="hullGapInput" min="0" max="20" value="2" /></div>
-            <div class="control">
-              <div class="control-label">material</div>
-              <select class="select-aero" id="hullMaterialSelect">
-                <option value="minecraft:oak_planks">Oak Planks</option>
-                <option value="minecraft:dark_oak_planks">Dark Oak Planks</option>
-                <option value="minecraft:spruce_planks">Spruce Planks</option>
-                <option value="minecraft:birch_planks">Birch Planks</option>
-                <option value="minecraft:stripped_oak_log">Stripped Oak Log</option>
-                <option value="minecraft:stripped_dark_oak_log">Stripped Dark Oak Log</option>
-                <option value="minecraft:iron_block">Iron Block</option>
-                <option value="custom">Custom block ID…</option>
-              </select>
-              <input type="text" class="text-aero" id="hullCustomBlock" placeholder="minecraft:dark_oak_planks" value="minecraft:dark_oak_planks" />
-            </div>
           </div>
         </div>
 
@@ -705,6 +753,44 @@
                   <option value="lift">Belly lifter (one big rotor, fat hub)</option>
                 </optgroup>
               </select>
+            </div>
+
+            <!-- Blade & hub materials (shared across every shape) -->
+            <div class="control">
+              <div class="control-label">blade material</div>
+              <select class="select-aero" id="propBladeSelect">
+                <option value="create:white_sail">Create Sail (white, functional)</option>
+                <option value="minecraft:white_wool">White Wool</option>
+                <option value="minecraft:light_gray_wool">Light Gray Wool</option>
+                <option value="minecraft:gray_wool">Gray Wool</option>
+                <option value="minecraft:black_wool">Black Wool</option>
+                <option value="minecraft:red_wool">Red Wool</option>
+                <option value="minecraft:orange_wool">Orange Wool</option>
+                <option value="minecraft:yellow_wool">Yellow Wool</option>
+                <option value="minecraft:lime_wool">Lime Wool</option>
+                <option value="minecraft:green_wool">Green Wool</option>
+                <option value="minecraft:cyan_wool">Cyan Wool</option>
+                <option value="minecraft:light_blue_wool">Light Blue Wool</option>
+                <option value="minecraft:blue_wool">Blue Wool</option>
+                <option value="minecraft:purple_wool">Purple Wool</option>
+                <option value="minecraft:magenta_wool">Magenta Wool</option>
+                <option value="minecraft:pink_wool">Pink Wool</option>
+                <option value="minecraft:brown_wool">Brown Wool</option>
+                <option value="custom">Custom block ID…</option>
+              </select>
+              <input type="text" class="text-aero" id="propBladeCustom" placeholder="create:white_sail" value="create:white_sail" />
+            </div>
+            <div class="control">
+              <div class="control-label">hub block</div>
+              <select class="select-aero" id="propHubSelect">
+                <option value="minecraft:white_wool">White Wool</option>
+                <option value="minecraft:iron_block">Iron Block</option>
+                <option value="minecraft:oak_planks">Oak Planks</option>
+                <option value="minecraft:dark_oak_planks">Dark Oak Planks</option>
+                <option value="minecraft:black_wool">Black Wool</option>
+                <option value="custom">Custom block ID…</option>
+              </select>
+              <input type="text" class="text-aero" id="propHubCustom" placeholder="minecraft:white_wool" value="minecraft:white_wool" />
             </div>
 
             <!-- Airfoil -->
@@ -1020,7 +1106,29 @@
       'minecraft:iron_block':            0xd8d8d8,
       'create:white_sail':               0xf0f0f0,
     };
-    function colourFor(id) { return BLOCK_COLORS[id] ?? 0x8b8b90; }
+    // Base wood tones so any *_planks/_stairs/_slab/_fence/_trapdoor variant
+    // (used by the shaped hull engine) resolves to a sensible preview colour
+    // without needing an explicit BLOCK_COLORS entry for every variant.
+    const WOOD_BASE = {
+      oak:0xb08a59, spruce:0x735037, birch:0xc9b88a, dark_oak:0x4a3017,
+      jungle:0xa9794f, acacia:0xb05c33, cherry:0xd6909a, mangrove:0x7a3326,
+      crimson:0x7a3a4f, warped:0x3a8f7e, bamboo:0xc2b04f,
+    };
+    // Wool tones so coloured-wool propeller blades preview in their real colour.
+    const WOOL_COLOR = {
+      white:0xe9ecec, orange:0xf07613, magenta:0xbd44b3, light_blue:0x3aafd9,
+      yellow:0xf8c627, lime:0x70b919, pink:0xed8dac, gray:0x3e4447,
+      light_gray:0x8e8e86, cyan:0x158991, purple:0x792aac, blue:0x35399d,
+      brown:0x724728, green:0x546d1b, red:0xa12722, black:0x141519,
+    };
+    function colourFor(id) {
+      if (BLOCK_COLORS[id] != null) return BLOCK_COLORS[id];
+      const m = id.match(/^minecraft:([a-z_]+?)_(planks|stairs|slab|fence|fence_gate|trapdoor|door|log|wood)$/);
+      if (m && WOOD_BASE[m[1]] != null) return WOOD_BASE[m[1]];
+      const w = id.match(/^minecraft:([a-z_]+)_wool$/);
+      if (w && WOOL_COLOR[w[1]] != null) return WOOL_COLOR[w[1]];
+      return 0x8b8b90;
+    }
 
     // ── Multi-balloon state ──────────────────────────────────────
     let _nextId = 0;
@@ -1062,13 +1170,113 @@
       }, overrides);
     }
 
+    // ════════════════════════════════════════════════════════════════
+    //  SHAPED HULL ENGINE — ported from createmod.com (MIT, © 2025 Uberswe)
+    //  internal/generator/hull.go → JS. Continuous naval-architecture model
+    //  with stair/slab/fence surface smoothing. Presets are their own.
+    // ════════════════════════════════════════════════════════════════
+    const SHAPED_WOODS = ['oak','spruce','birch','dark_oak','jungle','acacia','cherry','crimson','warped'];
+    const SHAPED_PRESETS = {
+      sloop:    { woodType:'spruce', length:26, beam:8, depth:5, bottomPinch:0.35, hullFlare:0.18, flareCurve:2.6, tumblehome:0.15, tumbleCurve:3, sheerCurve:0.15, sheerCurveExp:2, bowLength:8, bowSharpness:1.8, bowKeelRise:0.5, bowKeelLength:7, bowCurve:-0.25, sternStyle:'round', sternLength:4, sternSharpness:0.8, sternKeelRise:0.15, sternKeelLength:5, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:1, castleLength:5, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      schooner: { woodType:'spruce', length:38, beam:9, depth:6, bottomPinch:0.3, hullFlare:0.2, flareCurve:2.6, tumblehome:0.16, tumbleCurve:3, sheerCurve:0.14, sheerCurveExp:2, bowLength:12, bowSharpness:1.8, bowKeelRise:0.5, bowKeelLength:10, bowCurve:-0.3, sternStyle:'round', sternLength:5, sternSharpness:0.9, sternKeelRise:0.2, sternKeelLength:5, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:1, castleLength:8, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      frigate:  { woodType:'dark_oak', length:56, beam:12, depth:7, bottomPinch:0.28, hullFlare:0.25, flareCurve:2.6, tumblehome:0.25, tumbleCurve:3, sheerCurve:0.14, sheerCurveExp:2, bowLength:14, bowSharpness:1.8, bowKeelRise:0.6, bowKeelLength:13, bowCurve:-0.2, sternStyle:'square', sternLength:7, sternSharpness:0.6, sternKeelRise:0.25, sternKeelLength:7, sternOverhang:0.2, keelCurve:1.7, midWidthBias:0, castleBlend:5, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:2, castleLength:11, forecastleHeight:1, forecastleLength:6, hasGunPorts:true, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      galleon:  { woodType:'dark_oak', length:54, beam:16, depth:9, bottomPinch:0.35, hullFlare:0.4, flareCurve:2.4, tumblehome:0.35, tumbleCurve:2.8, sheerCurve:0.22, sheerCurveExp:2, bowLength:12, bowSharpness:1.5, bowKeelRise:0.7, bowKeelLength:12, bowCurve:0.15, sternStyle:'square', sternLength:7, sternSharpness:0.5, sternKeelRise:0.4, sternKeelLength:8, sternOverhang:0.55, keelCurve:1.7, midWidthBias:0.2, castleBlend:6, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:4, castleLength:14, forecastleHeight:2, forecastleLength:7, hasGunPorts:true, gunPortRow:3, gunPortSpacing:5, bowStyle:'default' },
+      carrack:  { woodType:'oak', length:42, beam:14, depth:8, bottomPinch:0.35, hullFlare:0.28, flareCurve:2.4, tumblehome:0.2, tumbleCurve:3, sheerCurve:0.28, sheerCurveExp:2, bowLength:10, bowSharpness:1.3, bowKeelRise:0.9, bowKeelLength:11, bowCurve:0.1, sternStyle:'square', sternLength:7, sternSharpness:0.5, sternKeelRise:0.55, sternKeelLength:8, sternOverhang:0.3, keelCurve:1.7, midWidthBias:0.15, castleBlend:5, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:5, castleLength:12, forecastleHeight:3, forecastleLength:7, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'default' },
+      longship: { woodType:'oak', length:62, beam:10, depth:5, bottomPinch:0.45, hullFlare:0.1, flareCurve:2.6, tumblehome:0.08, tumbleCurve:3, sheerCurve:0.35, sheerCurveExp:1.8, bowLength:16, bowSharpness:2.2, bowKeelRise:1.4, bowKeelLength:18, bowCurve:-0.5, sternStyle:'pointed', sternLength:16, sternSharpness:2.0, sternKeelRise:1.3, sternKeelLength:18, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:4, hasRailings:false, hasTrim:false, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      clipper:  { woodType:'spruce', length:96, beam:14, depth:8, bottomPinch:0.25, hullFlare:0.22, flareCurve:2.6, tumblehome:0.26, tumbleCurve:3, sheerCurve:0.1, sheerCurveExp:2, bowLength:28, bowSharpness:2.5, bowKeelRise:0.4, bowKeelLength:24, bowCurve:-0.8, sternStyle:'round', sternLength:14, sternSharpness:1.2, sternKeelRise:0.2, sternKeelLength:12, sternOverhang:0, keelCurve:1.7, midWidthBias:0.3, castleBlend:6, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:2, castleLength:14, forecastleHeight:1, forecastleLength:8, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'clipper' },
+      shipOfTheLine: { woodType:'dark_oak', length:82, beam:18, depth:11, bottomPinch:0.28, hullFlare:0.25, flareCurve:2.6, tumblehome:0.3, tumbleCurve:3, sheerCurve:0.12, sheerCurveExp:2, bowLength:18, bowSharpness:1.7, bowKeelRise:0.6, bowKeelLength:16, bowCurve:-0.15, sternStyle:'square', sternLength:8, sternSharpness:0.5, sternKeelRise:0.3, sternKeelLength:9, sternOverhang:0.3, keelCurve:1.7, midWidthBias:0, castleBlend:6, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:3, castleLength:18, forecastleHeight:1, forecastleLength:10, hasGunPorts:true, gunPortRow:3, gunPortSpacing:4, bowStyle:'pointed' },
+      cog:      { woodType:'oak', length:24, beam:12, depth:6, bottomPinch:0.45, hullFlare:0.25, flareCurve:2.6, tumblehome:0.12, tumbleCurve:3, sheerCurve:0.28, sheerCurveExp:2, bowLength:5, bowSharpness:1.0, bowKeelRise:0.75, bowKeelLength:6, bowCurve:0.3, sternStyle:'square', sternLength:5, sternSharpness:0.6, sternKeelRise:0.65, sternKeelLength:6, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:3, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:3, castleLength:7, forecastleHeight:2, forecastleLength:5, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'default' },
+      pinnace:  { woodType:'birch', length:20, beam:7, depth:4, bottomPinch:0.4, hullFlare:0.2, flareCurve:2.6, tumblehome:0.18, tumbleCurve:3, sheerCurve:0.15, sheerCurveExp:2, bowLength:6, bowSharpness:1.8, bowKeelRise:0.5, bowKeelLength:5, bowCurve:-0.2, sternStyle:'round', sternLength:3, sternSharpness:0.7, sternKeelRise:0.2, sternKeelLength:3, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      dhow:     { woodType:'acacia', length:34, beam:9, depth:5, bottomPinch:0.35, hullFlare:0.1, flareCurve:2.6, tumblehome:0.05, tumbleCurve:3, sheerCurve:0.2, sheerCurveExp:2, bowLength:12, bowSharpness:2.2, bowKeelRise:0.9, bowKeelLength:11, bowCurve:-0.6, sternStyle:'pointed', sternLength:7, sternSharpness:1.5, sternKeelRise:0.4, sternKeelLength:7, sternOverhang:0, keelCurve:1.7, midWidthBias:0.3, castleBlend:4, hasRailings:false, hasTrim:true, hasWindows:false, castleHeight:1, castleLength:6, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      junk:     { woodType:'jungle', length:36, beam:11, depth:5, bottomPinch:0.5, hullFlare:0.4, flareCurve:2.0, tumblehome:0.05, tumbleCurve:3, sheerCurve:0.2, sheerCurveExp:2, bowLength:7, bowSharpness:0.9, bowKeelRise:0.3, bowKeelLength:6, bowCurve:0.4, sternStyle:'square', sternLength:4, sternSharpness:0.5, sternKeelRise:0.2, sternKeelLength:4, sternOverhang:0.5, keelCurve:1.7, midWidthBias:0, castleBlend:3, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:2, castleLength:10, forecastleHeight:1, forecastleLength:5, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'default' },
+      warGalley:{ woodType:'dark_oak', length:72, beam:12, depth:5, bottomPinch:0.3, hullFlare:0.12, flareCurve:2.6, tumblehome:0.12, tumbleCurve:3, sheerCurve:0.1, sheerCurveExp:2, bowLength:20, bowSharpness:2.5, bowKeelRise:0.4, bowKeelLength:18, bowCurve:-0.5, sternStyle:'round', sternLength:10, sternSharpness:1.3, sternKeelRise:0.3, sternKeelLength:9, sternOverhang:0, keelCurve:1.7, midWidthBias:0.2, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:false, castleHeight:1, castleLength:10, forecastleHeight:1, forecastleLength:6, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'raked' },
+      flyingShip:{ woodType:'cherry', length:40, beam:14, depth:7, bottomPinch:0.5, hullFlare:0.35, flareCurve:2.2, tumblehome:0.3, tumbleCurve:2.5, sheerCurve:0.3, sheerCurveExp:2.5, bowLength:11, bowSharpness:1.2, bowKeelRise:1.2, bowKeelLength:13, bowCurve:0.5, sternStyle:'round', sternLength:9, sternSharpness:0.7, sternKeelRise:1.0, sternKeelLength:11, sternOverhang:0.6, keelCurve:2.0, midWidthBias:0, castleBlend:5, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:3, castleLength:12, forecastleHeight:2, forecastleLength:6, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'default' },
+      dragonShip:{ woodType:'crimson', length:50, beam:8, depth:6, bottomPinch:0.4, hullFlare:0.05, flareCurve:2.6, tumblehome:0.15, tumbleCurve:3, sheerCurve:0.4, sheerCurveExp:1.8, bowLength:16, bowSharpness:2.5, bowKeelRise:1.4, bowKeelLength:18, bowCurve:-0.8, sternStyle:'pointed', sternLength:14, sternSharpness:2.0, sternKeelRise:1.3, sternKeelLength:16, sternOverhang:0, keelCurve:2.2, midWidthBias:0, castleBlend:4, hasRailings:false, hasTrim:true, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      ark:      { woodType:'oak', length:70, beam:20, depth:10, bottomPinch:0.55, hullFlare:0.15, flareCurve:2.6, tumblehome:0.08, tumbleCurve:3, sheerCurve:0.05, sheerCurveExp:2, bowLength:10, bowSharpness:0.8, bowKeelRise:0.2, bowKeelLength:8, bowCurve:0.7, sternStyle:'square', sternLength:7, sternSharpness:0.5, sternKeelRise:0.2, sternKeelLength:6, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:true, castleHeight:2, castleLength:16, forecastleHeight:1, forecastleLength:8, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'default' },
+      trawler:  { woodType:'spruce', length:28, beam:12, depth:5, bottomPinch:0.3, hullFlare:0.12, flareCurve:2.6, tumblehome:0.08, tumbleCurve:3, sheerCurve:0.05, sheerCurveExp:2, bowLength:6, bowSharpness:0.9, bowKeelRise:0.2, bowKeelLength:5, bowCurve:0, sternStyle:'square', sternLength:4, sternSharpness:0.5, sternKeelRise:0.1, sternKeelLength:3, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:3, hasRailings:true, hasTrim:true, hasWindows:false, castleHeight:1, castleLength:6, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'plumb' },
+      tugboat:  { woodType:'dark_oak', length:20, beam:10, depth:5, bottomPinch:0.3, hullFlare:0.1, flareCurve:2.6, tumblehome:0.06, tumbleCurve:3, sheerCurve:0.05, sheerCurveExp:2, bowLength:5, bowSharpness:0.8, bowKeelRise:0.15, bowKeelLength:4, bowCurve:0, sternStyle:'square', sternLength:3, sternSharpness:0.5, sternKeelRise:0.1, sternKeelLength:3, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:3, hasRailings:true, hasTrim:true, hasWindows:false, castleHeight:1, castleLength:5, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'plumb' },
+      destroyer:{ woodType:'spruce', length:80, beam:10, depth:5, bottomPinch:0.3, hullFlare:0.15, flareCurve:2.6, tumblehome:0.18, tumbleCurve:3, sheerCurve:0.04, sheerCurveExp:2, bowLength:22, bowSharpness:2.8, bowKeelRise:0.25, bowKeelLength:20, bowCurve:-0.4, sternStyle:'round', sternLength:10, sternSharpness:1.0, sternKeelRise:0.1, sternKeelLength:8, sternOverhang:0, keelCurve:1.7, midWidthBias:0.25, castleBlend:5, hasRailings:true, hasTrim:false, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'raked' },
+      speedboat:{ woodType:'birch', length:20, beam:6, depth:3, bottomPinch:0.5, hullFlare:0.08, flareCurve:2.6, tumblehome:0.05, tumbleCurve:3, sheerCurve:0.08, sheerCurveExp:2, bowLength:7, bowSharpness:3.0, bowKeelRise:1.0, bowKeelLength:6, bowCurve:-0.5, sternStyle:'square', sternLength:3, sternSharpness:0.5, sternKeelRise:0.05, sternKeelLength:2, sternOverhang:0, keelCurve:1.7, midWidthBias:0, castleBlend:3, hasRailings:false, hasTrim:false, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'pointed' },
+      yacht:    { woodType:'birch', length:34, beam:7, depth:4, bottomPinch:0.3, hullFlare:0.12, flareCurve:2.6, tumblehome:0.1, tumbleCurve:3, sheerCurve:0.06, sheerCurveExp:2, bowLength:10, bowSharpness:2.2, bowKeelRise:0.35, bowKeelLength:9, bowCurve:-0.3, sternStyle:'round', sternLength:5, sternSharpness:0.8, sternKeelRise:0.1, sternKeelLength:4, sternOverhang:0, keelCurve:1.7, midWidthBias:0.15, castleBlend:4, hasRailings:true, hasTrim:true, hasWindows:false, castleHeight:0, castleLength:0, forecastleHeight:0, forecastleLength:0, hasGunPorts:false, gunPortRow:2, gunPortSpacing:4, bowStyle:'raked' },
+    };
+    // Our own airship-class names. Internal keys stay as the original ship
+    // types (share-link compatible); only these display labels are ours.
+    const SHAPED_PRESET_LABELS = {
+      sloop:'Skiff', schooner:'Courier', frigate:'Corsair', galleon:'Citadel', carrack:'Castellan',
+      longship:'Serpent', clipper:'Greyhound', shipOfTheLine:'Sovereign', cog:'Cobble', pinnace:'Minnow',
+      dhow:'Zephyr', junk:'Lantern', warGalley:'Piker', flyingShip:'Cloudchaser', dragonShip:'Drake',
+      ark:'Leviathan', trawler:'Dredger', tugboat:'Stout', destroyer:'Saber', speedboat:'Dart', yacht:'Swan',
+    };
+    // Default param set (wood lives separately on state.hull.wood).
+    const SHAPED_DEFAULTS = (function(){ const p = Object.assign({}, SHAPED_PRESETS.sloop); delete p.woodType; return p; })();
+    // Slider/select/checkbox schema, grouped into collapsible sections.
+    const HULL_PARAM_GROUPS = [
+      { title:'Size', open:true, items:[
+        {k:'length',label:'length',min:20,max:200,step:1},
+        {k:'beam',label:'beam (width)',min:4,max:60,step:1},
+        {k:'depth',label:'depth',min:3,max:40,step:1},
+      ]},
+      { title:'Cross-section', open:false, items:[
+        {k:'bottomPinch',label:'bottom pinch',min:0.1,max:0.7,step:0.01},
+        {k:'hullFlare',label:'hull flare',min:0,max:0.6,step:0.01},
+        {k:'flareCurve',label:'flare curve',min:1.2,max:4,step:0.1},
+        {k:'tumblehome',label:'tumblehome',min:0,max:0.4,step:0.01},
+        {k:'tumbleCurve',label:'tumble curve',min:1.5,max:5,step:0.1},
+        {k:'midWidthBias',label:'mid-width bias (aft)',min:0,max:1,step:0.05},
+      ]},
+      { title:'Sheer & keel', open:false, items:[
+        {k:'sheerCurve',label:'sheer curve',min:0,max:0.75,step:0.01},
+        {k:'sheerCurveExp',label:'sheer exponent',min:1,max:4,step:0.1},
+        {k:'keelCurve',label:'keel rocker curve',min:0.7,max:3.5,step:0.1},
+      ]},
+      { title:'Bow', open:false, items:[
+        {k:'bowStyle',label:'bow style',type:'select',options:['default','pointed','clipper','raked','plumb']},
+        {k:'bowLength',label:'bow length',min:2,max:40,step:1},
+        {k:'bowSharpness',label:'bow sharpness',min:0.4,max:4,step:0.1},
+        {k:'bowCurve',label:'bow curve (concave↔convex)',min:-1,max:1,step:0.05},
+        {k:'bowKeelRise',label:'bow keel rise',min:0,max:1.5,step:0.05},
+        {k:'bowKeelLength',label:'bow keel length',min:0,max:40,step:1},
+      ]},
+      { title:'Stern', open:false, items:[
+        {k:'sternStyle',label:'stern style',type:'select',options:['square','round','pointed']},
+        {k:'sternLength',label:'stern length',min:2,max:30,step:1},
+        {k:'sternSharpness',label:'stern sharpness',min:0.2,max:2,step:0.1},
+        {k:'sternKeelRise',label:'stern keel rise',min:0,max:1.5,step:0.05},
+        {k:'sternKeelLength',label:'stern keel length',min:0,max:30,step:1},
+        {k:'sternOverhang',label:'stern overhang',min:0,max:1,step:0.05},
+      ]},
+      { title:'Superstructure', open:false, items:[
+        {k:'castleHeight',label:'aftcastle height',min:0,max:6,step:1},
+        {k:'castleLength',label:'aftcastle length',min:0,max:30,step:1},
+        {k:'forecastleHeight',label:'forecastle height',min:0,max:3,step:1},
+        {k:'forecastleLength',label:'forecastle length',min:0,max:20,step:1},
+        {k:'castleBlend',label:'castle blend',min:2,max:12,step:1},
+      ]},
+      { title:'Detailing', open:false, items:[
+        {k:'hasRailings',label:'railings (fences)',type:'check'},
+        {k:'hasTrim',label:'gunwale trim (slabs)',type:'check'},
+        {k:'hasWindows',label:'stern windows',type:'check'},
+        {k:'hasGunPorts',label:'gun ports',type:'check'},
+        {k:'gunPortRow',label:'gun port row',min:1,max:6,step:1},
+        {k:'gunPortSpacing',label:'gun port spacing',min:2,max:8,step:1},
+      ]},
+    ];
+
     const state = {
       balloons: [newBalloon()],
       activeBalloonIdx: 0,
       orientation: { lay: 'up', yaw: 0 },
       hull: {
-        enabled:false, style:'box',
-        L:20, W:10, D:6, T:1, gap:2,
+        enabled:false,
+        mode:'shaped',          // 'shaped' (createmod parametric engine) | 'legacy' (our voxel styles)
+        gap:2,
+        // ── Shaped engine (port of createmod.com hull generator) ──
+        wood:'spruce',
+        preset:'sloop',
+        params:Object.assign({}, SHAPED_DEFAULTS),
+        // ── Legacy engine ──
+        style:'box',
+        L:20, W:10, D:6, T:1,
         block:'minecraft:oak_planks',
         customBlock:'minecraft:dark_oak_planks',
       },
@@ -1241,6 +1449,128 @@
       if (hullMatSelect.value === 'custom') { state.hull.block = hullCustomBlock.value || 'minecraft:dark_oak_planks'; regenerate(); }
     });
 
+    // ── Shaped hull engine UI (createmod-style) ──────────────────
+    let _syncHullUI = null;   // set by initShapedHullUI; called after share-link load
+    (function initShapedHullUI(){
+      const paramControls = {};
+      const woodSel    = document.getElementById('hullWoodSelect');
+      const presetWrap = document.getElementById('hullPresetBtns');
+      const groupsWrap = document.getElementById('hullParamGroups');
+
+      // wood dropdown
+      SHAPED_WOODS.forEach(w => {
+        const o = document.createElement('option');
+        o.value = w; o.textContent = w.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+        woodSel.appendChild(o);
+      });
+      woodSel.value = state.hull.wood;
+      woodSel.addEventListener('change', () => { state.hull.wood = woodSel.value; markCustom(); regenerate(); });
+
+      // preset buttons
+      Object.keys(SHAPED_PRESETS).forEach(name => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.dataset.preset = name; b.textContent = SHAPED_PRESET_LABELS[name] || name;
+        b.addEventListener('click', () => applyPreset(name));
+        presetWrap.appendChild(b);
+      });
+
+      const fmt = (v, step) => step < 1 ? (+v).toFixed(step >= 0.1 ? 1 : 2) : String(Math.round(v));
+
+      function makeControl(it){
+        const wrap = document.createElement('div'); wrap.className = 'control';
+        if (it.type === 'check') {
+          const lbl = document.createElement('label'); lbl.className = 'hull-check';
+          const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!state.hull.params[it.k];
+          const sp = document.createElement('span'); sp.textContent = it.label;
+          lbl.appendChild(cb); lbl.appendChild(sp); wrap.appendChild(lbl);
+          cb.addEventListener('change', () => { state.hull.params[it.k] = cb.checked; markCustom(); regenerate(); });
+          paramControls[it.k] = { set: v => { cb.checked = !!v; } };
+        } else if (it.type === 'select') {
+          const lab = document.createElement('div'); lab.className = 'control-label'; lab.textContent = it.label;
+          const sel = document.createElement('select'); sel.className = 'select-aero';
+          it.options.forEach(op => { const o = document.createElement('option'); o.value = op; o.textContent = op; sel.appendChild(o); });
+          sel.value = state.hull.params[it.k];
+          sel.addEventListener('change', () => { state.hull.params[it.k] = sel.value; markCustom(); regenerate(); });
+          wrap.appendChild(lab); wrap.appendChild(sel);
+          paramControls[it.k] = { set: v => { sel.value = v; } };
+        } else {
+          const row = document.createElement('div'); row.className = 'control-row';
+          const l = document.createElement('span'); l.textContent = it.label;
+          const valSpan = document.createElement('span');
+          row.appendChild(l); row.appendChild(valSpan);
+          const range = document.createElement('input');
+          range.type = 'range'; range.min = it.min; range.max = it.max; range.step = it.step; range.value = state.hull.params[it.k];
+          valSpan.textContent = fmt(state.hull.params[it.k], it.step);
+          range.addEventListener('input', () => { const v = parseFloat(range.value); state.hull.params[it.k] = v; valSpan.textContent = fmt(v, it.step); markCustom(); regenerate(); });
+          wrap.appendChild(row); wrap.appendChild(range);
+          paramControls[it.k] = { set: v => { range.value = v; valSpan.textContent = fmt(v, it.step); } };
+        }
+        return wrap;
+      }
+
+      // collapsible param groups
+      HULL_PARAM_GROUPS.forEach(grp => {
+        const g = document.createElement('div'); g.className = 'hull-grp' + (grp.open ? ' open' : '');
+        const h = document.createElement('div'); h.className = 'hull-grp-h';
+        h.innerHTML = '<span>' + grp.title + '</span><span class="chev">▸</span>';
+        h.addEventListener('click', () => g.classList.toggle('open'));
+        const body = document.createElement('div'); body.className = 'hull-grp-body';
+        grp.items.forEach(it => body.appendChild(makeControl(it)));
+        g.appendChild(h); g.appendChild(body); groupsWrap.appendChild(g);
+      });
+
+      function syncControls(){ for (const k in paramControls) if (state.hull.params[k] !== undefined) paramControls[k].set(state.hull.params[k]); }
+      function highlightPreset(){ presetWrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.preset === state.hull.preset)); }
+      function markCustom(){ if (state.hull.preset !== null) { state.hull.preset = null; highlightPreset(); } }
+
+      function applyPreset(name){
+        const pr = SHAPED_PRESETS[name]; if (!pr) return;
+        const p = Object.assign({}, pr);
+        if (p.woodType) { state.hull.wood = p.woodType; woodSel.value = p.woodType; }
+        delete p.woodType;
+        state.hull.params = Object.assign({}, SHAPED_DEFAULTS, p);
+        state.hull.preset = name;
+        syncControls(); highlightPreset(); regenerate();
+      }
+
+      // engine mode toggle
+      function setMode(m){
+        state.hull.mode = m;
+        document.getElementById('hullShapedPanel').style.display = m === 'shaped' ? 'block' : 'none';
+        document.getElementById('hullLegacyPanel').style.display = m === 'legacy' ? 'block' : 'none';
+        regenerate();
+      }
+      document.getElementById('hullModeShaped').addEventListener('change', () => setMode('shaped'));
+      document.getElementById('hullModeLegacy').addEventListener('change', () => setMode('legacy'));
+
+      // Re-sync the whole hull UI from live state (used after a share-link load).
+      _syncHullUI = function(){
+        const en = !!state.hull.enabled;
+        document.getElementById('hullEnabled').checked = en;
+        document.getElementById('hullControls').classList.toggle('show', en);
+        const m = state.hull.mode === 'legacy' ? 'legacy' : 'shaped';
+        document.getElementById('hullModeShaped').checked = m === 'shaped';
+        document.getElementById('hullModeLegacy').checked = m === 'legacy';
+        document.getElementById('hullShapedPanel').style.display = m === 'shaped' ? 'block' : 'none';
+        document.getElementById('hullLegacyPanel').style.display = m === 'legacy' ? 'block' : 'none';
+        woodSel.value = state.hull.wood;
+        syncControls(); highlightPreset();
+        const sty = document.getElementById('hullStyleSelect'); if (sty) sty.value = state.hull.style;
+        const setNR = (rId, nId, v) => { const r = document.getElementById(rId), n = document.getElementById(nId); if (r) r.value = v; if (n) n.value = v; };
+        setNR('hullLInput','hullLNum',state.hull.L);
+        setNR('hullWInput','hullWNum',state.hull.W);
+        setNR('hullDInput','hullDNum',state.hull.D);
+        setNR('hullTInput','hullTNum',state.hull.T);
+        setNR('hullGapInput','hullGapNum',state.hull.gap);
+        const matSel = document.getElementById('hullMaterialSelect'), custom = document.getElementById('hullCustomBlock');
+        const known = ['minecraft:oak_planks','minecraft:dark_oak_planks','minecraft:spruce_planks','minecraft:birch_planks','minecraft:stripped_oak_log','minecraft:stripped_dark_oak_log','minecraft:iron_block'];
+        if (known.indexOf(state.hull.block) >= 0) { matSel.value = state.hull.block; custom.classList.remove('show'); }
+        else { matSel.value = 'custom'; custom.classList.add('show'); custom.value = state.hull.block; }
+      };
+
+      syncControls(); highlightPreset();
+    })();
+
     // ── Propellor controls ───────────────────────────────────────
     document.getElementById('propEnabled').addEventListener('change', function() {
       state.prop.enabled = this.checked;
@@ -1258,6 +1588,33 @@
       regenerate();
     });
     showPropCfg(state.prop.type);
+
+    // Blade & hub material pickers (shared across all prop shapes).
+    (function initPropMaterials(){
+      const bladeSel = document.getElementById('propBladeSelect');
+      const bladeCustom = document.getElementById('propBladeCustom');
+      const hubSel = document.getElementById('propHubSelect');
+      const hubCustom = document.getElementById('propHubCustom');
+      const applyBlade = () => {
+        if (bladeSel.value === 'custom') { bladeCustom.classList.add('show'); state.prop.bladeBlock = bladeCustom.value || 'create:white_sail'; }
+        else { bladeCustom.classList.remove('show'); state.prop.bladeBlock = bladeSel.value; }
+      };
+      const applyHub = () => {
+        if (hubSel.value === 'custom') { hubCustom.classList.add('show'); state.prop.hubBlock = hubCustom.value || 'minecraft:white_wool'; }
+        else { hubCustom.classList.remove('show'); state.prop.hubBlock = hubSel.value; }
+      };
+      bladeSel.addEventListener('change', () => { applyBlade(); regenerate(); });
+      bladeCustom.addEventListener('input', () => { if (bladeSel.value === 'custom') { state.prop.bladeBlock = bladeCustom.value || 'create:white_sail'; regenerate(); } });
+      hubSel.addEventListener('change', () => { applyHub(); regenerate(); });
+      hubCustom.addEventListener('input', () => { if (hubSel.value === 'custom') { state.prop.hubBlock = hubCustom.value || 'minecraft:white_wool'; regenerate(); } });
+      // initialize selects from current state (custom value → show text input)
+      const initSel = (sel, custom, value, fallback) => {
+        if ([...sel.options].some(o => o.value === value)) { sel.value = value; custom.classList.remove('show'); }
+        else { sel.value = 'custom'; custom.classList.add('show'); custom.value = value || fallback; }
+      };
+      initSel(bladeSel, bladeCustom, state.prop.bladeBlock, 'create:white_sail');
+      initSel(hubSel, hubCustom, state.prop.hubBlock, 'minecraft:white_wool');
+    })();
     function bindPropRange(rangeId, numId, propType, key) {
       const range = document.getElementById(rangeId);
       const num   = document.getElementById(numId);
@@ -2612,7 +2969,7 @@
       icebreaker:'col',
     };
 
-    function buildHull(){
+    function buildHullLegacy(){
       const{L,W,D,T,style}=state.hull;
       const idx=(x,y,z)=>x+L*(y+D*z);
       const solid=new Uint8Array(L*D*W);
@@ -2814,6 +3171,264 @@
       return{blocks,sizeX:L,sizeY:D,sizeZ:W};
     }
 
+    // ── Shaped hull (createmod.com port) ─────────────────────────
+    // Faithful JS translation of internal/generator/hull.go GenerateHull.
+    // Emits typed blocks {x,y,z,name,props}; `name` is wood-substituted.
+    function hullClampI(v,lo,hi){ return v<lo?lo:(v>hi?hi:v); }
+    function hullSmoothstep(t){ let x=t<0?0:(t>1?1:t); return x*x*(3-2*x); }
+    function validateShaped(p){
+      p.length=hullClampI(p.length,20,500); p.beam=hullClampI(p.beam,4,100); p.depth=hullClampI(p.depth,3,40);
+      p.bottomPinch=hullClampI(p.bottomPinch,0.1,0.7); p.hullFlare=hullClampI(p.hullFlare,0,0.6); p.flareCurve=hullClampI(p.flareCurve,1.2,4.0);
+      p.tumblehome=hullClampI(p.tumblehome,0,0.4); p.tumbleCurve=hullClampI(p.tumbleCurve,1.5,5.0);
+      p.sheerCurve=hullClampI(p.sheerCurve,0,0.75); p.sheerCurveExp=hullClampI(p.sheerCurveExp,1.0,4.0);
+      p.bowLength=hullClampI(p.bowLength,2,40); p.bowSharpness=hullClampI(p.bowSharpness,0.4,4.0);
+      p.bowKeelRise=hullClampI(p.bowKeelRise,0,1.5); p.bowKeelLength=hullClampI(p.bowKeelLength,0,40); p.bowCurve=hullClampI(p.bowCurve,-1.0,1.0);
+      p.sternLength=hullClampI(p.sternLength,2,30); p.sternSharpness=hullClampI(p.sternSharpness,0.2,2.0);
+      p.sternKeelRise=hullClampI(p.sternKeelRise,0,1.5); p.sternKeelLength=hullClampI(p.sternKeelLength,0,30); p.sternOverhang=hullClampI(p.sternOverhang,0,1.0);
+      p.keelCurve=hullClampI(p.keelCurve,0.7,3.5); p.castleBlend=hullClampI(p.castleBlend,2,12);
+      p.castleHeight=hullClampI(p.castleHeight,0,6); p.castleLength=hullClampI(p.castleLength,0,30);
+      if(p.castleLength>Math.floor(p.length*55/100)) p.castleLength=Math.floor(p.length*55/100);
+      p.forecastleHeight=hullClampI(p.forecastleHeight,0,3); p.forecastleLength=hullClampI(p.forecastleLength,0,20);
+      if(p.forecastleLength>Math.floor(p.length*50/100)) p.forecastleLength=Math.floor(p.length*50/100);
+      p.gunPortRow=hullClampI(p.gunPortRow,1,6); p.gunPortSpacing=hullClampI(p.gunPortSpacing,2,8); p.midWidthBias=hullClampI(p.midWidthBias,0,1.0);
+      if(p.sternStyle!=='square'&&p.sternStyle!=='round'&&p.sternStyle!=='pointed') p.sternStyle='round';
+      if(!{default:1,pointed:1,clipper:1,raked:1,plumb:1}[p.bowStyle]) p.bowStyle='default';
+      if(p.bowLength>Math.floor(p.length/2)) p.bowLength=Math.floor(p.length/2);
+      if(p.sternLength>Math.floor(p.length/2)) p.sternLength=Math.floor(p.length/2);
+      if(!p.keelCurve) p.keelCurve=1.7; if(!p.castleBlend) p.castleBlend=4; if(!p.gunPortRow) p.gunPortRow=2;
+      return p;
+    }
+    function buildHullShaped(pin, wood){
+      const p=validateShaped(Object.assign({}, SHAPED_DEFAULTS, pin));
+      const W=(s)=>'minecraft:'+wood+'_'+s;
+      const NM={planks:W('planks'),stairs:W('stairs'),slab:W('slab'),fence:W('fence'),trapdoor:W('trapdoor')};
+      const L=p.length, D=p.depth, depth=D, length=L;
+
+      const crossSectionFactor=(yNorm)=>{
+        let yc=yNorm; if(yc>1)yc=1; if(yc<0)yc=0;
+        const sy=yc*yc*yc*(yc*(yc*6-15)+10);
+        const base=p.bottomPinch+(1-p.bottomPinch)*sy;
+        const flare=p.hullFlare*Math.pow(yc,p.flareCurve);
+        const tumble=p.tumblehome*Math.pow(yc,p.tumbleCurve);
+        let above=yNorm-1; if(above<0)above=0;
+        const castleTaper=above*0.32+above*above*0.18;
+        let r=base+flare-tumble-castleTaper; if(r<0.12)r=0.12; return r;
+      };
+      const longitudinalFactor=(zNorm)=>{
+        const bowStart=1.0-p.bowLength/length, sternEnd=p.sternLength/length;
+        if(zNorm<=sternEnd){
+          let t=zNorm/Math.max(sternEnd,0.001); if(t<0)t=0;
+          const st=t*t*t*(t*(t*6-15)+10);
+          switch(p.sternStyle){
+            case 'square':{ let f=Math.pow(st,p.sternSharpness); if(f<0.72)f=0.72; return f; }
+            case 'round':  return Math.pow(st,p.sternSharpness*0.55);
+            default:       return Math.pow(st,p.sternSharpness);
+          }
+        }
+        if(zNorm>=bowStart){
+          let t=(1-zNorm)/Math.max(1-bowStart,0.001);
+          const st=t*t*t*(t*(t*6-15)+10); let base;
+          switch(p.bowStyle){
+            case 'pointed': base=Math.pow(Math.max(st,0),p.bowSharpness*1.5); break;
+            case 'clipper': base=st*st*st; if(p.bowCurve<0) base=base*(1+p.bowCurve)+Math.pow(st,5)*(-p.bowCurve); break;
+            case 'raked':{ const rt=Math.pow(st,0.5); base=Math.pow(rt,p.bowSharpness*0.8); break; }
+            case 'plumb': base = st<0.15 ? (st/0.15*0.15) : 1.0; break;
+            default:
+              base=Math.pow(Math.max(st,0),p.bowSharpness);
+              if(p.bowCurve!==0){
+                if(p.bowCurve>0){ const cx=Math.sqrt(Math.max(st,0)); base=base*(1-p.bowCurve)+cx*p.bowCurve; }
+                else { const cc=st*st*st; base=base*(1+p.bowCurve)+cc*(-p.bowCurve); }
+              }
+          }
+          return base;
+        }
+        if(p.midWidthBias>0){
+          const midNorm=sternEnd+(bowStart-sternEnd)*(0.5-p.midWidthBias*0.35);
+          if(zNorm<midNorm){ const t=(zNorm-sternEnd)/Math.max(midNorm-sternEnd,0.001); return 0.85+0.15*Math.pow(t,0.6); }
+        }
+        return 1;
+      };
+      const halfWidthAt=(y,z)=>{
+        const yNorm=y/Math.max(depth,1), zNorm=z/Math.max(length-1,1);
+        let base=crossSectionFactor(yNorm)*longitudinalFactor(zNorm)*(p.beam/2);
+        if(p.sternOverhang>0 && yNorm>1.0 && zNorm<p.sternLength/length) base+=p.sternOverhang*0.3*(yNorm-1.0)*(p.beam/2);
+        return base;
+      };
+      const keelYAt=(z)=>{
+        const zNorm=z/Math.max(length-1,1); const curve=p.keelCurve; let rise=0;
+        if(p.bowKeelRise>0&&p.bowKeelLength>0){ const s=1.0-p.bowKeelLength/length; if(zNorm>s){ const t=(zNorm-s)/Math.max(1-s,0.001); const r=Math.pow(t,curve)*p.bowKeelRise; if(r>rise)rise=r; } }
+        if(p.sternKeelRise>0&&p.sternKeelLength>0){ const e=p.sternKeelLength/length; if(zNorm<e){ const t=(e-zNorm)/Math.max(e,0.001); const r=Math.pow(t,curve)*p.sternKeelRise; if(r>rise)rise=r; } }
+        return Math.round(rise*depth);
+      };
+      const deckYAt=(z)=>{
+        let y=depth;
+        if(p.sheerCurve>0){ const zNorm=z/Math.max(length-1,1); const t=Math.abs(zNorm-0.5)*2; y+=p.sheerCurve*depth*Math.pow(t,p.sheerCurveExp); }
+        if(p.castleHeight>0&&p.castleLength>0){ let cL=p.castleLength; const mx=Math.floor(length*0.55); if(cL>mx)cL=mx; let bl=Math.floor(cL*0.55); if(bl>p.castleBlend)bl=p.castleBlend; if(bl<2)bl=2; if(z<cL-bl)y+=p.castleHeight; else if(z<cL){ const t=(z-(cL-bl))/bl; y+=p.castleHeight*(1-hullSmoothstep(t)); } }
+        if(p.forecastleHeight>0&&p.forecastleLength>0){ let fL=p.forecastleLength; const mx=Math.floor(length*0.5); if(fL>mx)fL=mx; let bl=Math.floor(fL*0.55); if(bl>p.castleBlend)bl=p.castleBlend; if(bl<2)bl=2; const zb=L-1-z; if(zb<fL-bl)y+=p.forecastleHeight; else if(zb<fL){ const t=(zb-(fL-bl))/bl; y+=p.forecastleHeight*(1-hullSmoothstep(t)); } }
+        return Math.round(y);
+      };
+
+      const K=(x,y,z)=>x+','+y+','+z;
+      const inHull=new Set();
+      const keelYArr=new Array(L), deckYArr=new Array(L);
+      let maxDeckY=D;
+      for(let z=0;z<L;z++){ deckYArr[z]=deckYAt(z); if(deckYArr[z]>maxDeckY)maxDeckY=deckYArr[z]; }
+      const hwArr=[], rawHW=[];
+      for(let y=0;y<=maxDeckY;y++){ hwArr[y]=new Array(L).fill(-1); rawHW[y]=new Array(L).fill(0); }
+      for(let z=0;z<L;z++){ keelYArr[z]=keelYAt(z); const topY=deckYArr[z]; for(let y=keelYArr[z];y<=topY;y++) if(y<=maxDeckY) rawHW[y][z]=halfWidthAt(y,z); }
+      const bowStart=L-p.bowLength, sternEnd=p.sternLength;
+      for(let y=0;y<=maxDeckY;y++){ const sm=rawHW[y].slice(); for(let z=1;z<L-1;z++){ if(z>=sternEnd&&z<=bowStart) continue; const a=rawHW[y][z-1],c=rawHW[y][z],n=rawHW[y][z+1]; if(a>0||c>0||n>0) sm[z]=a*0.25+c*0.5+n*0.25; } rawHW[y]=sm; }
+      for(let z=0;z<L;z++){ const topY=deckYArr[z]; for(let y=keelYArr[z];y<=topY;y++){ let hw=0; if(y<=maxDeckY)hw=rawHW[y][z]; if(hw<0.15)continue; const maxX=Math.max(0,Math.round(hw-0.0001)); if(y<=maxDeckY)hwArr[y][z]=maxX; for(let x=-maxX;x<=maxX;x++) inHull.add(K(x,y,z)); } }
+      const has=(x,y,z)=>inHull.has(K(x,y,z));
+
+      const blocks=new Map();
+      const set=(x,y,z,name,props)=>blocks.set(K(x,y,z),{x,y,z,name,props:props||null});
+      const get=(x,y,z)=>blocks.get(K(x,y,z))||null;
+
+      // shell + deck
+      for(const k of inHull){ const c=k.split(',').map(Number),x=c[0],y=c[1],z=c[2];
+        const exposed=!has(x-1,y,z)||!has(x+1,y,z)||!has(x,y-1,z)||!has(x,y+1,z)||!has(x,y,z-1)||!has(x,y,z+1);
+        if(exposed||y===deckYArr[z]) set(x,y,z,NM.planks,null);
+      }
+      // lateral flare stairs
+      for(let z=0;z<L;z++) for(let y=keelYArr[z];y<deckYArr[z];y++){
+        let hwHere=-1; if(y<=maxDeckY&&y>=0)hwHere=hwArr[y][z];
+        let hwUp=-1; if(y+1<=maxDeckY&&y+1>=0)hwUp=hwArr[y+1][z];
+        if(hwUp<=hwHere)continue;
+        for(let xNew=hwHere+1;xNew<=hwUp;xNew++){
+          if(has(xNew,y,z))continue; if(!has(xNew,y+1,z))continue;
+          const ex=get(xNew,y,z); if(ex&&ex.name===NM.planks)continue;
+          set(xNew,y,z,NM.stairs,{facing:'east',half:'top',shape:'straight',waterlogged:'false'});
+          set(-xNew,y,z,NM.stairs,{facing:'west',half:'top',shape:'straight',waterlogged:'false'});
+        }
+      }
+      // longitudinal taper stairs
+      const placeLong=(x,y,z,facing)=>{ if(has(x,y,z))return; const ex=get(x,y,z); if(ex&&(ex.name===NM.planks||ex.name===NM.stairs))return; set(x,y,z,NM.stairs,{facing,half:'top',shape:'straight',waterlogged:'false'}); };
+      for(let y=0;y<=maxDeckY;y++) for(let z=0;z<L;z++){
+        let hwThis=-1; if(y>=0)hwThis=hwArr[y][z]; if(hwThis<0)continue;
+        let hwF=-1; if(z+1<L)hwF=hwArr[y][z+1];
+        if(hwF>=0&&hwF<hwThis){ for(let x=hwF+1;x<=hwThis;x++){ placeLong(x,y,z+1,'south'); if(x!==0)placeLong(-x,y,z+1,'south'); } }
+        let hwB=-1; if(z>0)hwB=hwArr[y][z-1];
+        if(hwB>=0&&hwB<hwThis&&z>0){ for(let x=hwB+1;x<=hwThis;x++){ placeLong(x,y,z-1,'north'); if(x!==0)placeLong(-x,y,z-1,'north'); } }
+      }
+      // keel-rise stairs
+      for(let z=0;z<L-1;z++){
+        const k0=keelYArr[z],k1=keelYArr[z+1]; if(k1===k0)continue;
+        let dir,yFill,zFill,refZ;
+        if(k1>k0){ dir='bow'; yFill=k1-1; zFill=z+1; refZ=z+1; } else { dir='stern'; yFill=k0-1; zFill=z; refZ=z; }
+        let hw=-1; if(yFill+1<=maxDeckY&&yFill+1>=0&&refZ>=0&&refZ<L)hw=hwArr[yFill+1][refZ]; if(hw<0)continue;
+        for(let x=-hw;x<=hw;x++){ if(has(x,yFill,zFill))continue; if(get(x,yFill,zFill))continue; set(x,yFill,zFill,NM.stairs,{facing:dir==='stern'?'north':'south',half:'top',shape:'straight',waterlogged:'false'}); }
+      }
+      // no stair stacking → plank
+      { const list=[]; for(const b of blocks.values()) if(b.name===NM.stairs)list.push(b); list.sort((a,b)=>b.y-a.y);
+        for(const s of list){ const bl=get(s.x,s.y-1,s.z); if(bl&&bl.name===NM.stairs) set(s.x,s.y,s.z,NM.planks,null); } }
+      // stern windows
+      if(p.hasWindows&&p.castleHeight>=2&&p.castleLength>0){ const z=0, wy=D+1;
+        if(deckYArr[z]>D){ let hwBack=-1; if(wy<=maxDeckY&&wy>=0)hwBack=hwArr[wy][z];
+          if(hwBack>=1){ for(let x=-hwBack+1;x<=hwBack-1;x+=2){ const ex=get(x,wy,z); if(ex&&ex.name===NM.planks) set(x,wy,z,NM.trapdoor,{facing:'north',half:'bottom',open:'true',powered:'false',waterlogged:'false'}); } } } }
+      // trim slabs + railings
+      for(let z=0;z<L;z++){
+        const deckY=deckYArr[z]; let hw=-1; if(deckY<=maxDeckY&&deckY>=0)hw=hwArr[deckY][z]; if(hw<1)continue;
+        const y=deckY+1; const wantTrim=p.hasTrim, wantRail=p.hasRailings, canInset=hw>=2;
+        if(wantTrim&&wantRail&&canInset){
+          if(!get(hw,y,z)&&!has(hw,y,z)) set(hw,y,z,NM.slab,{type:'bottom',waterlogged:'false'});
+          if(!get(-hw,y,z)&&!has(-hw,y,z)) set(-hw,y,z,NM.slab,{type:'bottom',waterlogged:'false'});
+          set(hw-1,y,z,NM.fence,{north:'false',south:'false',east:'false',west:'false',waterlogged:'false'});
+          if(hw-1>0) set(-(hw-1),y,z,NM.fence,{north:'false',south:'false',east:'false',west:'false',waterlogged:'false'});
+        } else if(wantTrim&&!wantRail){
+          if(!get(hw,y,z)&&!has(hw,y,z)) set(hw,y,z,NM.slab,{type:'bottom',waterlogged:'false'});
+          if(hw>0&&!get(-hw,y,z)&&!has(-hw,y,z)) set(-hw,y,z,NM.slab,{type:'bottom',waterlogged:'false'});
+        } else if(wantRail){
+          set(hw,y,z,NM.fence,{north:'false',south:'false',east:'false',west:'false',waterlogged:'false'});
+          if(hw>0) set(-hw,y,z,NM.fence,{north:'false',south:'false',east:'false',west:'false',waterlogged:'false'});
+        }
+      }
+      // no fence directly over slab
+      for(const b of Array.from(blocks.values())){ if(b.name!==NM.fence)continue; const bl=get(b.x,b.y-1,b.z); if(bl&&bl.name===NM.slab) blocks.delete(K(b.x,b.y-1,b.z)); }
+      // gun ports
+      if(p.hasGunPorts&&p.gunPortRow>0){ const midKeelY=keelYAt(Math.floor(L/2)); let yPort=D-p.gunPortRow; if(midKeelY+1>yPort)yPort=midKeelY+1;
+        for(let z=3;z<L-3;z+=p.gunPortSpacing){ let hw=-1; if(yPort>=0&&yPort<=maxDeckY)hw=hwArr[yPort][z]; if(hw<1)continue;
+          set(hw,yPort,z,NM.trapdoor,{facing:'east',half:'bottom',open:'true',powered:'false',waterlogged:'false'});
+          if(hw>0) set(-hw,yPort,z,NM.trapdoor,{facing:'west',half:'bottom',open:'true',powered:'false',waterlogged:'false'}); } }
+      // fence bridging across sheer/castle/taper transitions
+      { const isSup=(b)=>!!b&&(b.name===NM.planks||b.name===NM.fence||b.name===NM.stairs||b.name===NM.slab);
+        const addBridge=(x,y,z)=>{ if(blocks.get(K(x,y,z)))return; if(!isSup(get(x,y-1,z)))return; set(x,y,z,NM.fence,{north:'false',south:'false',east:'false',west:'false',waterlogged:'false'}); };
+        const fences=[]; for(const b of blocks.values()) if(b.name===NM.fence)fences.push(b);
+        for(const f of fences){ for(const dz of [-1,1]){ const direct=get(f.x,f.y,f.z+dz); if(direct&&direct.name===NM.fence)continue;
+          for(const dy of [-2,-1,0,1,2]) for(const dx of [-1,0,1]){ if(dx===0&&dy===0)continue;
+            const n=get(f.x+dx,f.y+dy,f.z+dz); if(!n||n.name!==NM.fence)continue;
+            let commonY=f.y; if(n.y>commonY)commonY=n.y;
+            if(dx!==0) addBridge(f.x+dx,commonY,f.z);
+            if(dy!==0) for(let ys=n.y+1;ys<=commonY;ys++) addBridge(n.x,ys,n.z);
+          } } }
+      }
+      // fence connection states
+      { const cd=(bx,by,bz,dx,dz)=>{ const n=get(bx+dx,by,bz+dz); if(!n)return 'false'; return (n.name===NM.fence||n.name===NM.planks||n.name===NM.stairs)?'true':'false'; };
+        for(const b of blocks.values()){ if(b.name!==NM.fence)continue; b.props={ east:cd(b.x,b.y,b.z,1,0), west:cd(b.x,b.y,b.z,-1,0), south:cd(b.x,b.y,b.z,0,1), north:cd(b.x,b.y,b.z,0,-1), waterlogged:'false' }; } }
+      // stair corner shapes
+      { const fv={south:[0,1],north:[0,-1],east:[1,0],west:[-1,0]};
+        const lOf={south:'east',north:'west',east:'north',west:'south'}, rOf={south:'west',north:'east',east:'south',west:'north'};
+        for(const b of blocks.values()){ if(b.name!==NM.stairs)continue; const facing=b.props.facing, f=fv[facing];
+          const front=get(b.x+f[0],b.y,b.z+f[1]), back=get(b.x-f[0],b.y,b.z-f[1]);
+          if(back&&back.name===NM.stairs&&back.props.half===b.props.half){ const bf=back.props.facing; if(bf===lOf[facing]){b.props.shape='inner_left';continue;} if(bf===rOf[facing]){b.props.shape='inner_right';continue;} }
+          if(front&&front.name===NM.stairs&&front.props.half===b.props.half){ const ff=front.props.facing; if(ff===lOf[facing]){b.props.shape='outer_left';continue;} if(ff===rOf[facing]){b.props.shape='outer_right';continue;} }
+        } }
+
+      // Orient hull length along X (the generator builds it along Z). This
+      // matches the legacy hull and the rear-mount propeller, which sits at
+      // the +X end — otherwise the prop ends up beside the ship, not behind.
+      // Proper 90° rotation about Y (newX=-z, newZ=x) so stair-corner
+      // handedness is preserved; facing + fence-connection sides are remapped.
+      const FAC_ROT = { south:'west', north:'east', east:'south', west:'north' };
+      for(const b of blocks.values()){
+        const ox=b.x, oz=b.z; b.x=-oz; b.z=ox;
+        const pr=b.props; if(!pr) continue;
+        if(pr.facing) pr.facing = FAC_ROT[pr.facing] || pr.facing;
+        if(pr.north!==undefined||pr.south!==undefined||pr.east!==undefined||pr.west!==undefined){
+          const o={north:pr.north,south:pr.south,east:pr.east,west:pr.west};
+          pr.north=o.west; pr.east=o.north; pr.south=o.east; pr.west=o.south;
+        }
+      }
+
+      let minX=1e9,minY=1e9,minZ=1e9,maxX=-1e9,maxY=-1e9,maxZ=-1e9;
+      for(const b of blocks.values()){ if(b.x<minX)minX=b.x; if(b.y<minY)minY=b.y; if(b.z<minZ)minZ=b.z; if(b.x>maxX)maxX=b.x; if(b.y>maxY)maxY=b.y; if(b.z>maxZ)maxZ=b.z; }
+      if(!blocks.size){minX=minY=minZ=0;maxX=maxY=maxZ=0;}
+      const out=[];
+      for(const b of blocks.values()) out.push({x:b.x-minX,y:b.y-minY,z:b.z-minZ,name:b.name,props:b.props});
+      return {blocks:out, sizeX:maxX-minX+1, sizeY:maxY-minY+1, sizeZ:maxZ-minZ+1};
+    }
+
+    // Dispatcher — both engines return typed blocks {x,y,z,name,props}.
+    function buildHull(){
+      if(state.hull.mode==='legacy'){
+        const r=buildHullLegacy();
+        const name=state.hull.block==='custom'?(state.hull.customBlock||'minecraft:oak_planks'):state.hull.block;
+        return {blocks:r.blocks.map(b=>({x:b.x,y:b.y,z:b.z,name,props:null})), sizeX:r.sizeX,sizeY:r.sizeY,sizeZ:r.sizeZ};
+      }
+      const wood=SHAPED_WOODS.indexOf(state.hull.wood)>=0?state.hull.wood:'spruce';
+      return buildHullShaped(state.hull.params, wood);
+    }
+
+    // Fill in defaults / migrate hull state loaded from a share link. Links
+    // made before the shaped engine existed have no `mode` and were always
+    // the legacy voxel hull, so we infer 'legacy' for them.
+    function normalizeHullState(raw){
+      const h = Object.assign({}, raw);
+      if (h.mode !== 'shaped' && h.mode !== 'legacy')
+        h.mode = (h.style !== undefined || h.L !== undefined) ? 'legacy' : 'shaped';
+      if (!h.wood || SHAPED_WOODS.indexOf(h.wood) < 0) h.wood = 'spruce';
+      if (h.preset === undefined) h.preset = null;
+      h.params = Object.assign({}, SHAPED_DEFAULTS, (h.params && typeof h.params === 'object') ? h.params : {});
+      if (h.style === undefined) h.style = 'box';
+      if (h.L === undefined) h.L = 20; if (h.W === undefined) h.W = 10;
+      if (h.D === undefined) h.D = 6;  if (h.T === undefined) h.T = 1;
+      if (h.gap === undefined) h.gap = 2;
+      if (h.block === undefined) h.block = 'minecraft:oak_planks';
+      if (h.customBlock === undefined) h.customBlock = 'minecraft:dark_oak_planks';
+      if (h.enabled === undefined) h.enabled = false;
+      return h;
+    }
+
     // ── Propellor voxelization ──────────────────────────────────
     // Builds raw {x,y,z,kind} block records in WORLD coordinates so the
     // caller can fold them into the overall bounds & palette.
@@ -2824,10 +3439,11 @@
     // along +X behind the hub.
 
     // Push a block, dedup'd via the shared `seen` set.
-    // `axis` is the rotation axis ('X'|'Y'|'Z') the blade belongs to — it's
-    // carried on the record so the palette can emit the proper blockstate
-    // (e.g. create:white_sail's `axis` property). Without this every sail
-    // defaults to axis=y and ends up lying flat.
+    // `axis` here is the propeller's ROTATION axis ('X'|'Y'|'Z'). Create
+    // sails take a `facing` blockstate (not `axis`), so on export the whole
+    // fan's sails are faced ALONG this rotation axis — a flat disc facing
+    // the thrust direction (X→east, Y→up, Z→north), matching how
+    // createmod.com orients its propeller sails.
     function pushBlade(out, seen, x, y, z, axis){
       const k = x+','+y+','+z;
       if(seen.has(k))return;
@@ -3412,10 +4028,10 @@
 
       // Hull
       const hullData=state.hull.enabled?buildHull():null;
-      const hBid=state.hull.block==='custom'?state.hull.customBlock:state.hull.block;
+      // Hull blocks are typed ({name,props}); palette entries are allocated
+      // per (name,props) in the push loop below, so no single material here.
       let hOX=0,hOY=0,hOZ=0;
       if(hullData){
-        if(!palMap.has(hBid))palMap.set(hBid,nPI++);
         hOX=Math.floor((bMinX+bMaxX)/2-hullData.sizeX/2);
         hOZ=Math.floor((bMinZ+bMaxZ)/2-hullData.sizeZ/2);
         hOY=bMinY-state.hull.gap-hullData.sizeY;
@@ -3424,53 +4040,35 @@
       // Propellors (positioned in absolute world coords relative to balloon bounds)
       const propData=buildProps(bMinX,bMaxX,bMinY,bMaxY,bMinZ,bMaxZ);
       let propHubIdx=-1;
-      // Blade palette is per-axis: a sail blade rotating around X needs
-      // `axis=x` so it stands up as a panel, not the default `axis=y`
-      // which lays it flat. We allocate one palette entry per axis the
-      // current shape actually uses.
+      // Create sails take a `facing` blockstate (NOT `axis`). The whole fan's
+      // sails are faced along the propeller's rotation axis, so it reads as a
+      // flat disc facing the thrust direction. Non-sail blades (wool, custom)
+      // carry no orientation. propBladeIdxByAxis maps each rotation axis used
+      // among the blades → its palette index.
       const propBladeIdxByAxis = {};
-      // palMap keys use a composite "name[k=v,...]" syntax so the same
-      // base block can live in the palette multiple times with different
-      // Properties. Plain names (no brackets) stay backwards compatible.
+      // palMap keys use a composite "name[k=v,...]" syntax so the same base
+      // block can live in the palette multiple times with different Properties.
       const paletteKey = (name, props) => {
         if(!props) return name;
         const ks = Object.keys(props).sort();
         if(!ks.length) return name;
         return name + '[' + ks.map(k => k+'='+props[k]).join(',') + ']';
       };
-      // Which Minecraft/Create blocks expose an `axis` property. Adding
-      // axis=… to a block that doesn't have it would still load (the
-      // game ignores unknown properties) but it bloats the palette and
-      // makes the NBT noisier, so we gate it.
-      const hasAxisProperty = (id) => /(_sail|_log|_wood|_pillar|_stem|_hyphae)$/.test(id) ||
-        /:stripped_/.test(id) ||
-        id === 'minecraft:chain' ||
-        id === 'minecraft:bamboo_block' ||
-        id === 'minecraft:stripped_bamboo_block' ||
-        id === 'minecraft:basalt' ||
-        id === 'minecraft:polished_basalt' ||
-        id === 'minecraft:hay_block' ||
-        id === 'minecraft:bone_block' ||
-        id === 'minecraft:muddy_mangrove_roots' ||
-        id === 'create:shaft' ||
-        id === 'create:cogwheel' ||
-        id === 'create:large_cogwheel';
+      // Rotation axis → sail facing (the sail's flat face points along the spin axis).
+      const AXIS_TO_FACING = { X:'east', Y:'up', Z:'north' };
       if(propData&&propData.length){
         if(!palMap.has(state.prop.hubBlock))palMap.set(state.prop.hubBlock,nPI++);
         propHubIdx=palMap.get(state.prop.hubBlock);
-        // Allocate one palette entry per axis that actually appears among
-        // the blades. Fall back to no-properties entry for non-axis
-        // blade blocks.
         const bladeId = state.prop.bladeBlock;
-        const bladeIsAxial = hasAxisProperty(bladeId);
+        const bladeIsSail = /_sail$/.test(bladeId);   // create:<color>_sail carries a `facing` state
         const axesUsed = new Set();
         for(const pb of propData) if(pb.kind==='blade' && pb.axis) axesUsed.add(pb.axis);
-        if(!bladeIsAxial || !axesUsed.size){
+        if(!bladeIsSail || !axesUsed.size){
           if(!palMap.has(bladeId)) palMap.set(bladeId, nPI++);
           for(const ax of axesUsed) propBladeIdxByAxis[ax] = palMap.get(bladeId);
         } else {
           for(const ax of axesUsed){
-            const key = paletteKey(bladeId, {axis: ax.toLowerCase()});
+            const key = paletteKey(bladeId, {facing: AXIS_TO_FACING[ax] || 'north'});
             if(!palMap.has(key)) palMap.set(key, nPI++);
             propBladeIdxByAxis[ax] = palMap.get(key);
           }
@@ -3517,8 +4115,15 @@
 
       let hullCount=0;
       if(hullData){
-        const hmi=palMap.get(hBid);
-        for(const hb of hullData.blocks){blocks.push({x:hb.x+hOX-wMinX,y:hb.y+hOY-wMinY,z:hb.z+hOZ-wMinZ,mat:hmi});hullCount++;}
+        // Each hull block carries its own block name + blockstate props
+        // (planks/stairs/slab/fence/trapdoor). Allocate a palette entry per
+        // unique (name,props) via the shared composite-key scheme.
+        for(const hb of hullData.blocks){
+          const key=paletteKey(hb.name, hb.props);
+          if(!palMap.has(key))palMap.set(key,nPI++);
+          blocks.push({x:hb.x+hOX-wMinX,y:hb.y+hOY-wMinY,z:hb.z+hOZ-wMinZ,mat:palMap.get(key)});
+          hullCount++;
+        }
       }
 
       let propCount=0;
@@ -3595,6 +4200,57 @@
     canvas.addEventListener('pointerup',()=>{interacting=false;});
     canvas.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(8,Math.min(200,dist+e.deltaY*.05));},{passive:false});
 
+    // ── Partial-block preview geometry ───────────────────────────
+    // Builds a block-centered (spans [-.5,.5]) merged BufferGeometry from a
+    // list of boxes so stairs/slabs/fences/trapdoors render as real shapes,
+    // not full cubes. Used by the shaped hull engine.
+    const HULL_FACE_DEFS=[
+      {n:[0,0,1], c:[[-.5,-.5,.5],[.5,-.5,.5],[.5,.5,.5],[-.5,.5,.5]]},
+      {n:[0,0,-1],c:[[.5,-.5,-.5],[-.5,-.5,-.5],[-.5,.5,-.5],[.5,.5,-.5]]},
+      {n:[1,0,0], c:[[.5,-.5,.5],[.5,-.5,-.5],[.5,.5,-.5],[.5,.5,.5]]},
+      {n:[-1,0,0],c:[[-.5,-.5,-.5],[-.5,-.5,.5],[-.5,.5,.5],[-.5,.5,-.5]]},
+      {n:[0,1,0], c:[[-.5,.5,.5],[.5,.5,.5],[.5,.5,-.5],[-.5,.5,-.5]]},
+      {n:[0,-1,0],c:[[-.5,-.5,-.5],[.5,-.5,-.5],[.5,-.5,.5],[-.5,-.5,.5]]},
+    ];
+    function hullBoxesGeometry(boxes){
+      const pos=[],nor=[];
+      for(const b of boxes) for(const f of HULL_FACE_DEFS){
+        const v=f.c.map(o=>[b.cx+o[0]*b.sx,b.cy+o[1]*b.sy,b.cz+o[2]*b.sz]);
+        const tri=[v[0],v[1],v[2],v[0],v[2],v[3]];
+        for(const t of tri){pos.push(t[0],t[1],t[2]);nor.push(f.n[0],f.n[1],f.n[2]);}
+      }
+      const g=new THREE.BufferGeometry();
+      g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+      g.setAttribute('normal',new THREE.Float32BufferAttribute(nor,3));
+      return g;
+    }
+    function hullStairBoxes(facing,half){
+      const f={south:[0,1],north:[0,-1],east:[1,0],west:[-1,0]}[facing]||[0,1];
+      const slabY=half==='top'?.25:-.25, riserY=half==='top'?-.25:.25;
+      const boxes=[{sx:1,sy:.5,sz:1,cx:0,cy:slabY,cz:0}];
+      if(f[1]!==0) boxes.push({sx:1,sy:.5,sz:.5,cx:0,cy:riserY,cz:-.25*f[1]});
+      else         boxes.push({sx:.5,sy:.5,sz:1,cx:-.25*f[0],cy:riserY,cz:0});
+      return boxes;
+    }
+    function hullFenceBoxes(props){
+      const b=[{sx:.25,sy:1,sz:.25,cx:0,cy:0,cz:0}];
+      const arm=(dx,dz)=>({sx:dx?.5:.14,sy:.35,sz:dz?.5:.14,cx:dx*.25,cy:.12,cz:dz*.25});
+      if(props){ if(props.east==='true')b.push(arm(1,0)); if(props.west==='true')b.push(arm(-1,0)); if(props.south==='true')b.push(arm(0,1)); if(props.north==='true')b.push(arm(0,-1)); }
+      return b;
+    }
+    function hullTrapdoorBoxes(facing){
+      const m={east:{sx:.16,sy:1,sz:1,cx:.42},west:{sx:.16,sy:1,sz:1,cx:-.42},north:{sx:1,sy:1,sz:.16,cz:-.42},south:{sx:1,sy:1,sz:.16,cz:.42}}[facing]||{sx:1,sy:1,sz:.16,cz:.42};
+      return [{sx:m.sx,sy:m.sy,sz:m.sz,cx:m.cx||0,cy:0,cz:m.cz||0}];
+    }
+    // Returns a custom geometry for partial blocks, or null for full cubes.
+    function previewShapeGeometry(name,props){
+      if(name.endsWith('_stairs')) return hullBoxesGeometry(hullStairBoxes(props?props.facing:'south', props&&props.half?props.half:'bottom'));
+      if(name.endsWith('_slab'))   return hullBoxesGeometry([(props&&props.type==='top')?{sx:1,sy:.5,sz:1,cx:0,cy:.25,cz:0}:{sx:1,sy:.5,sz:1,cx:0,cy:-.25,cz:0}]);
+      if(name.endsWith('_fence'))  return hullBoxesGeometry(hullFenceBoxes(props));
+      if(name.endsWith('_trapdoor'))return hullBoxesGeometry(hullTrapdoorBoxes(props?props.facing:'south'));
+      return null;
+    }
+
     function rebuildMesh(stats){
       while(root.children.length){const c=root.children[0];c.geometry?.dispose();c.material?.dispose();root.remove(c);}
       const{blocks,sizeX,sizeY,sizeZ,palette,balloonBounds}=stats;
@@ -3607,8 +4263,9 @@
         // {Name, Properties}; normalize for the preview's colour lookup.
         const bid = typeof pe === 'string' ? pe : (pe && pe.Name);
         if(!bid||bid==='minecraft:air')return;
+        const props = (pe && typeof pe === 'object') ? pe.Properties : null;
         const isG=bid.includes('glass');
-        const geom=new THREE.BoxGeometry(1,1,1);
+        const geom=previewShapeGeometry(bid,props)||new THREE.BoxGeometry(1,1,1);
         const matr=new THREE.MeshStandardMaterial({color:colourFor(bid),roughness:isG?.05:.85,metalness:bid.includes('iron')?.6:0,transparent:isG,opacity:isG?.45:1});
         const inst=new THREE.InstancedMesh(geom,matr,subset.length);
         const m=new THREE.Matrix4();
@@ -3785,7 +4442,9 @@
       statEnvelope.textContent=fmt(stats.envelope);
       const ms=(performance.now()-t0).toFixed(0);
       const multi=state.balloons.length>1?` ×${state.balloons.length}`:'';
-      const hBit=state.hull.enabled?` + ${state.hull.style} hull`:'';
+      const hBit=state.hull.enabled
+        ?` + ${state.hull.mode==='legacy'?state.hull.style:(state.hull.preset?(SHAPED_PRESET_LABELS[state.hull.preset]||state.hull.preset):state.hull.wood+' shaped')} hull`
+        :'';
       const pBit=state.prop.enabled?` + ${state.prop.type} prop`:'';
       const oBit=(state.orientation.lay!=='up'||state.orientation.yaw!==0)
         ?` · ${state.orientation.lay==='up'?'':state.orientation.lay+' '}yaw ${state.orientation.yaw}°`
@@ -3895,7 +4554,7 @@
           state.activeBalloonIdx = Math.max(0, Math.min(s.activeBalloonIdx, state.balloons.length - 1));
         }
         if (s.orientation) state.orientation = s.orientation;
-        if (s.hull)        state.hull        = s.hull;
+        if (s.hull)        state.hull        = normalizeHullState(s.hull);
         if (s.prop)        state.prop        = s.prop;
 
         // Patch any missing keys on balloons against the current default
@@ -3907,6 +4566,7 @@
 
         renderBalloonList();
         syncControlsToActiveBalloon();
+        _syncHullUI?.();
         regenerate();
       }
 
