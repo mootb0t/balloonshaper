@@ -3390,6 +3390,17 @@
         }
       }
 
+      // Stair facing is computed in createmod's internal convention, which is
+      // the OPPOSITE of Minecraft's `facing` (their NBT writer flips it 180°
+      // on export). We render the preview with Minecraft's real convention, so
+      // flip here once — correcting both the preview and the exported .nbt.
+      // Only stairs flip; trapdoors and fence connections stay as generated.
+      const STAIR_FLIP = { north:'south', south:'north', east:'west', west:'east' };
+      for(const b of blocks.values()){
+        if(b.name===NM.stairs && b.props && b.props.facing)
+          b.props.facing = STAIR_FLIP[b.props.facing] || b.props.facing;
+      }
+
       let minX=1e9,minY=1e9,minZ=1e9,maxX=-1e9,maxY=-1e9,maxZ=-1e9;
       for(const b of blocks.values()){ if(b.x<minX)minX=b.x; if(b.y<minY)minY=b.y; if(b.z<minZ)minZ=b.z; if(b.x>maxX)maxX=b.x; if(b.y>maxY)maxY=b.y; if(b.z>maxZ)maxZ=b.z; }
       if(!blocks.size){minX=minY=minZ=0;maxX=maxY=maxZ=0;}
